@@ -8,7 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV PORT=8080
-EXPOSE 8080
-
-CMD gunicorn -b 0.0.0.0:$PORT main:app --worker-class uvicorn.workers.UvicornWorker --workers 1
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-8080} main:app --worker-class uvicorn.workers.UvicornWorker --workers 1"]
