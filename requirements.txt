@@ -4,3 +4,4 @@ gunicorn
 httpx
 PyJWT
 python-dotenv
+python-multipart
