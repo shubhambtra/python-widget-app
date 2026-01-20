@@ -126,7 +126,7 @@ def support_login_page():
 
 @app.get("/support")
 def support_page():
-    return FileResponse("support.html")
+    return FileResponse("Support.html")
 
 
 @app.get("/Support.html")
