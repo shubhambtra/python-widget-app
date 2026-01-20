@@ -5,3 +5,5 @@ httpx
 PyJWT
 python-dotenv
 python-multipart
+openai
+
