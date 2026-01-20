@@ -11,6 +11,9 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Uplo
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+# Base directory for file paths
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI()
 
 # JWT settings (must match .NET API)
@@ -32,24 +35,27 @@ def validate_jwt_token(token: str):
     except jwt.InvalidTokenError:
         return None
 
-app.mount("/static", StaticFiles(directory="widget"), name="static")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "widget")), name="static")
 
 # Serve config.js
 @app.get("/config.js")
 def serve_config():
-    return FileResponse("config.js", media_type="application/javascript")
+    return FileResponse(BASE_DIR / "config.js", media_type="application/javascript")
 
 # Serve branding.js
 @app.get("/branding.js")
 def serve_branding():
-    return FileResponse("branding.js", media_type="application/javascript")
+    return FileResponse(BASE_DIR / "branding.js", media_type="application/javascript")
 
 # .NET API Base URL
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:5000/api")
 
 # Create uploads directory
-UPLOADS_DIR = Path("uploads")
-UPLOADS_DIR.mkdir(exist_ok=True)
+UPLOADS_DIR = BASE_DIR / "uploads"
+try:
+    UPLOADS_DIR.mkdir(exist_ok=True)
+except Exception:
+    pass  # May fail on read-only filesystems
 
 # Allowed file types
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.doc', '.docx', '.txt', '.zip'}
@@ -71,104 +77,104 @@ connections = {}
 
 @app.get("/")
 def landing_page():
-    return FileResponse("index.html")
+    return FileResponse(BASE_DIR / "index.html")
 
 
 @app.get("/index.html")
 def landing_page_html():
-    return FileResponse("index.html")
+    return FileResponse(BASE_DIR / "index.html")
 
 
 @app.get("/register")
 def register_page():
-    return FileResponse("register.html")
+    return FileResponse(BASE_DIR / "register.html")
 
 
 @app.get("/register.html")
 def register_page_html():
-    return FileResponse("register.html")
+    return FileResponse(BASE_DIR / "register.html")
 
 
 @app.get("/login")
 def unified_login_page():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/login.html")
 def unified_login_page_html():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/admin-login")
 def admin_login_page():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/admin-login.html")
 def admin_login_page_html():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/admin-dashboard")
 def admin_dashboard_page():
-    return FileResponse("admin-dashboard.html")
+    return FileResponse(BASE_DIR / "admin-dashboard.html")
 
 
 @app.get("/admin-dashboard.html")
 def admin_dashboard_page_html():
-    return FileResponse("admin-dashboard.html")
+    return FileResponse(BASE_DIR / "admin-dashboard.html")
 
 
 @app.get("/support/login")
 def support_login_page():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/support")
 def support_page():
-    return FileResponse("Support.html")
+    return FileResponse(BASE_DIR / "Support.html")
 
 
 @app.get("/Support.html")
 def support_page_html():
-    return FileResponse("Support.html")
+    return FileResponse(BASE_DIR / "Support.html")
 
 
 @app.get("/profile.html")
 def profile_page():
-    return FileResponse("profile.html")
+    return FileResponse(BASE_DIR / "profile.html")
 
 
 @app.get("/welcome-messages.html")
 def welcome_messages_page():
-    return FileResponse("welcome-messages.html")
+    return FileResponse(BASE_DIR / "welcome-messages.html")
 
 
 @app.get("/site-login")
 def site_login_page():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/site-login.html")
 def site_login_page_html():
-    return FileResponse("login.html")
+    return FileResponse(BASE_DIR / "login.html")
 
 
 @app.get("/site-admin.html")
 def site_admin_page():
-    return FileResponse("site-admin.html")
+    return FileResponse(BASE_DIR / "site-admin.html")
 
 @app.get("/knowledge-base.html")
 def knowledge_base_page():
-    return FileResponse("knowledge-base.html")
+    return FileResponse(BASE_DIR / "knowledge-base.html")
 
 @app.get("/test-widget")
 def test_widget_page():
-    return FileResponse("test-widget.html")
+    return FileResponse(BASE_DIR / "test-widget.html")
 
 @app.get("/test-widget.html")
 def test_widget_page_html():
-    return FileResponse("test-widget.html")
+    return FileResponse(BASE_DIR / "test-widget.html")
 
 
 # ------------------ REGISTRATION ------------------
