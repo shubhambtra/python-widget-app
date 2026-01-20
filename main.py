@@ -10,11 +10,21 @@ import jwt
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, UploadFile, File, Form, Header
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 # Base directory for file paths
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # JWT settings (must match .NET API)
 JWT_SECRET = os.getenv("JWT_SECRET", "YourSuperSecretKeyThatShouldBeAtLeast32CharactersLong!")
