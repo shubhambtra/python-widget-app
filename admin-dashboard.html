@@ -1,0 +1,4219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Dashboard - ChatApp Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Theme Variables */
+:root {
+  /* Default Dark Theme */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-primary: #6366f1;
+  --accent-secondary: #8b5cf6;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-primary: #6366f1;
+  --accent-secondary: #8b5cf6;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Ocean Blue Theme */
+[data-theme="ocean"] {
+  --bg-primary: #0c1929;
+  --bg-secondary: #132f4c;
+  --bg-tertiary: #1a4971;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #e3f2fd;
+  --text-secondary: #90caf9;
+  --text-muted: #64b5f6;
+  --accent-primary: #2196f3;
+  --accent-secondary: #03a9f4;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Forest Green Theme */
+[data-theme="forest"] {
+  --bg-primary: #0d1f12;
+  --bg-secondary: #1a3a21;
+  --bg-tertiary: #2d5a3c;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #e8f5e9;
+  --text-secondary: #a5d6a7;
+  --text-muted: #81c784;
+  --accent-primary: #4caf50;
+  --accent-secondary: #66bb6a;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Sunset Theme */
+[data-theme="sunset"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #2d2d44;
+  --bg-tertiary: #3d3d5c;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #fce4ec;
+  --text-secondary: #f8bbd9;
+  --text-muted: #f48fb1;
+  --accent-primary: #ff6b6b;
+  --accent-secondary: #ffa06b;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Midnight Purple Theme */
+[data-theme="midnight"] {
+  --bg-primary: #13111c;
+  --bg-secondary: #1e1a2e;
+  --bg-tertiary: #2d2640;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #ede9fe;
+  --text-secondary: #c4b5fd;
+  --text-muted: #a78bfa;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #a855f7;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Rose Gold Theme */
+[data-theme="rose"] {
+  --bg-primary: #1c1417;
+  --bg-secondary: #2d2226;
+  --bg-tertiary: #3d3033;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #fdf2f8;
+  --text-secondary: #fbcfe8;
+  --text-muted: #f9a8d4;
+  --accent-primary: #ec4899;
+  --accent-secondary: #f472b6;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Cyberpunk Theme */
+[data-theme="cyber"] {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #1a1a25;
+  --bg-card: rgba(255, 255, 255, 0.02);
+  --border-color: rgba(0, 255, 255, 0.2);
+  --text-primary: #00ffff;
+  --text-secondary: #00d4d4;
+  --text-muted: #00a3a3;
+  --accent-primary: #ff00ff;
+  --accent-secondary: #00ffff;
+  --shadow-color: rgba(0, 255, 255, 0.2);
+}
+
+/* Coffee Theme */
+[data-theme="coffee"] {
+  --bg-primary: #1a1512;
+  --bg-secondary: #2c2420;
+  --bg-tertiary: #3d342e;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #fef3c7;
+  --text-secondary: #fcd34d;
+  --text-muted: #d97706;
+  --accent-primary: #f59e0b;
+  --accent-secondary: #fbbf24;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Nord Theme */
+[data-theme="nord"] {
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #eceff4;
+  --text-secondary: #d8dee9;
+  --text-muted: #a3be8c;
+  --accent-primary: #88c0d0;
+  --accent-secondary: #81a1c1;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dracula Theme */
+[data-theme="dracula"] {
+  --bg-primary: #282a36;
+  --bg-secondary: #343746;
+  --bg-tertiary: #44475a;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #f8f8f2;
+  --text-secondary: #bd93f9;
+  --text-muted: #6272a4;
+  --accent-primary: #ff79c6;
+  --accent-secondary: #bd93f9;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Solarized Dark Theme */
+[data-theme="solarized"] {
+  --bg-primary: #002b36;
+  --bg-secondary: #073642;
+  --bg-tertiary: #094552;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #fdf6e3;
+  --text-secondary: #93a1a1;
+  --text-muted: #657b83;
+  --accent-primary: #268bd2;
+  --accent-secondary: #2aa198;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Monokai Theme */
+[data-theme="monokai"] {
+  --bg-primary: #272822;
+  --bg-secondary: #3e3d32;
+  --bg-tertiary: #49483e;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #f8f8f2;
+  --text-secondary: #e6db74;
+  --text-muted: #75715e;
+  --accent-primary: #a6e22e;
+  --accent-secondary: #66d9ef;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  text-decoration: none;
+}
+
+.sidebar-logo .logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-logo .logo-icon svg {
+  width: 22px;
+  height: 22px;
+  color: white;
+}
+
+.sidebar-logo span {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sidebar-nav {
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+
+.nav-item:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--accent-primary);
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar-footer {
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-details .name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-details .role {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 260px;
+  padding: 32px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-header p {
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  border: none;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-tertiary);
+}
+
+.btn-small {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.stat-card .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.stat-card .stat-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.stat-card .stat-icon.sites {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+.stat-card .stat-icon.users {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+}
+
+.stat-card .stat-icon.conversations {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.stat-card .stat-icon.agents {
+  background: rgba(251, 146, 60, 0.2);
+  color: #fb923c;
+}
+
+.stat-card .stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-label {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Sites Table */
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  width: 200px;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-box svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 16px 24px;
+  text-align: left;
+}
+
+th {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+tr:last-child {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: var(--bg-tertiary);
+}
+
+.site-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  font-size: 16px;
+}
+
+.site-name {
+  font-weight: 500;
+}
+
+.site-domain {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.badge.inactive {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.badge.free {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.badge.pro {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+}
+
+.badge.enterprise {
+  background: rgba(251, 146, 60, 0.2);
+  color: #fb923c;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.action-btn.delete {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.action-btn.delete:hover {
+  background: #dc2626;
+  color: white;
+}
+
+/* Settings View */
+.settings-container {
+  padding: 20px;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+
+.settings-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-section h3 svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-primary);
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.theme-card {
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+}
+
+.theme-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.theme-card.active {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.theme-preview {
+  height: 80px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  overflow: hidden;
+}
+
+.theme-preview .preview-sidebar {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 4px;
+}
+
+.theme-preview .preview-main {
+  flex: 1;
+  padding: 8px;
+}
+
+.theme-preview .preview-bar {
+  height: 6px;
+  border-radius: 3px;
+  opacity: 0.6;
+}
+
+.theme-preview .preview-content {
+  height: 100%;
+  border-radius: 4px;
+  opacity: 0.3;
+}
+
+.theme-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theme-card-name .check-icon {
+  display: none;
+  color: var(--accent-primary);
+}
+
+.theme-card.active .check-icon {
+  display: block;
+}
+
+/* Branding Settings Form */
+.settings-form {
+  display: grid;
+  gap: 20px;
+}
+
+.settings-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.settings-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-form-group input,
+.settings-form-group textarea {
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.settings-form-group input:focus,
+.settings-form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.settings-form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.settings-form-group .input-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.logo-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+}
+
+.logo-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.logo-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.logo-preview svg {
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted);
+}
+
+.logo-upload-content {
+  flex: 1;
+}
+
+.logo-upload-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.logo-upload-content p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.upload-btn:hover {
+  background: var(--accent-hover);
+}
+
+.settings-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-save-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.settings-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.settings-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+}
+
+.settings-tab {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.settings-tab:hover {
+  color: var(--text-primary);
+}
+
+.settings-tab.active {
+  color: var(--accent-primary);
+}
+
+.settings-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-primary);
+  border-radius: 2px 2px 0 0;
+}
+
+.settings-tab-content {
+  display: none;
+}
+
+.settings-tab-content.active {
+  display: block;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(139, 92, 246, 0.2);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-muted);
+}
+
+.empty-state svg {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.toast.error {
+  background: #ef4444;
+  color: white;
+}
+
+.toast.success {
+  background: #22c55e;
+  color: white;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow: hidden;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal {
+  transform: scale(1) translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-header .close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-header .close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(85vh - 140px);
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section h3 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.detail-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.detail-item.full-width {
+  grid-column: span 2;
+}
+
+.detail-item label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.detail-item .value {
+  font-size: 14px;
+  color: #e2e8f0;
+  word-break: break-word;
+}
+
+.detail-item .value.large {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 20px;
+  color: white;
+}
+
+.modal-avatar.site {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+}
+
+.modal-avatar.user {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+}
+
+.modal-avatar.conversation {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+/* Conversation Messages Modal */
+.messages-modal .modal {
+  max-width: 700px;
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.message-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.message-item.visitor {
+  background: rgba(14, 165, 233, 0.1);
+  border-color: rgba(14, 165, 233, 0.2);
+}
+
+.message-item.agent {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.message-item.bot {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.message-item.visitor .message-avatar {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+}
+
+.message-item.agent .message-avatar {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+}
+
+.message-item.bot .message-avatar {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.message-sender {
+  font-weight: 600;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.message-text {
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.conversation-info {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.conversation-info-item {
+  flex: 1;
+  text-align: center;
+}
+
+.conversation-info-item label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.conversation-info-item .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.empty-messages {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.empty-messages svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 80px;
+    padding: 16px;
+  }
+
+  .sidebar-logo span,
+  .nav-item span,
+  .user-details {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .user-info {
+    justify-content: center;
+  }
+
+  .main-content {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .table-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Site Details Modal -->
+<div class="modal-overlay" id="siteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>
+        <div class="modal-avatar site" id="siteModalAvatar">S</div>
+        <span id="siteModalTitle">Site Details</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('siteModal')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="siteModalBody">
+      <!-- Content will be injected -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('siteModal')">Close</button>
+      <button class="btn btn-primary" id="siteEditBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        Edit Site
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Conversation Messages Modal -->
+<div class="modal-overlay messages-modal" id="conversationModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>
+        <div class="modal-avatar conversation" id="conversationModalAvatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <span id="conversationModalTitle">Conversation Messages</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('conversationModal')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="conversationModalBody">
+      <!-- Content will be injected -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('conversationModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Details Modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>
+        <div class="modal-avatar user" id="userModalAvatar">U</div>
+        <span id="userModalTitle">User Details</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('userModal')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="userModalBody">
+      <!-- Content will be injected -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('userModal')">Close</button>
+      <button class="btn btn-primary" id="userEditBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        Edit User
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Plan Modal -->
+<div class="modal-overlay" id="planModal">
+  <div class="modal" style="max-width: 720px; max-height: 90vh; background: #ffffff; border: none;">
+    <div class="modal-header" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-radius: 12px 12px 0 0; padding: 20px 24px;">
+      <h2 style="display: flex; align-items: center; gap: 12px; margin: 0; font-size: 1.25rem;">
+        <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <span id="planModalTitle">Create Subscription Plan</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('planModal')" style="color: white; opacity: 0.8;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="planModalBody" style="padding: 0; overflow-y: auto; max-height: calc(90vh - 160px);">
+      <form id="planForm">
+        <input type="hidden" id="planId" value="">
+
+        <!-- Basic Info Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#6366f1">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Basic Information</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+            <div class="form-group" style="margin: 0;">
+              <label for="planName" style="font-size: 0.85rem; font-weight: 500; color: #4b5563; margin-bottom: 6px; display: block;">Plan Name <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="planName" required placeholder="e.g., Professional" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s;" onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="planSortOrder" style="font-size: 0.85rem; font-weight: 500; color: #4b5563; margin-bottom: 6px; display: block;">Display Order</label>
+              <input type="number" id="planSortOrder" value="0" min="0" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem;" onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
+            </div>
+          </div>
+          <div class="form-group" style="margin: 16px 0 0 0;">
+            <label for="planDescription" style="font-size: 0.85rem; font-weight: 500; color: #4b5563; margin-bottom: 6px; display: block;">Description</label>
+            <textarea id="planDescription" rows="2" placeholder="Briefly describe what this plan offers..." style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit;" onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"></textarea>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Pricing</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Monthly <span style="color: #ef4444;">*</span></label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <span style="font-size: 1.5rem; color: #374151; margin-right: 4px;">$</span>
+                <input type="number" id="planMonthlyPrice" required min="0" step="0.01" placeholder="0" style="width: 80px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;" onfocus="this.parentElement.parentElement.style.borderColor='#6366f1'" onblur="this.parentElement.parentElement.style.borderColor='#d1d5db'">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">/month</span>
+            </div>
+            <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Annual</label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <span style="font-size: 1.5rem; color: #374151; margin-right: 4px;">$</span>
+                <input type="number" id="planAnnualPrice" min="0" step="0.01" placeholder="0" style="width: 80px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">/year</span>
+            </div>
+            <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Trial Period</label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <input type="number" id="planTrialDays" min="0" value="0" style="width: 60px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">days free</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Limits Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#f59e0b">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Usage Limits</span>
+            <span style="font-size: 0.75rem; color: #9ca3af; margin-left: auto;">Leave empty for unlimited</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#ca8a04">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #854d0e;">Users</label>
+              </div>
+              <input type="number" id="planMaxAgents" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #fef08a; border-radius: 6px; font-size: 0.9rem; background: white;">
+            </div>
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#2563eb">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #1e40af;">Conversations</label>
+              </div>
+              <input type="number" id="planMaxConversations" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#16a34a">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #166534;">Messages</label>
+              </div>
+              <input type="number" id="planMaxMessages" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+            <div style="background: #fdf4ff; border: 1px solid #f5d0fe; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#a855f7">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #7e22ce;">Storage</label>
+              </div>
+              <input type="number" id="planMaxStorage" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #f5d0fe; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">MB total</span>
+            </div>
+            <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#ea580c">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #c2410c;">File Size</label>
+              </div>
+              <input type="number" id="planMaxFileSize" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #fed7aa; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">MB max</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Features Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; background: #f0f9ff;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0ea5e9">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">AI Features</span>
+            <span style="font-size: 0.75rem; color: #9ca3af; margin-left: auto;">Configure AI capabilities for this plan</span>
+          </div>
+
+          <!-- AI Feature Toggles -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 14px 16px; background: white; border: 1px solid #bae6fd; border-radius: 10px;">
+              <input type="checkbox" id="planAiAnalysisEnabled" style="width: 18px; height: 18px; accent-color: #0ea5e9;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0ea5e9">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  AI Analysis
+                </div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Conversation insights & analytics</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 14px 16px; background: white; border: 1px solid #c4b5fd; border-radius: 10px;">
+              <input type="checkbox" id="planAiAutoReplyEnabled" style="width: 18px; height: 18px; accent-color: #8b5cf6;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#8b5cf6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                  AI Auto Reply
+                </div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Automated AI responses</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- AI Usage Limits -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: white; border: 1px solid #bae6fd; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0284c7">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #0369a1;">AI Analyses Limit</label>
+              </div>
+              <input type="number" id="planMaxAiAnalyses" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #bae6fd; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+            <div style="background: white; border: 1px solid #c4b5fd; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#7c3aed">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #6d28d9;">AI Auto Replies Limit</label>
+              </div>
+              <input type="number" id="planMaxAiAutoReplies" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #c4b5fd; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Section -->
+        <div style="padding: 20px 24px; background: #f9fafb;">
+          <div style="display: flex; gap: 24px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px 16px; background: white; border: 1px solid #d1d5db; border-radius: 10px; flex: 1;">
+              <input type="checkbox" id="planIsActive" checked style="width: 18px; height: 18px; accent-color: #22c55e;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem;">Active</div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Plan is available for subscription</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px 16px; background: white; border: 1px solid #d1d5db; border-radius: 10px; flex: 1;">
+              <input type="checkbox" id="planIsPublic" checked style="width: 18px; height: 18px; accent-color: #6366f1;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem;">Public</div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Visible on pricing page</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer" style="padding: 16px 24px; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 12px;">
+      <button class="btn btn-secondary" onclick="closeModal('planModal')" style="padding: 10px 20px; border-radius: 8px;">Cancel</button>
+      <button class="btn btn-primary" onclick="savePlan()" style="padding: 10px 24px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #4f46e5); display: flex; align-items: center; gap: 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Save Plan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    </div>
+    <span><span data-brand="name">ChatApp</span> Admin</span>
+  </a>
+
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" id="navSites">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+      <span>All Sites</span>
+    </a>
+    <a href="#" class="nav-item" id="navUsers">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <span>Users</span>
+    </a>
+    <a href="#" class="nav-item" id="navConversations">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      <span>Conversations</span>
+    </a>
+    <a href="#" class="nav-item" id="navPlans">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+      <span>Plans</span>
+    </a>
+    <a href="#" class="nav-item" id="navAnalytics">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      <span>Analytics</span>
+    </a>
+    <a href="#" class="nav-item" id="navPayments">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+      <span>Payments</span>
+    </a>
+    <a href="#" class="nav-item" id="navSubscriptions">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+      </svg>
+      <span>Subscriptions</span>
+    </a>
+    <a href="#" class="nav-item" id="navSettings">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div class="user-details">
+        <div class="name" id="userName">Admin</div>
+        <div class="role">Platform Owner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>Platform Dashboard</h1>
+      <p>Overview of all sites and users on the platform</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="loadData()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon sites">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        </svg>
+      </div>
+      <div class="stat-value" id="totalSites">-</div>
+      <div class="stat-label">Total Sites</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon users">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="totalUsers">-</div>
+      <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon conversations">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="totalConversations">-</div>
+      <div class="stat-label">Conversations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon agents">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="totalAgents">-</div>
+      <div class="stat-label">Support Agents</div>
+    </div>
+  </div>
+
+  <!-- Sites Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2>All Registered Sites</h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="tableHeaderActions"></div>
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search sites..." oninput="filterSites()">
+        </div>
+      </div>
+    </div>
+
+    <div id="sitesTableContainer">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading sites...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/config.js"></script>
+<script>
+const API_BASE = CONFIG.API_BASE;
+const toast = document.getElementById('toast');
+
+// Get params from URL
+const params = new URLSearchParams(location.search);
+const authToken = params.get('token');
+const currentUser = params.get('user');
+
+// Set user info
+document.getElementById('userName').textContent = currentUser || 'Admin';
+document.getElementById('userAvatar').textContent = (currentUser || 'A')[0].toUpperCase();
+
+let allSites = [];
+
+function showToast(message, type = 'error') {
+  toast.textContent = message;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function logout() {
+  location.href = '/login';
+}
+
+async function loadData() {
+  if (!authToken) {
+    showToast('No authentication token. Please login again.');
+    setTimeout(() => location.href = '/login', 2000);
+    return;
+  }
+
+  try {
+    // Fetch all sites
+    const sitesRes = await fetch(`${API_BASE}/sites/all`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    if (sitesRes.status === 401 || sitesRes.status === 403) {
+      showToast('Session expired. Please login again.');
+      setTimeout(() => location.href = '/login', 2000);
+      return;
+    }
+
+    if (!sitesRes.ok) {
+      throw new Error('Failed to fetch sites');
+    }
+
+    const sitesResult = await sitesRes.json();
+
+    if (sitesResult.success) {
+      allSites = sitesResult.data?.items || sitesResult.data || [];
+      document.getElementById('totalSites').textContent = allSites.length;
+      renderSitesTable(allSites);
+    }
+
+    // Load site settings
+    await loadSiteSettings();
+
+    // Try to fetch users count
+    try {
+      const usersRes = await fetch(`${API_BASE}/users`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (usersRes.ok) {
+        const usersResult = await usersRes.json();
+        const users = usersResult.data?.items || usersResult.data || [];
+        document.getElementById('totalUsers').textContent = users.length;
+
+        // Count support agents
+        const agents = users.filter(u => u.role === 'support_agent');
+        document.getElementById('totalAgents').textContent = agents.length;
+      }
+    } catch (e) {
+      document.getElementById('totalUsers').textContent = '-';
+      document.getElementById('totalAgents').textContent = '-';
+    }
+
+    // Fetch conversations count
+    try {
+      const conversationsRes = await fetch(`${API_BASE}/conversations`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (conversationsRes.ok) {
+        const conversationsResult = await conversationsRes.json();
+        const conversations = conversationsResult.data?.items || conversationsResult.data || [];
+        document.getElementById('totalConversations').textContent = conversations.length;
+      }
+    } catch (e) {
+      document.getElementById('totalConversations').textContent = '-';
+    }
+
+  } catch (err) {
+    showToast(err.message || 'Failed to load data');
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3>Failed to load sites</h3>
+        <p>${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+function renderSitesTable(sites) {
+  if (!sites.length) {
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        </svg>
+        <h3>No sites registered yet</h3>
+        <p>Sites will appear here once users register</p>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Site</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Plan</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sites.map(site => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="site-icon">${(site.name || 'S')[0].toUpperCase()}</div>
+                <div>
+                  <div class="site-name">${escapeHtml(site.name || 'Unnamed')}</div>
+                  <div class="site-domain">${escapeHtml(site.domain || 'No domain')}</div>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(site.ownerEmail || site.ownerId || '-')}</td>
+            <td><span class="badge ${site.isActive !== false ? 'active' : 'inactive'}">${site.isActive !== false ? 'Active' : 'Inactive'}</span></td>
+            <td><span class="badge ${(site.plan || 'free').toLowerCase()}">${site.plan || 'Free'}</span></td>
+            <td>${formatDate(site.createdAt)}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="View Details" onclick="viewSite('${site.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button class="action-btn" title="Edit" onclick="editSite('${site.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('sitesTableContainer').innerHTML = html;
+}
+
+let allUsers = [];
+let allConversations = [];
+
+function filterSites() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+
+  if (currentView === 'users') {
+    const filtered = allUsers.filter(user =>
+      (user.name || '').toLowerCase().includes(query) ||
+      (user.email || '').toLowerCase().includes(query) ||
+      (user.username || '').toLowerCase().includes(query) ||
+      (user.role || '').toLowerCase().includes(query)
+    );
+    renderUsersTable(filtered);
+  } else if (currentView === 'conversations') {
+    const filtered = allConversations.filter(conv =>
+      (conv.visitorName || '').toLowerCase().includes(query) ||
+      (conv.visitorEmail || '').toLowerCase().includes(query) ||
+      (conv.siteName || '').toLowerCase().includes(query) ||
+      (conv.status || '').toLowerCase().includes(query) ||
+      (conv.id || '').toLowerCase().includes(query)
+    );
+    renderConversationsTable(filtered);
+  } else {
+    const filtered = allSites.filter(site =>
+      (site.name || '').toLowerCase().includes(query) ||
+      (site.domain || '').toLowerCase().includes(query) ||
+      (site.ownerEmail || '').toLowerCase().includes(query)
+    );
+    renderSitesTable(filtered);
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+
+function viewSite(siteId) {
+  const site = allSites.find(s => s.id === siteId);
+  if (!site) {
+    showToast('Site not found');
+    return;
+  }
+
+  // Update modal header
+  document.getElementById('siteModalAvatar').textContent = (site.name || 'S')[0].toUpperCase();
+  document.getElementById('siteModalTitle').textContent = site.name || 'Unnamed Site';
+
+  // Build modal content
+  const statusBadge = site.isActive !== false ?
+    '<span class="badge active">Active</span>' :
+    '<span class="badge inactive">Inactive</span>';
+
+  const planBadge = `<span class="badge ${(site.plan || 'free').toLowerCase()}">${site.plan || 'Free'}</span>`;
+
+  document.getElementById('siteModalBody').innerHTML = `
+    <div class="detail-section">
+      <h3>Basic Information</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Site Name</label>
+          <div class="value">${escapeHtml(site.name || 'Unnamed')}</div>
+        </div>
+        <div class="detail-item">
+          <label>Domain</label>
+          <div class="value">${escapeHtml(site.domain || 'No domain set')}</div>
+        </div>
+        <div class="detail-item">
+          <label>Status</label>
+          <div class="value">${statusBadge}</div>
+        </div>
+        <div class="detail-item">
+          <label>Plan</label>
+          <div class="value">${planBadge}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Owner Information</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Owner Email</label>
+          <div class="value">${escapeHtml(site.ownerEmail || '-')}</div>
+        </div>
+        <div class="detail-item">
+          <label>Owner ID</label>
+          <div class="value">${escapeHtml(site.ownerId || '-')}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Site Details</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Site ID</label>
+          <div class="value">${escapeHtml(site.id || '-')}</div>
+        </div>
+        <div class="detail-item">
+          <label>Created</label>
+          <div class="value">${formatDate(site.createdAt)}</div>
+        </div>
+        <div class="detail-item full-width">
+          <label>API Key</label>
+          <div class="value" style="font-family: monospace; font-size: 12px;">${escapeHtml(site.apiKey || 'Not available')}</div>
+        </div>
+      </div>
+    </div>
+
+    ${site.settings ? `
+    <div class="detail-section">
+      <h3>Settings</h3>
+      <div class="detail-grid">
+        <div class="detail-item full-width">
+          <label>Configuration</label>
+          <div class="value" style="font-family: monospace; font-size: 12px; white-space: pre-wrap;">${escapeHtml(JSON.stringify(site.settings, null, 2))}</div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
+  `;
+
+  // Set up edit button
+  document.getElementById('siteEditBtn').onclick = () => {
+    closeModal('siteModal');
+    editSite(siteId);
+  };
+
+  openModal('siteModal');
+}
+
+function editSite(siteId) {
+  showToast('Site editing coming soon', 'success');
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+      modal.classList.remove('show');
+    });
+    document.body.style.overflow = '';
+  }
+});
+
+// Navigation handling
+let currentView = 'dashboard';
+
+document.getElementById('navSites').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('sites');
+});
+
+document.getElementById('navUsers').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('users');
+});
+
+document.getElementById('navConversations').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('conversations');
+});
+
+document.getElementById('navPlans').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('plans');
+});
+
+document.getElementById('navAnalytics').addEventListener('click', (e) => {
+  e.preventDefault();
+  showToast('Analytics coming soon', 'success');
+});
+
+document.getElementById('navPayments').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('payments');
+});
+
+document.getElementById('navSubscriptions').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('subscriptions');
+});
+
+document.getElementById('navSettings').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('settings');
+});
+
+// Dashboard nav item
+document.querySelector('.nav-item.active').addEventListener('click', (e) => {
+  e.preventDefault();
+  showView('dashboard');
+});
+
+function showView(view) {
+  currentView = view;
+
+  // Clear search input
+  const searchInput = document.getElementById('searchInput');
+  searchInput.value = '';
+
+  // Update active nav item
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+  if (view === 'dashboard') {
+    document.querySelector('.nav-item').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'Platform Dashboard';
+    document.querySelector('.page-header p').textContent = 'Overview of all sites and users on the platform';
+    document.querySelector('.stats-grid').style.display = 'grid';
+    document.querySelector('.table-card .table-header h2').textContent = 'All Registered Sites';
+    searchInput.placeholder = 'Search sites...';
+    renderSitesTable(allSites);
+  } else if (view === 'sites') {
+    document.getElementById('navSites').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'All Sites';
+    document.querySelector('.page-header p').textContent = 'Manage all registered sites on the platform';
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.table-card .table-header h2').textContent = 'Sites';
+    searchInput.placeholder = 'Search sites...';
+    renderSitesTable(allSites);
+  } else if (view === 'users') {
+    document.getElementById('navUsers').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'All Users';
+    document.querySelector('.page-header p').textContent = 'Manage all users on the platform';
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.table-card .table-header h2').textContent = 'Users';
+    searchInput.placeholder = 'Search users...';
+    loadUsersView();
+  } else if (view === 'conversations') {
+    document.getElementById('navConversations').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'All Conversations';
+    document.querySelector('.page-header p').textContent = 'View all chat conversations across the platform';
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.table-card .table-header h2').textContent = 'Conversations';
+    searchInput.placeholder = 'Search conversations...';
+    loadConversationsView();
+  } else if (view === 'plans') {
+    document.getElementById('navPlans').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'Subscription Plans';
+    document.querySelector('.page-header p').textContent = 'Manage subscription plans and pricing';
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.table-card .table-header h2').textContent = 'Plans';
+    searchInput.placeholder = 'Search plans...';
+    document.getElementById('tableHeaderActions').innerHTML = `
+      <button class="btn btn-primary" onclick="openCreatePlanModal()" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; font-weight: 500; background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Create Plan
+      </button>
+    `;
+    loadPlansView();
+  } else if (view === 'payments') {
+    document.getElementById('navPayments').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'Payments & Invoices';
+    document.querySelector('.page-header p').textContent = 'View all payment transactions and invoices';
+    document.querySelector('.stats-grid').style.display = 'grid';
+    document.querySelector('.table-card .table-header h2').textContent = 'Payments';
+    searchInput.placeholder = 'Search payments...';
+    loadPaymentsView();
+  } else if (view === 'subscriptions') {
+    document.getElementById('navSubscriptions').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'Subscriptions';
+    document.querySelector('.page-header p').textContent = 'Manage all site subscriptions';
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.table-card .table-header h2').textContent = 'All Subscriptions';
+    searchInput.placeholder = 'Search subscriptions...';
+    loadSubscriptionsView();
+  } else if (view === 'settings') {
+    document.getElementById('navSettings').classList.add('active');
+    document.querySelector('.page-header h1').textContent = 'Settings';
+    document.querySelector('.page-header p').textContent = 'Customize your dashboard experience';
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.table-card .table-header h2').textContent = 'Appearance';
+    searchInput.placeholder = 'Search settings...';
+    renderSettingsView();
+  }
+
+  // Clear header actions for views that don't need them
+  if (view !== 'plans') {
+    document.getElementById('tableHeaderActions').innerHTML = '';
+  }
+}
+
+async function loadUsersView() {
+  document.getElementById('sitesTableContainer').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading users...</p>
+    </div>
+  `;
+
+  try {
+    const usersRes = await fetch(`${API_BASE}/users`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    if (usersRes.status === 401 || usersRes.status === 403) {
+      showToast('Session expired. Please login again.');
+      setTimeout(() => location.href = '/login', 2000);
+      return;
+    }
+
+    if (!usersRes.ok) {
+      throw new Error('Failed to fetch users');
+    }
+
+    const usersResult = await usersRes.json();
+    allUsers = usersResult.data?.items || usersResult.data || [];
+    renderUsersTable(allUsers);
+
+  } catch (err) {
+    showToast(err.message || 'Failed to load users');
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3>Failed to load users</h3>
+        <p>${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+function renderUsersTable(users) {
+  if (!users.length) {
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <h3>No users registered yet</h3>
+        <p>Users will appear here once they register</p>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${users.map(user => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="user-avatar" style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;background:linear-gradient(135deg, #8b5cf6, #6366f1);">${(user.name || user.email || 'U')[0].toUpperCase()}</div>
+                <div>
+                  <div class="site-name">${escapeHtml(user.name || 'Unnamed')}</div>
+                  <div class="site-domain">${escapeHtml(user.username || '')}</div>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(user.email || '-')}</td>
+            <td><span class="badge ${user.role === 'super_admin' ? 'enterprise' : user.role === 'site_owner' ? 'pro' : 'free'}">${escapeHtml(user.role || 'user')}</span></td>
+            <td><span class="badge ${user.isActive !== false ? 'active' : 'inactive'}">${user.isActive !== false ? 'Active' : 'Inactive'}</span></td>
+            <td>${formatDate(user.createdAt)}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="View Details" onclick="viewUser('${user.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button class="action-btn" title="Edit" onclick="editUser('${user.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('sitesTableContainer').innerHTML = html;
+}
+
+function viewUser(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) {
+    showToast('User not found');
+    return;
+  }
+
+  // Update modal header
+  document.getElementById('userModalAvatar').textContent = (user.name || user.email || 'U')[0].toUpperCase();
+  document.getElementById('userModalTitle').textContent = user.name || user.email || 'Unknown User';
+
+  // Build modal content
+  const statusBadge = user.isActive !== false ?
+    '<span class="badge active">Active</span>' :
+    '<span class="badge inactive">Inactive</span>';
+
+  const roleBadgeClass = user.role === 'super_admin' ? 'enterprise' :
+                         user.role === 'site_owner' ? 'pro' : 'free';
+  const roleBadge = `<span class="badge ${roleBadgeClass}">${escapeHtml(user.role || 'user')}</span>`;
+
+  document.getElementById('userModalBody').innerHTML = `
+    <div class="detail-section">
+      <h3>Basic Information</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Full Name</label>
+          <div class="value">${escapeHtml(user.name || 'Not set')}</div>
+        </div>
+        <div class="detail-item">
+          <label>Username</label>
+          <div class="value">${escapeHtml(user.username || 'Not set')}</div>
+        </div>
+        <div class="detail-item full-width">
+          <label>Email</label>
+          <div class="value">${escapeHtml(user.email || '-')}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Account Status</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Role</label>
+          <div class="value">${roleBadge}</div>
+        </div>
+        <div class="detail-item">
+          <label>Status</label>
+          <div class="value">${statusBadge}</div>
+        </div>
+        <div class="detail-item">
+          <label>Email Verified</label>
+          <div class="value">${user.emailVerified ? '<span class="badge active">Verified</span>' : '<span class="badge inactive">Not Verified</span>'}</div>
+        </div>
+        <div class="detail-item">
+          <label>Created</label>
+          <div class="value">${formatDate(user.createdAt)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>User Details</h3>
+      <div class="detail-grid">
+        <div class="detail-item full-width">
+          <label>User ID</label>
+          <div class="value" style="font-family: monospace; font-size: 12px;">${escapeHtml(user.id || '-')}</div>
+        </div>
+        ${user.siteId ? `
+        <div class="detail-item full-width">
+          <label>Associated Site ID</label>
+          <div class="value" style="font-family: monospace; font-size: 12px;">${escapeHtml(user.siteId)}</div>
+        </div>
+        ` : ''}
+        ${user.lastLogin ? `
+        <div class="detail-item full-width">
+          <label>Last Login</label>
+          <div class="value">${formatDate(user.lastLogin)}</div>
+        </div>
+        ` : ''}
+      </div>
+    </div>
+
+    ${user.permissions ? `
+    <div class="detail-section">
+      <h3>Permissions</h3>
+      <div class="detail-grid">
+        <div class="detail-item full-width">
+          <label>Assigned Permissions</label>
+          <div class="value">${Array.isArray(user.permissions) ? user.permissions.map(p => `<span class="badge free" style="margin-right:6px;margin-bottom:4px;">${escapeHtml(p)}</span>`).join('') : escapeHtml(JSON.stringify(user.permissions))}</div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
+  `;
+
+  // Set up edit button
+  document.getElementById('userEditBtn').onclick = () => {
+    closeModal('userModal');
+    editUser(userId);
+  };
+
+  openModal('userModal');
+}
+
+function editUser(userId) {
+  showToast('User editing coming soon', 'success');
+}
+
+// Conversations functions
+async function loadConversationsView() {
+  document.getElementById('sitesTableContainer').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading conversations...</p>
+    </div>
+  `;
+
+  try {
+    const conversationsRes = await fetch(`${API_BASE}/conversations`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    if (conversationsRes.status === 401 || conversationsRes.status === 403) {
+      showToast('Session expired. Please login again.');
+      setTimeout(() => location.href = '/login', 2000);
+      return;
+    }
+
+    if (!conversationsRes.ok) {
+      throw new Error('Failed to fetch conversations');
+    }
+
+    const conversationsResult = await conversationsRes.json();
+    allConversations = conversationsResult.data?.items || conversationsResult.data || [];
+    renderConversationsTable(allConversations);
+
+  } catch (err) {
+    showToast(err.message || 'Failed to load conversations');
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3>Failed to load conversations</h3>
+        <p>${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+function renderConversationsTable(conversations) {
+  if (!conversations.length) {
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3>No conversations yet</h3>
+        <p>Conversations will appear here once visitors start chatting</p>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Visitor</th>
+          <th>Site</th>
+          <th>Assigned Agent</th>
+          <th>Messages</th>
+          <th>Status</th>
+          <th>Started</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${conversations.map(conv => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="site-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">${(conv.visitorName || conv.visitorEmail || 'V')[0].toUpperCase()}</div>
+                <div>
+                  <div class="site-name">${escapeHtml(conv.visitorName || 'Anonymous Visitor')}</div>
+                  <div class="site-domain">${escapeHtml(conv.visitorEmail || 'No email')}</div>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(conv.siteName || conv.siteId || '-')}</td>
+            <td>
+              ${conv.assignedUserName ? `
+                <div class="site-info">
+                  <div class="site-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">${conv.assignedUserName[0].toUpperCase()}</div>
+                  <div>
+                    <div class="site-name">${escapeHtml(conv.assignedUserName)}</div>
+                  </div>
+                </div>
+              ` : '<span class="badge inactive">Unassigned</span>'}
+            </td>
+            <td><span class="badge free">${conv.messageCount || conv.messages?.length || 0} messages</span></td>
+            <td><span class="badge ${conv.status === 'active' || conv.status === 'open' ? 'active' : conv.status === 'closed' ? 'inactive' : 'pro'}">${escapeHtml(conv.status || 'Unknown')}</span></td>
+            <td>${formatDate(conv.createdAt || conv.startedAt)}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="View Messages" onclick="viewConversation('${conv.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button class="action-btn delete" title="Delete Conversation" onclick="deleteConversation('${conv.id}', '${conv.siteId}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('sitesTableContainer').innerHTML = html;
+}
+
+async function viewConversation(conversationId) {
+  const conversation = allConversations.find(c => c.id === conversationId);
+  if (!conversation) {
+    showToast('Conversation not found');
+    return;
+  }
+
+  // Update modal header
+  document.getElementById('conversationModalTitle').textContent = `Conversation with ${conversation.visitorName || 'Anonymous Visitor'}`;
+
+  // Show loading state
+  document.getElementById('conversationModalBody').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading messages...</p>
+    </div>
+  `;
+
+  openModal('conversationModal');
+
+  try {
+    // Fetch conversation messages
+    const messagesRes = await fetch(`${API_BASE}/conversations/${conversationId}/messages`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    let messages = [];
+
+    if (messagesRes.ok) {
+      const messagesResult = await messagesRes.json();
+      messages = messagesResult.data?.items || messagesResult.data || messagesResult.messages || [];
+    } else if (conversation.messages) {
+      // Use embedded messages if API fails
+      messages = conversation.messages;
+    }
+
+    renderConversationMessages(conversation, messages);
+
+  } catch (err) {
+    // Try to use embedded messages
+    if (conversation.messages && conversation.messages.length > 0) {
+      renderConversationMessages(conversation, conversation.messages);
+    } else {
+      document.getElementById('conversationModalBody').innerHTML = `
+        <div class="empty-messages">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <h3>Failed to load messages</h3>
+          <p>${err.message}</p>
+        </div>
+      `;
+    }
+  }
+}
+
+async function deleteConversation(conversationId, siteId) {
+  const conversation = allConversations.find(c => c.id === conversationId);
+  const visitorName = conversation?.visitorName || 'this visitor';
+
+  const confirmDelete = confirm(`Are you sure you want to delete the conversation with ${visitorName}? This action cannot be undone.`);
+  if (!confirmDelete) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/sites/${siteId}/conversations/${conversationId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    if (response.ok) {
+      showToast('Conversation deleted successfully', 'success');
+      // Remove from local array and re-render
+      allConversations = allConversations.filter(c => c.id !== conversationId);
+      renderConversationsTable(allConversations);
+      // Update count
+      document.getElementById('totalConversations').textContent = allConversations.length;
+    } else {
+      const error = await response.json();
+      showToast('Failed to delete conversation: ' + (error.detail || 'Unknown error'), 'error');
+    }
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
+    showToast('Failed to delete conversation', 'error');
+  }
+}
+
+function renderConversationMessages(conversation, messages) {
+  const statusBadge = conversation.status === 'active' || conversation.status === 'open' ?
+    '<span class="badge active">Active</span>' :
+    conversation.status === 'closed' ?
+    '<span class="badge inactive">Closed</span>' :
+    `<span class="badge pro">${escapeHtml(conversation.status || 'Unknown')}</span>`;
+
+  let messagesHtml = '';
+
+  if (!messages || messages.length === 0) {
+    messagesHtml = `
+      <div class="empty-messages">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3>No messages</h3>
+        <p>This conversation has no messages yet</p>
+      </div>
+    `;
+  } else {
+    messagesHtml = `
+      <div class="messages-container">
+        ${messages.map(msg => {
+          const senderType = msg.senderType || msg.type || (msg.isBot ? 'bot' : msg.isAgent ? 'agent' : 'visitor');
+          const senderName = msg.senderName || msg.sender || (senderType === 'bot' ? 'Bot' : senderType === 'agent' ? 'Support Agent' : conversation.visitorName || 'Visitor');
+          const avatar = senderName[0].toUpperCase();
+          const time = formatDateTime(msg.createdAt || msg.timestamp || msg.sentAt);
+
+          return `
+            <div class="message-item ${senderType}">
+              <div class="message-avatar">${avatar}</div>
+              <div class="message-content">
+                <div class="message-header">
+                  <span class="message-sender">${escapeHtml(senderName)}</span>
+                  <span class="message-time">${time}</span>
+                </div>
+                <div class="message-text">${escapeHtml(msg.content || msg.text || msg.message || '')}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  document.getElementById('conversationModalBody').innerHTML = `
+    <div class="conversation-info">
+      <div class="conversation-info-item">
+        <label>Visitor</label>
+        <div class="value">${escapeHtml(conversation.visitorName || 'Anonymous')}</div>
+      </div>
+      <div class="conversation-info-item">
+        <label>Status</label>
+        <div class="value">${statusBadge}</div>
+      </div>
+      <div class="conversation-info-item">
+        <label>Messages</label>
+        <div class="value">${messages.length}</div>
+      </div>
+      <div class="conversation-info-item">
+        <label>Started</label>
+        <div class="value">${formatDate(conversation.createdAt || conversation.startedAt)}</div>
+      </div>
+    </div>
+    ${messagesHtml}
+  `;
+}
+
+function formatDateTime(dateStr) {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+}
+
+// ========== PLANS MANAGEMENT ==========
+let allPlans = [];
+
+async function loadPlansView() {
+  document.getElementById('sitesTableContainer').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading plans...</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/plans`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      showToast('Session expired. Please login again.');
+      setTimeout(() => location.href = '/login', 2000);
+      return;
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      allPlans = data.data || [];
+      renderPlansTable(allPlans);
+    } else {
+      showToast(data.message || 'Failed to load plans');
+    }
+  } catch (error) {
+    console.error('Error loading plans:', error);
+    showToast('Failed to load plans');
+  }
+}
+
+function renderPlansTable(plans) {
+  if (!plans || plans.length === 0) {
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <p>No subscription plans found</p>
+        <button class="btn btn-primary" onclick="openCreatePlanModal()">Create First Plan</button>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Price</th>
+          <th>Limits</th>
+          <th>AI Features</th>
+          <th>Subscribers</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${plans.map(plan => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="site-icon" style="background: linear-gradient(135deg, ${plan.monthlyPrice === 0 ? '#6b7280, #4b5563' : '#6366f1, #4f46e5'});">
+                  ${plan.name[0].toUpperCase()}
+                </div>
+                <div>
+                  <div class="site-name">${escapeHtml(plan.name)}</div>
+                  <div class="site-domain">${escapeHtml(plan.description || 'No description')}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #22c55e;">$${plan.monthlyPrice}/mo</div>
+              ${plan.annualPrice ? `<div style="font-size: 12px; color: #6b7280;">$${plan.annualPrice}/yr</div>` : ''}
+            </td>
+            <td>
+              <div style="font-size: 12px; line-height: 1.6;">
+                <div>${plan.maxAgents ? plan.maxAgents + ' users' : 'Unlimited users'}</div>
+                <div>${plan.maxConversationsPerMonth ? plan.maxConversationsPerMonth + ' convs/mo' : 'Unlimited convs'}</div>
+                <div>${plan.maxStorageMb ? plan.maxStorageMb + ' MB' : 'Unlimited storage'}</div>
+              </div>
+            </td>
+            <td>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span class="badge ${plan.aiAnalysisEnabled ? 'active' : 'inactive'}" style="font-size: 10px;">
+                  ${plan.aiAnalysisEnabled ? '✓ Analysis' : '✗ Analysis'}${plan.aiAnalysisEnabled && plan.maxAiAnalysesPerMonth ? ' (' + plan.maxAiAnalysesPerMonth + '/mo)' : ''}
+                </span>
+                <span class="badge ${plan.aiAutoReplyEnabled ? 'pro' : 'inactive'}" style="font-size: 10px;">
+                  ${plan.aiAutoReplyEnabled ? '✓ Auto Reply' : '✗ Auto Reply'}${plan.aiAutoReplyEnabled && plan.maxAiAutoRepliesPerMonth ? ' (' + plan.maxAiAutoRepliesPerMonth + '/mo)' : ''}
+                </span>
+              </div>
+            </td>
+            <td><span class="badge ${plan.subscribersCount > 0 ? 'active' : 'free'}">${plan.subscribersCount} subscribers</span></td>
+            <td>
+              <span class="badge ${plan.isActive ? 'active' : 'inactive'}">${plan.isActive ? 'Active' : 'Inactive'}</span>
+              ${plan.isPublic ? '' : '<span class="badge pro" style="margin-left: 4px;">Hidden</span>'}
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="Edit Plan" onclick="openEditPlanModal('${plan.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button class="action-btn" title="Delete Plan" onclick="deletePlan('${plan.id}', '${escapeHtml(plan.name)}')" ${plan.subscribersCount > 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('sitesTableContainer').innerHTML = html;
+}
+
+function openCreatePlanModal() {
+  document.getElementById('planModalTitle').textContent = 'Create Subscription Plan';
+  document.getElementById('planForm').reset();
+  document.getElementById('planId').value = '';
+  document.getElementById('planIsActive').checked = true;
+  document.getElementById('planIsPublic').checked = true;
+  document.getElementById('planTrialDays').value = '0';
+  document.getElementById('planSortOrder').value = '0';
+  // AI Features - default to disabled
+  document.getElementById('planAiAnalysisEnabled').checked = false;
+  document.getElementById('planAiAutoReplyEnabled').checked = false;
+  document.getElementById('planMaxAiAnalyses').value = '';
+  document.getElementById('planMaxAiAutoReplies').value = '';
+  openModal('planModal');
+}
+
+function openEditPlanModal(planId) {
+  const plan = allPlans.find(p => p.id === planId);
+  if (!plan) {
+    showToast('Plan not found');
+    return;
+  }
+
+  document.getElementById('planModalTitle').textContent = 'Edit Plan: ' + plan.name;
+  document.getElementById('planId').value = plan.id;
+  document.getElementById('planName').value = plan.name;
+  document.getElementById('planDescription').value = plan.description || '';
+  document.getElementById('planMonthlyPrice').value = plan.monthlyPrice;
+  document.getElementById('planAnnualPrice').value = plan.annualPrice || '';
+  document.getElementById('planMaxAgents').value = plan.maxAgents || '';
+  document.getElementById('planMaxConversations').value = plan.maxConversationsPerMonth || '';
+  document.getElementById('planMaxMessages').value = plan.maxMessagesPerMonth || '';
+  document.getElementById('planMaxStorage').value = plan.maxStorageMb || '';
+  document.getElementById('planMaxFileSize').value = plan.maxFileSizeMb || '';
+  document.getElementById('planTrialDays').value = plan.trialDays || 0;
+  document.getElementById('planSortOrder').value = plan.sortOrder || 0;
+  document.getElementById('planIsActive').checked = plan.isActive;
+  document.getElementById('planIsPublic').checked = plan.isPublic;
+  // AI Features
+  document.getElementById('planAiAnalysisEnabled').checked = plan.aiAnalysisEnabled || false;
+  document.getElementById('planAiAutoReplyEnabled').checked = plan.aiAutoReplyEnabled || false;
+  document.getElementById('planMaxAiAnalyses').value = plan.maxAiAnalysesPerMonth || '';
+  document.getElementById('planMaxAiAutoReplies').value = plan.maxAiAutoRepliesPerMonth || '';
+
+  openModal('planModal');
+}
+
+async function savePlan() {
+  const planId = document.getElementById('planId').value;
+  const isEdit = !!planId;
+
+  const planData = {
+    name: document.getElementById('planName').value,
+    description: document.getElementById('planDescription').value || null,
+    monthlyPrice: parseFloat(document.getElementById('planMonthlyPrice').value) || 0,
+    annualPrice: parseFloat(document.getElementById('planAnnualPrice').value) || null,
+    maxAgents: parseInt(document.getElementById('planMaxAgents').value) || null,
+    maxConversationsPerMonth: parseInt(document.getElementById('planMaxConversations').value) || null,
+    maxMessagesPerMonth: parseInt(document.getElementById('planMaxMessages').value) || null,
+    maxStorageMb: parseInt(document.getElementById('planMaxStorage').value) || null,
+    maxFileSizeMb: parseInt(document.getElementById('planMaxFileSize').value) || null,
+    trialDays: parseInt(document.getElementById('planTrialDays').value) || 0,
+    sortOrder: parseInt(document.getElementById('planSortOrder').value) || 0,
+    isActive: document.getElementById('planIsActive').checked,
+    isPublic: document.getElementById('planIsPublic').checked,
+    aiAnalysisEnabled: document.getElementById('planAiAnalysisEnabled').checked,
+    aiAutoReplyEnabled: document.getElementById('planAiAutoReplyEnabled').checked,
+    maxAiAnalysesPerMonth: parseInt(document.getElementById('planMaxAiAnalyses').value) || null,
+    maxAiAutoRepliesPerMonth: parseInt(document.getElementById('planMaxAiAutoReplies').value) || null
+  };
+
+  if (!planData.name) {
+    showToast('Plan name is required');
+    return;
+  }
+
+  try {
+    const url = isEdit ? `${API_BASE}/admin/plans/${planId}` : `${API_BASE}/admin/plans`;
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(planData)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showToast(isEdit ? 'Plan updated successfully' : 'Plan created successfully', 'success');
+      closeModal('planModal');
+      loadPlansView();
+    } else {
+      showToast(data.message || 'Failed to save plan');
+    }
+  } catch (error) {
+    console.error('Error saving plan:', error);
+    showToast('Failed to save plan');
+  }
+}
+
+async function deletePlan(planId, planName) {
+  if (!confirm(`Are you sure you want to delete the plan "${planName}"? This action cannot be undone.`)) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/plans/${planId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showToast('Plan deleted successfully', 'success');
+      loadPlansView();
+    } else {
+      showToast(data.message || 'Failed to delete plan');
+    }
+  } catch (error) {
+    console.error('Error deleting plan:', error);
+    showToast('Failed to delete plan');
+  }
+}
+
+// ==================== PAYMENTS & INVOICES ====================
+let allPayments = [];
+let allInvoices = [];
+let paymentStats = null;
+let paymentsViewMode = 'payments'; // 'payments' or 'invoices'
+
+async function loadPaymentsView() {
+  document.getElementById('sitesTableContainer').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading payments...</p>
+    </div>
+  `;
+
+  try {
+    // Load stats, payments, and invoices in parallel
+    const [statsRes, paymentsRes, invoicesRes] = await Promise.all([
+      fetch(`${API_BASE}/admin/payments/stats`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      }),
+      fetch(`${API_BASE}/admin/payments`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      }),
+      fetch(`${API_BASE}/admin/payments/invoices`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      })
+    ]);
+
+    if (statsRes.status === 401 || paymentsRes.status === 401) {
+      showToast('Session expired. Please login again.');
+      setTimeout(() => location.href = '/login', 2000);
+      return;
+    }
+
+    const statsData = await statsRes.json();
+    const paymentsData = await paymentsRes.json();
+    const invoicesData = await invoicesRes.json();
+
+    if (statsData.success) {
+      paymentStats = statsData.data;
+      updatePaymentStats();
+    }
+
+    if (paymentsData.success) {
+      allPayments = paymentsData.data?.items || [];
+    }
+
+    if (invoicesData.success) {
+      allInvoices = invoicesData.data?.items || [];
+    }
+
+    renderPaymentsView();
+
+  } catch (err) {
+    console.error('Error loading payments:', err);
+    showToast(err.message || 'Failed to load payments');
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <p>Failed to load payments. Please try again.</p>
+      </div>
+    `;
+  }
+}
+
+function updatePaymentStats() {
+  if (!paymentStats) return;
+
+  // Repurpose the stats grid for payments
+  document.querySelector('.stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="stat-value">$${paymentStats.totalRevenue.toLocaleString()}</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      </div>
+      <div class="stat-value">$${paymentStats.monthlyRevenue.toLocaleString()}</div>
+      <div class="stat-label">This Month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="stat-value">${paymentStats.successfulPayments}</div>
+      <div class="stat-label">Successful Payments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <div class="stat-value">${paymentStats.paidInvoices}/${paymentStats.totalInvoices}</div>
+      <div class="stat-label">Paid Invoices</div>
+    </div>
+  `;
+}
+
+function renderPaymentsView() {
+  // Add toggle buttons for payments/invoices
+  document.getElementById('tableHeaderActions').innerHTML = `
+    <div style="display: flex; gap: 8px;">
+      <button class="btn ${paymentsViewMode === 'payments' ? 'btn-primary' : 'btn-secondary'}" onclick="switchPaymentsView('payments')" style="padding: 8px 16px; border-radius: 8px;">
+        Payments
+      </button>
+      <button class="btn ${paymentsViewMode === 'invoices' ? 'btn-primary' : 'btn-secondary'}" onclick="switchPaymentsView('invoices')" style="padding: 8px 16px; border-radius: 8px;">
+        Invoices
+      </button>
+    </div>
+  `;
+
+  if (paymentsViewMode === 'payments') {
+    document.querySelector('.table-card .table-header h2').textContent = 'Payments';
+    renderPaymentsTable(allPayments);
+  } else {
+    document.querySelector('.table-card .table-header h2').textContent = 'Invoices';
+    renderInvoicesTable(allInvoices);
+  }
+}
+
+function switchPaymentsView(mode) {
+  paymentsViewMode = mode;
+  renderPaymentsView();
+}
+
+function renderPaymentsTable(payments) {
+  const container = document.getElementById('sitesTableContainer');
+
+  if (!payments || payments.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin: 0 auto 16px; display: block; opacity: 0.5;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <p>No payments found</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <table class="sites-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Site</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Payment ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${payments.map(payment => `
+          <tr>
+            <td>${new Date(payment.createdAt).toLocaleDateString()}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="site-avatar" style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 12px;">
+                  ${payment.siteName.charAt(0).toUpperCase()}
+                </div>
+                <span>${payment.siteName}</span>
+              </div>
+            </td>
+            <td>
+              <span style="font-weight: 600; color: #10b981;">
+                ${payment.currency} ${payment.amount.toLocaleString()}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge ${getPaymentStatusClass(payment.status)}">${payment.status}</span>
+            </td>
+            <td style="font-family: monospace; font-size: 12px; color: #94a3b8;">
+              ${payment.razorpayPaymentId || payment.stripePaymentIntentId || payment.id.substring(0, 8)}...
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderInvoicesTable(invoices) {
+  const container = document.getElementById('sitesTableContainer');
+
+  if (!invoices || invoices.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin: 0 auto 16px; display: block; opacity: 0.5;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p>No invoices found</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <table class="sites-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Invoice #</th>
+          <th>Site</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${invoices.map(invoice => `
+          <tr>
+            <td>${new Date(invoice.createdAt).toLocaleDateString()}</td>
+            <td style="font-family: monospace; font-weight: 500;">${invoice.invoiceNumber}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="site-avatar" style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 12px;">
+                  ${invoice.siteName.charAt(0).toUpperCase()}
+                </div>
+                <span>${invoice.siteName}</span>
+              </div>
+            </td>
+            <td>
+              <span style="font-weight: 600; color: #10b981;">
+                ${invoice.currency} ${invoice.total.toLocaleString()}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge ${getInvoiceStatusClass(invoice.status)}">${invoice.status}</span>
+            </td>
+            <td style="font-size: 12px; color: #94a3b8;">
+              ${new Date(invoice.periodStart).toLocaleDateString()} - ${new Date(invoice.periodEnd).toLocaleDateString()}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function getPaymentStatusClass(status) {
+  switch (status) {
+    case 'succeeded': return 'status-active';
+    case 'pending': return 'status-pending';
+    case 'failed': return 'status-inactive';
+    case 'refunded': return 'status-inactive';
+    default: return 'status-pending';
+  }
+}
+
+function getInvoiceStatusClass(status) {
+  switch (status) {
+    case 'paid': return 'status-active';
+    case 'open': return 'status-pending';
+    case 'draft': return 'status-pending';
+    case 'void': return 'status-inactive';
+    case 'uncollectible': return 'status-inactive';
+    default: return 'status-pending';
+  }
+}
+
+// ==================== SUBSCRIPTIONS ====================
+let allSubscriptions = [];
+
+async function loadSubscriptionsView() {
+  document.getElementById('sitesTableContainer').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading subscriptions...</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/subscriptions`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    if (response.status === 401) {
+      showToast('Session expired. Please login again.');
+      setTimeout(() => location.href = '/login', 2000);
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.success) {
+      allSubscriptions = data.data || [];
+      renderSubscriptionsView();
+    } else {
+      throw new Error(data.message || 'Failed to load subscriptions');
+    }
+  } catch (err) {
+    console.error('Error loading subscriptions:', err);
+    showToast(err.message || 'Failed to load subscriptions');
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <p>Failed to load subscriptions. Please try again.</p>
+      </div>
+    `;
+  }
+}
+
+function renderSubscriptionsView() {
+  if (allSubscriptions.length === 0) {
+    document.getElementById('sitesTableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+        </svg>
+        <h3>No Subscriptions Yet</h3>
+        <p>No site subscriptions have been created.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table class="sites-table">
+      <thead>
+        <tr>
+          <th>Site</th>
+          <th>Plan</th>
+          <th>Status</th>
+          <th>Billing</th>
+          <th>Start Date</th>
+          <th>Period End</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${allSubscriptions.map(sub => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="site-avatar">${sub.siteName.charAt(0).toUpperCase()}</div>
+                <div class="site-details">
+                  <div class="site-name">${escapeHtml(sub.siteName)}</div>
+                  <div class="site-domain">${escapeHtml(sub.siteDomain)}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span style="font-weight: 600; color: var(--accent-primary);">${escapeHtml(sub.planName)}</span>
+            </td>
+            <td>
+              <span class="status-badge ${getSubscriptionStatusClass(sub.status)}">${sub.status}</span>
+            </td>
+            <td>
+              <span style="text-transform: capitalize;">${sub.billingCycle}</span>
+            </td>
+            <td>
+              <div style="font-size: 13px;">
+                ${new Date(sub.currentPeriodStart).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </div>
+            </td>
+            <td>
+              <div style="font-size: 13px;">
+                ${new Date(sub.currentPeriodEnd).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                ${isExpiringSoon(sub.currentPeriodEnd) ? '<span style="color: #f59e0b; font-size: 11px; margin-left: 4px;">(Expiring soon)</span>' : ''}
+              </div>
+            </td>
+            <td>
+              <button class="btn-icon" onclick="openExtendModal('${sub.id}', '${escapeHtml(sub.siteName)}', '${sub.currentPeriodEnd}')" title="Extend Subscription">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('sitesTableContainer').innerHTML = html;
+}
+
+function getSubscriptionStatusClass(status) {
+  switch (status) {
+    case 'active': return 'status-active';
+    case 'trialing': return 'status-pending';
+    case 'canceled': return 'status-inactive';
+    case 'past_due': return 'status-inactive';
+    case 'paused': return 'status-pending';
+    default: return 'status-pending';
+  }
+}
+
+function isExpiringSoon(endDate) {
+  const end = new Date(endDate);
+  const now = new Date();
+  const diffDays = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+  return diffDays <= 7 && diffDays > 0;
+}
+
+function openExtendModal(subscriptionId, siteName, currentEndDate) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'extendModal';
+  modal.innerHTML = `
+    <div class="modal" style="max-width: 450px;">
+      <div class="modal-header">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Extend Subscription
+        </h2>
+        <button class="close-btn" onclick="closeExtendModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 20px;">
+          <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 13px;">Site</p>
+          <p style="font-weight: 600; font-size: 16px; color: var(--text-primary);">${escapeHtml(siteName)}</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 13px;">Current Period End</p>
+          <p style="font-weight: 600; color: var(--text-primary);">${new Date(currentEndDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+        <div class="settings-form-group" style="margin-bottom: 16px;">
+          <label>Extend By (Days)</label>
+          <input type="number" id="extendDays" value="30" min="1" max="365">
+          <span class="input-hint">New end date: <strong id="newEndDate">${calculateNewEndDate(currentEndDate, 30)}</strong></span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-small" onclick="setExtendDays(7, '${currentEndDate}')" style="flex: 1;">7 days</button>
+          <button type="button" class="btn-small" onclick="setExtendDays(30, '${currentEndDate}')" style="flex: 1;">30 days</button>
+          <button type="button" class="btn-small" onclick="setExtendDays(90, '${currentEndDate}')" style="flex: 1;">90 days</button>
+          <button type="button" class="btn-small" onclick="setExtendDays(365, '${currentEndDate}')" style="flex: 1;">1 year</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeExtendModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="extendSubscription('${subscriptionId}')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Extend
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Add event listener for days input
+  document.getElementById('extendDays').addEventListener('input', (e) => {
+    const days = parseInt(e.target.value) || 0;
+    document.getElementById('newEndDate').textContent = calculateNewEndDate(currentEndDate, days);
+  });
+
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function calculateNewEndDate(currentEndDate, days) {
+  const date = new Date(currentEndDate);
+  date.setDate(date.getDate() + days);
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function setExtendDays(days, currentEndDate) {
+  document.getElementById('extendDays').value = days;
+  document.getElementById('newEndDate').textContent = calculateNewEndDate(currentEndDate, days);
+}
+
+function closeExtendModal() {
+  const modal = document.getElementById('extendModal');
+  if (modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+async function extendSubscription(subscriptionId) {
+  const days = parseInt(document.getElementById('extendDays').value);
+  if (!days || days < 1) {
+    showToast('Please enter a valid number of days', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/subscriptions/${subscriptionId}/extend`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ days })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showToast(data.message || `Subscription extended by ${days} days`, 'success');
+      closeExtendModal();
+      loadSubscriptionsView(); // Reload the list
+    } else {
+      showToast(data.message || 'Failed to extend subscription', 'error');
+    }
+  } catch (err) {
+    console.error('Error extending subscription:', err);
+    showToast('Failed to extend subscription', 'error');
+  }
+}
+
+// ==================== SETTINGS & THEMES ====================
+const themes = [
+  {
+    id: 'dark',
+    name: 'Dark',
+    colors: { bg: '#0f172a', sidebar: '#1e293b', accent: '#6366f1', text: '#e2e8f0' }
+  },
+  {
+    id: 'light',
+    name: 'Light',
+    colors: { bg: '#f8fafc', sidebar: '#ffffff', accent: '#6366f1', text: '#1e293b' }
+  },
+  {
+    id: 'ocean',
+    name: 'Ocean Blue',
+    colors: { bg: '#0c1929', sidebar: '#132f4c', accent: '#2196f3', text: '#e3f2fd' }
+  },
+  {
+    id: 'forest',
+    name: 'Forest Green',
+    colors: { bg: '#0d1f12', sidebar: '#1a3a21', accent: '#4caf50', text: '#e8f5e9' }
+  },
+  {
+    id: 'sunset',
+    name: 'Sunset',
+    colors: { bg: '#1a1a2e', sidebar: '#2d2d44', accent: '#ff6b6b', text: '#fce4ec' }
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight Purple',
+    colors: { bg: '#13111c', sidebar: '#1e1a2e', accent: '#a855f7', text: '#e9d5ff' }
+  },
+  {
+    id: 'rose',
+    name: 'Rose Gold',
+    colors: { bg: '#1c1618', sidebar: '#2d2226', accent: '#f472b6', text: '#fce7f3' }
+  },
+  {
+    id: 'cyber',
+    name: 'Cyberpunk',
+    colors: { bg: '#0a0a0f', sidebar: '#12121a', accent: '#00ff88', text: '#00ff88' }
+  },
+  {
+    id: 'coffee',
+    name: 'Coffee',
+    colors: { bg: '#1a1614', sidebar: '#2d2520', accent: '#d97706', text: '#fef3c7' }
+  },
+  {
+    id: 'nord',
+    name: 'Nord',
+    colors: { bg: '#2e3440', sidebar: '#3b4252', accent: '#88c0d0', text: '#eceff4' }
+  },
+  {
+    id: 'dracula',
+    name: 'Dracula',
+    colors: { bg: '#282a36', sidebar: '#343746', accent: '#bd93f9', text: '#f8f8f2' }
+  },
+  {
+    id: 'solarized',
+    name: 'Solarized',
+    colors: { bg: '#002b36', sidebar: '#073642', accent: '#2aa198', text: '#93a1a1' }
+  },
+  {
+    id: 'monokai',
+    name: 'Monokai',
+    colors: { bg: '#272822', sidebar: '#3e3d32', accent: '#f92672', text: '#f8f8f2' }
+  }
+];
+
+function getCurrentTheme() {
+  return localStorage.getItem('adminDashboardTheme') || 'dark';
+}
+
+function setTheme(themeId) {
+  const theme = themes.find(t => t.id === themeId);
+  if (!theme) return;
+
+  if (themeId === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', themeId);
+  }
+
+  localStorage.setItem('adminDashboardTheme', themeId);
+
+  // Update active state in settings view if visible
+  document.querySelectorAll('.theme-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.theme === themeId);
+  });
+
+  showToast(`Theme changed to ${theme.name}`, 'success');
+}
+
+// Site Settings State
+let siteSettingsData = {
+  siteName: 'ChatApp',
+  siteLogo: null,
+  favicon: null,
+  copyrightText: '',
+  seoTitle: '',
+  seoDescription: '',
+  seoKeywords: '',
+  ogImage: null,
+  facebookUrl: '',
+  twitterUrl: '',
+  linkedInUrl: '',
+  instagramUrl: '',
+  supportEmail: '',
+  supportPhone: ''
+};
+
+async function loadSiteSettings() {
+  try {
+    const response = await fetch(`${API_BASE}/SiteSettings`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    if (response.ok) {
+      const result = await response.json();
+      if (result.data) {
+        siteSettingsData = {
+          siteName: result.data.siteName || 'ChatApp',
+          siteLogo: result.data.siteLogo || null,
+          favicon: result.data.favicon || null,
+          copyrightText: result.data.copyrightText || '',
+          seoTitle: result.data.seoTitle || '',
+          seoDescription: result.data.seoDescription || '',
+          seoKeywords: result.data.seoKeywords || '',
+          ogImage: result.data.ogImage || null,
+          facebookUrl: result.data.facebookUrl || '',
+          twitterUrl: result.data.twitterUrl || '',
+          linkedInUrl: result.data.linkedInUrl || '',
+          instagramUrl: result.data.instagramUrl || '',
+          supportEmail: result.data.supportEmail || '',
+          supportPhone: result.data.supportPhone || ''
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load site settings:', error);
+  }
+}
+
+async function saveSiteSettings() {
+  const saveBtn = document.getElementById('saveSiteSettingsBtn');
+  const originalText = saveBtn.innerHTML;
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<svg class="animate-spin" style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...';
+
+  try {
+    const payload = {
+      siteName: document.getElementById('settingSiteName').value,
+      copyrightText: document.getElementById('settingCopyright').value,
+      seoTitle: document.getElementById('settingSeoTitle').value,
+      seoDescription: document.getElementById('settingSeoDesc').value,
+      seoKeywords: document.getElementById('settingSeoKeywords').value,
+      facebookUrl: document.getElementById('settingFacebook').value,
+      twitterUrl: document.getElementById('settingTwitter').value,
+      linkedInUrl: document.getElementById('settingLinkedIn').value,
+      instagramUrl: document.getElementById('settingInstagram').value,
+      supportEmail: document.getElementById('settingSupportEmail').value,
+      supportPhone: document.getElementById('settingSupportPhone').value
+    };
+
+    const response = await fetch(`${API_BASE}/SiteSettings`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      siteSettingsData = { ...siteSettingsData, ...payload };
+      showToast('Settings saved successfully', 'success');
+    } else {
+      const error = await response.json();
+      showToast(error.message || 'Failed to save settings', 'error');
+    }
+  } catch (error) {
+    console.error('Failed to save settings:', error);
+    showToast('Failed to save settings', 'error');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = originalText;
+  }
+}
+
+async function uploadSiteLogo() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      showToast('Uploading logo...', 'info');
+      const response = await fetch(`${API_BASE}/SiteSettings/logo`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}` },
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        siteSettingsData.siteLogo = result.data;
+        document.getElementById('logoPreviewImg').src = result.data;
+        document.getElementById('logoPreviewImg').style.display = 'block';
+        document.getElementById('logoPlaceholder').style.display = 'none';
+        showToast('Logo uploaded successfully', 'success');
+      } else {
+        const error = await response.json();
+        showToast(error.message || 'Failed to upload logo', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to upload logo:', error);
+      showToast('Failed to upload logo', 'error');
+    }
+  };
+  input.click();
+}
+
+async function uploadFavicon() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.ico,.png,.svg';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      showToast('Uploading favicon...', 'info');
+      const response = await fetch(`${API_BASE}/SiteSettings/favicon`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}` },
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        siteSettingsData.favicon = result.data;
+        document.getElementById('faviconPreviewImg').src = result.data;
+        document.getElementById('faviconPreviewImg').style.display = 'block';
+        document.getElementById('faviconPlaceholder').style.display = 'none';
+        showToast('Favicon uploaded successfully', 'success');
+      } else {
+        const error = await response.json();
+        showToast(error.message || 'Failed to upload favicon', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to upload favicon:', error);
+      showToast('Failed to upload favicon', 'error');
+    }
+  };
+  input.click();
+}
+
+function switchSettingsTab(tabName) {
+  document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.settings-tab[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById(`settings-tab-${tabName}`).classList.add('active');
+}
+
+function renderSettingsView() {
+  const currentTheme = getCurrentTheme();
+
+  const html = `
+    <div class="settings-container">
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="branding" onclick="switchSettingsTab('branding')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline; vertical-align: middle; margin-right: 6px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          Branding & SEO
+        </button>
+        <button class="settings-tab" data-tab="theme" onclick="switchSettingsTab('theme')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline; vertical-align: middle; margin-right: 6px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+          Theme
+        </button>
+        <button class="settings-tab" data-tab="about" onclick="switchSettingsTab('about')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline; vertical-align: middle; margin-right: 6px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          About
+        </button>
+      </div>
+
+      <!-- Branding & SEO Tab -->
+      <div id="settings-tab-branding" class="settings-tab-content active">
+        <div class="settings-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Site Branding
+          </h3>
+          <div class="settings-form">
+            <div class="settings-form-row">
+              <div class="settings-form-group">
+                <label>Site Name</label>
+                <input type="text" id="settingSiteName" value="${escapeHtml(siteSettingsData.siteName)}" placeholder="Enter site name">
+                <span class="input-hint">This name appears in the browser tab and emails</span>
+              </div>
+              <div class="settings-form-group">
+                <label>Copyright Text</label>
+                <input type="text" id="settingCopyright" value="${escapeHtml(siteSettingsData.copyrightText || '')}" placeholder="e.g., © 2024 Your Company">
+                <span class="input-hint">Displayed in the footer</span>
+              </div>
+            </div>
+
+            <div class="settings-form-row">
+              <div class="settings-form-group">
+                <label>Site Logo</label>
+                <div class="logo-upload-area">
+                  <div class="logo-preview">
+                    <img id="logoPreviewImg" src="${siteSettingsData.siteLogo || ''}" style="display: ${siteSettingsData.siteLogo ? 'block' : 'none'}">
+                    <svg id="logoPlaceholder" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: ${siteSettingsData.siteLogo ? 'none' : 'block'}">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div class="logo-upload-content">
+                    <h4>Upload Logo</h4>
+                    <p>Recommended size: 200x50px. Max 5MB. Formats: PNG, JPG, SVG</p>
+                    <button type="button" class="upload-btn" onclick="uploadSiteLogo()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      Choose File
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-form-group">
+                <label>Favicon</label>
+                <div class="logo-upload-area">
+                  <div class="logo-preview" style="width: 48px; height: 48px;">
+                    <img id="faviconPreviewImg" src="${siteSettingsData.favicon || ''}" style="display: ${siteSettingsData.favicon ? 'block' : 'none'}">
+                    <svg id="faviconPlaceholder" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: ${siteSettingsData.favicon ? 'none' : 'block'}">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  </div>
+                  <div class="logo-upload-content">
+                    <h4>Upload Favicon</h4>
+                    <p>Recommended: 32x32px ICO or PNG</p>
+                    <button type="button" class="upload-btn" onclick="uploadFavicon()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      Choose File
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            SEO Settings
+          </h3>
+          <div class="settings-form">
+            <div class="settings-form-group">
+              <label>SEO Title</label>
+              <input type="text" id="settingSeoTitle" value="${escapeHtml(siteSettingsData.seoTitle || '')}" placeholder="Enter page title for search engines">
+              <span class="input-hint">Appears in search results. Keep under 60 characters.</span>
+            </div>
+            <div class="settings-form-group">
+              <label>SEO Description</label>
+              <textarea id="settingSeoDesc" placeholder="Enter a compelling description for search engines">${escapeHtml(siteSettingsData.seoDescription || '')}</textarea>
+              <span class="input-hint">Meta description for search results. Keep under 160 characters.</span>
+            </div>
+            <div class="settings-form-group">
+              <label>SEO Keywords</label>
+              <input type="text" id="settingSeoKeywords" value="${escapeHtml(siteSettingsData.seoKeywords || '')}" placeholder="keyword1, keyword2, keyword3">
+              <span class="input-hint">Comma-separated keywords (optional, less important for modern SEO)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Social Media Links
+          </h3>
+          <div class="settings-form">
+            <div class="settings-form-row">
+              <div class="settings-form-group">
+                <label>Facebook URL</label>
+                <input type="url" id="settingFacebook" value="${escapeHtml(siteSettingsData.facebookUrl || '')}" placeholder="https://facebook.com/yourpage">
+              </div>
+              <div class="settings-form-group">
+                <label>Twitter/X URL</label>
+                <input type="url" id="settingTwitter" value="${escapeHtml(siteSettingsData.twitterUrl || '')}" placeholder="https://twitter.com/yourhandle">
+              </div>
+            </div>
+            <div class="settings-form-row">
+              <div class="settings-form-group">
+                <label>LinkedIn URL</label>
+                <input type="url" id="settingLinkedIn" value="${escapeHtml(siteSettingsData.linkedInUrl || '')}" placeholder="https://linkedin.com/company/yourcompany">
+              </div>
+              <div class="settings-form-group">
+                <label>Instagram URL</label>
+                <input type="url" id="settingInstagram" value="${escapeHtml(siteSettingsData.instagramUrl || '')}" placeholder="https://instagram.com/yourhandle">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contact Information
+          </h3>
+          <div class="settings-form">
+            <div class="settings-form-row">
+              <div class="settings-form-group">
+                <label>Support Email</label>
+                <input type="email" id="settingSupportEmail" value="${escapeHtml(siteSettingsData.supportEmail || '')}" placeholder="support@yourcompany.com">
+              </div>
+              <div class="settings-form-group">
+                <label>Support Phone</label>
+                <input type="tel" id="settingSupportPhone" value="${escapeHtml(siteSettingsData.supportPhone || '')}" placeholder="+1 (555) 123-4567">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--border-color);">
+          <button id="saveSiteSettingsBtn" class="settings-save-btn" onclick="saveSiteSettings()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- Theme Tab -->
+      <div id="settings-tab-theme" class="settings-tab-content">
+        <div class="settings-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+            Dashboard Theme
+          </h3>
+          <div class="theme-grid">
+            ${themes.map(theme => `
+              <div class="theme-card ${currentTheme === theme.id ? 'active' : ''}" data-theme="${theme.id}" onclick="setTheme('${theme.id}')">
+                <div class="theme-preview" style="background: ${theme.colors.bg};">
+                  <div class="preview-sidebar" style="background: ${theme.colors.sidebar};">
+                    <div class="preview-bar" style="background: ${theme.colors.accent};"></div>
+                    <div class="preview-bar" style="background: ${theme.colors.text};"></div>
+                    <div class="preview-bar" style="background: ${theme.colors.text};"></div>
+                  </div>
+                  <div class="preview-main">
+                    <div class="preview-content" style="background: ${theme.colors.text};"></div>
+                  </div>
+                </div>
+                <div class="theme-card-name">
+                  ${theme.name}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- About Tab -->
+      <div id="settings-tab-about" class="settings-tab-content">
+        <div class="settings-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            About
+          </h3>
+          <div style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
+            <p><strong><span data-brand="name">ChatApp</span> Admin Dashboard</strong></p>
+            <p style="margin-top: 8px;">Version 1.0.0</p>
+            <p style="margin-top: 4px;">Manage your chat platform with ease.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('sitesTableContainer').innerHTML = html;
+}
+
+// Initialize theme on page load
+(function initTheme() {
+  const savedTheme = getCurrentTheme();
+  if (savedTheme && savedTheme !== 'dark') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+})();
+
+// Load data on page load
+loadData();
+</script>
+</body>
+</html>

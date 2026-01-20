@@ -1,0 +1,448 @@
+================================================================================
+PROJECT CONTEXT - ChatApp Support System
+Last Updated: 2026-01-17
+================================================================================
+
+OVERVIEW
+--------
+This is a real-time chat support system with three main components:
+1. .NET Core API (Backend) - Handles authentication, data persistence, REST APIs
+2. Python FastAPI Server - Handles WebSocket connections, serves frontend pages
+3. Frontend HTML Pages - Support dashboard, chat widget, configuration pages
+
+================================================================================
+ARCHITECTURE
+================================================================================
+
+1. .NET CORE API (Port 5000)
+   Location: F:\ChatApp AI\python-widget-app\API\ChatApp.API\
+
+   - Database: SQL Server (ChatAppDB on localhost)
+   - Authentication: JWT tokens
+   - Key Entities: User, Site, Visitor, Conversation, Message, WelcomeMessage
+
+   Key Files:
+   - Controllers/AuthController.cs - Login, registration, profile management
+   - Controllers/SitesController.cs - Site management, welcome messages CRUD
+   - Controllers/ConversationsController.cs - Chat conversations
+   - Controllers/MessagesController.cs - Chat messages
+   - Services/Implementations/SiteService.cs - Business logic for sites
+   - Data/ApplicationDbContext.cs - EF Core database context
+   - Models/Entities/ - All database entities
+   - Models/DTOs/ - Data transfer objects
+
+2. PYTHON FASTAPI SERVER (Port 8000 for pages, Port 5002 for WebSocket)
+   Location: F:\ChatApp AI\python-widget-app\main.py
+
+   Responsibilities:
+   - Serves static HTML pages
+   - Manages WebSocket connections for real-time chat
+   - Routes messages between customers and support agents
+   - Validates JWT tokens
+   - Sends welcome messages to new customers
+
+   Key Routes:
+   - GET /support/login -> support-login.html
+   - GET /support -> support.html
+   - GET /Support.html -> Support.html
+   - GET /profile.html -> profile.html
+   - GET /welcome-messages.html -> welcome-messages.html
+   - GET /admin-login -> admin-login.html (Super admin)
+   - GET /admin-dashboard -> admin-dashboard.html (Super admin)
+   - GET /site-login -> site-login.html (Site owner)
+   - GET /site-admin.html -> site-admin.html (Site owner)
+   - WebSocket /ws - Real-time chat connection
+
+   API Proxy Endpoints (for Super Admin):
+   - GET /api/conversations - Aggregates conversations from all sites
+   - GET /api/conversations/{id}/messages - Get conversation messages
+
+3. FRONTEND PAGES
+   Location: F:\ChatApp AI\python-widget-app\
+
+   Super Admin (Platform Level):
+   - admin-login.html - Super admin login page
+   - admin-dashboard.html - Platform dashboard (sites, users, conversations)
+
+   Site Owner (Site Level):
+   - site-login.html - Site owner login page
+   - site-admin.html - Site admin dashboard (agents, settings, billing)
+
+   Support Agent:
+   - Support.html - Main support agent dashboard (chat interface)
+   - support-login.html - Login page for support agents
+
+   Shared:
+   - profile.html - User profile management page
+   - welcome-messages.html - Configure auto-welcome messages
+
+   Testing:
+   - test-widget.html - Test page for chat widget
+   - widget/ folder - Embeddable chat widget files
+
+================================================================================
+DATABASE SCHEMA (Key Tables)
+================================================================================
+
+- users: Support agents and admins
+- sites: Customer websites that embed the chat widget
+- visitors: End users who use the chat widget
+- conversations: Chat sessions between visitors and support
+- messages: Individual chat messages
+- welcome_messages: Auto-sent messages when customer joins (NEW)
+- user_sites: Many-to-many relation between users and sites
+- refresh_tokens: JWT refresh token storage
+
+WelcomeMessage Table Structure:
+- Id (NVARCHAR(36), PK)
+- SiteId (NVARCHAR(36), FK to sites)
+- Message (NVARCHAR(MAX))
+- DisplayOrder (INT)
+- IsActive (BIT)
+- DelayMs (INT)
+- CreatedAt, UpdatedAt (DATETIME2)
+
+================================================================================
+AUTHENTICATION FLOW
+================================================================================
+
+1. Support agent logs in via support-login.html
+2. Credentials sent to Python /support/login
+3. Python forwards to .NET API /api/auth/support/login
+4. .NET validates credentials, returns JWT token
+5. Token stored in browser, passed to Support.html via URL params
+6. Support.html connects to WebSocket with token
+7. Python validates token on WebSocket connection
+
+JWT Settings:
+- Secret: YourSuperSecretKeyThatShouldBeAtLeast32CharactersLong!
+- Algorithm: HS256
+- Issuer: ChatApp.API
+- Audience: ChatApp.Client
+
+================================================================================
+WEBSOCKET MESSAGE FLOW
+================================================================================
+
+Customer Side:
+1. Widget loads on customer website
+2. Customer enters name, triggers "init" message
+3. Python creates visitor and conversation via .NET API
+4. Python sends welcome message (if configured)
+5. Messages flow through Python WebSocket hub
+
+Support Side:
+1. Agent connects with JWT token
+2. Python validates token, adds to support connections
+3. Agent sees all conversations for their site
+4. Messages routed through Python to correct customer
+
+Message Types:
+- init: Customer initialization
+- message: Chat message
+- typing: Typing indicator
+- read: Message read receipt
+- history: Request message history
+
+================================================================================
+RECENT CHANGES (This Session)
+================================================================================
+
+1. PROFILE PAGE (profile.html) - NEW
+   - View/edit user profile (first name, last name, avatar)
+   - Change password functionality
+   - Uses existing API endpoints:
+     - GET /api/auth/me
+     - PUT /api/auth/me
+     - POST /api/auth/change-password
+
+2. WELCOME MESSAGES FEATURE - NEW
+
+   Backend:
+   - Created WelcomeMessage entity
+   - Added DbSet to ApplicationDbContext
+   - Created welcome_messages table in database
+   - Added DTOs: WelcomeMessageDto, CreateWelcomeMessageRequest, etc.
+   - Added service methods in ISiteService and SiteService
+   - Added API endpoints in SitesController:
+     - GET /api/sites/{siteId}/welcome-messages [AllowAnonymous]
+     - POST /api/sites/{siteId}/welcome-messages [Authenticated]
+     - PUT /api/sites/{siteId}/welcome-messages/{id} [Authenticated]
+     - DELETE /api/sites/{siteId}/welcome-messages/{id} [Authenticated]
+     - PUT /api/sites/{siteId}/welcome-messages/reorder [Authenticated]
+
+   Frontend:
+   - Created welcome-messages.html configuration page
+   - Add/edit/delete/reorder welcome messages
+   - Toggle active/inactive status
+   - Preview section
+
+   Python Integration:
+   - Added get_welcome_messages() function in main.py
+   - Added send_welcome_message() function in main.py
+   - Modified customer init handler to send welcome message
+
+3. NAVIGATION FIXES
+   - Added routes in main.py for new pages:
+     - /profile.html
+     - /welcome-messages.html
+     - /Support.html
+   - Updated Support.html navigation to open Profile and Settings pages
+
+================================================================================
+TEST CREDENTIALS
+================================================================================
+
+Username: testuser
+Password: Test123!
+Site ID: 3499011b-2965-4417-a773-9f5d6f368e2f
+
+================================================================================
+HOW TO RUN
+================================================================================
+
+1. Start .NET API:
+   cd "F:\ChatApp AI\python-widget-app\API\ChatApp.API"
+   dotnet run
+   (Runs on http://localhost:5000)
+
+2. Start Python Server:
+   cd "F:\ChatApp AI\python-widget-app"
+   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+   (Pages on http://localhost:8000, WebSocket on port 5002)
+
+3. Access Support Dashboard:
+   http://localhost:8000/support/login
+
+4. Test Widget:
+   Open test-widget.html in browser
+
+================================================================================
+FIXES APPLIED (2026-01-16 Session)
+================================================================================
+
+1. WELCOME MESSAGE "SYSTEM" USER BUG - FIXED
+   Problem: Welcome message was showing as "System" user in support dashboard
+   Fix in main.py send_welcome_message():
+   - Changed sender_type from "system" to "support"
+   - Changed sender_id from "system" to support_user_id or "bot"
+   - Changed notification from type "message" to "welcome_sent"
+   - Support.html now handles "welcome_sent" type separately
+
+2. VISITOR SESSION PERSISTENCE BUG - FIXED
+   Problem: Reloading widget with different name didn't create new user
+   Fix in widget/Widget.html:
+   - Changed from localStorage to sessionStorage for visitorId
+   - New browser tab = new visitor (sessionStorage is tab-scoped)
+   - Page reload = same visitor (maintains current conversation)
+   - Added userName and chatStarted to sessionStorage
+   - Added restoreChat() function for seamless page reload
+
+3. PAGE ROUTES MISSING - FIXED
+   Problem: welcome-messages.html and profile.html returned 404
+   Fix in main.py:
+   - Added route: GET /profile.html -> profile.html
+   - Added route: GET /welcome-messages.html -> welcome-messages.html
+   - Added route: GET /Support.html -> Support.html
+
+================================================================================
+TEST RESULTS (2026-01-16)
+================================================================================
+
+Automated tests verified the following functionality:
+
+1. WELCOME MESSAGE TESTS - ALL PASSED
+   - Multiple customers (Alice, Bob, Charlie) connected simultaneously
+   - All received welcome message from 'testuser' (support agent name)
+   - Support dashboard received "welcome_sent" notifications
+   - No "System" user created in user list
+
+2. SESSION PERSISTENCE TESTS - ALL PASSED
+   - Same visitor ID reconnects successfully (page reload scenario)
+   - New visitor ID receives welcome message (new tab scenario)
+   - Messages flow correctly in both directions
+
+3. MULTI-USER CHAT TESTS - ALL PASSED
+   - 3 simultaneous customers can chat
+   - All messages delivered to support agent
+   - User join/leave notifications work
+
+Test scripts: test_websocket.py, test_session.py
+
+4. SITE ADMIN DASHBOARD - NEW (2026-01-16)
+
+   Created separate admin login and dashboard for site owners:
+
+   Files Created:
+   - site-login.html - Admin login page (email/password auth)
+   - site-admin.html - Full admin dashboard with sidebar layout
+
+   Dashboard Sections:
+   - Overview: Analytics dashboard (conversations, visitors, response times)
+   - Agents: Add/remove/manage support agents and their permissions
+   - Welcome Messages: Configure auto-welcome messages (integrated)
+   - Site Settings: Company info, business hours, AI settings
+   - Widget Design: Customize widget colors, position, features
+   - Billing: Billing contact and address info
+
+   Login Flow:
+   - User logs in with email/password via /api/auth/login
+   - System fetches sites owned by user via /api/sites
+   - If user owns multiple sites, shows site selector modal
+   - Redirects to site-admin.html?siteId=xxx&token=xxx
+
+   API Endpoints Used (all existing):
+   - GET /api/sites/{siteId}/analytics/dashboard
+   - GET /api/sites/{siteId}/analytics/conversations
+   - GET /api/sites/{siteId}/analytics/agents
+   - GET /api/sites/{siteId}/agents (CRUD)
+   - GET/PUT /api/sites/{siteId} (site settings)
+   - GET/PUT /api/sites/{siteId}/widget-config
+   - GET/PUT /api/sites/{siteId}/billing
+   - CRUD /api/sites/{siteId}/welcome-messages
+
+   Python Routes Added (main.py):
+   - GET /site-login -> site-login.html
+   - GET /site-login.html -> site-login.html
+   - GET /site-admin.html -> site-admin.html
+
+   Updated Files:
+   - support-login.html - Added "Sign in as Site Admin" link
+
+================================================================================
+UPDATES (2026-01-17 Session)
+================================================================================
+
+1. SUPER ADMIN DASHBOARD ENHANCEMENTS (admin-dashboard.html)
+
+   Sidebar Navigation - Now Fully Functional:
+   - Dashboard: Shows stats overview and sites table
+   - All Sites: Dedicated view for managing all registered sites
+   - Users: View and manage all users across the platform
+   - Conversations: NEW - View all conversations across all sites
+   - Analytics: Coming soon placeholder
+   - Settings: Coming soon placeholder
+
+   View Modals Added:
+   - Site Details Modal: View site info (name, domain, status, plan, owner, API key, settings)
+   - User Details Modal: View user info (name, email, role, status, permissions)
+   - Conversation Messages Modal: View full chat history with styled message bubbles
+
+   Conversation Features:
+   - Lists all conversations from all sites (super admin only)
+   - Shows visitor name/email, site, message count, status, start date
+   - Click eye icon to view full message history
+   - Messages styled by sender type (visitor=blue, agent=purple, bot=green)
+   - Search/filter conversations by visitor, site, status
+
+   UI Improvements:
+   - Smooth modal animations with backdrop blur
+   - Click outside or Escape to close modals
+   - Consistent badge styling for roles/status
+   - Empty states for no data scenarios
+
+2. PYTHON API PROXY ENDPOINTS (main.py)
+
+   New Endpoints Added:
+
+   GET /api/conversations
+   - Super admin only (validates JWT role)
+   - Fetches all sites, then all conversations for each site
+   - Adds siteName to each conversation for display
+   - Returns aggregated list of all conversations
+
+   GET /api/conversations/{conversation_id}/messages
+   - Authenticated users
+   - Proxies to .NET API /api/messages/conversation/{id}
+   - Returns message list for the conversation
+
+3. API_BASE FIX (admin-dashboard.html)
+   - Changed from hardcoded port 5000 to dynamic ${location.origin}
+   - Dashboard now works on any port (8000, 5000, etc.)
+
+================================================================================
+KNOWN ISSUES / TODO
+================================================================================
+
+1. File naming inconsistency:
+   - Some files use PascalCase (Support.html)
+   - Some use lowercase (support-login.html)
+   - Routes need to match exact filenames
+
+================================================================================
+API ENDPOINTS SUMMARY
+================================================================================
+
+Auth:
+- POST /api/auth/support/login - Support agent login
+- POST /api/auth/register - Register new user
+- GET /api/auth/me - Get current user profile
+- PUT /api/auth/me - Update profile
+- POST /api/auth/change-password - Change password
+
+Sites:
+- GET /api/sites/{siteId} - Get site details
+- GET /api/sites/{siteId}/welcome-messages - List welcome messages
+- POST /api/sites/{siteId}/welcome-messages - Create welcome message
+- PUT /api/sites/{siteId}/welcome-messages/{id} - Update message
+- DELETE /api/sites/{siteId}/welcome-messages/{id} - Delete message
+- PUT /api/sites/{siteId}/welcome-messages/reorder - Reorder messages
+
+Conversations:
+- GET /api/sites/{siteId}/conversations - List conversations for a site
+- GET /api/conversations/{id}/messages - Get messages for conversation
+- POST /api/conversations - Create conversation
+
+Super Admin (Python Proxy):
+- GET /api/conversations - Get ALL conversations across all sites (super_admin only)
+- GET /api/conversations/{id}/messages - Get messages for a conversation
+
+Messages:
+- POST /api/messages - Create message
+
+Visitors:
+- POST /api/visitors - Create visitor
+- PUT /api/visitors/{id} - Update visitor
+
+================================================================================
+CONNECTION STRINGS
+================================================================================
+
+Development (appsettings.Development.json):
+Server=localhost;Database=ChatAppDB;Trusted_Connection=True;TrustServerCertificate=True
+
+================================================================================
+FILE STRUCTURE
+================================================================================
+
+F:\ChatApp AI\python-widget-app\
+├── API\
+│   └── ChatApp.API\
+│       ├── Controllers\
+│       ├── Data\
+│       ├── Middleware\
+│       ├── Models\
+│       │   ├── DTOs\
+│       │   └── Entities\
+│       ├── Services\
+│       │   ├── Implementations\
+│       │   └── Interfaces\
+│       ├── appsettings.json
+│       └── Program.cs
+├── widget\
+│   ├── chat-widget.js
+│   └── chat-widget.css
+├── uploads\
+├── main.py (Python FastAPI server)
+├── Support.html (Support agent dashboard)
+├── support-login.html (Support agent login)
+├── admin-dashboard.html (Super admin platform dashboard) [UPDATED 2026-01-17]
+├── admin-login.html (Super admin login)
+├── site-admin.html (Site owner admin dashboard)
+├── site-login.html (Site owner login)
+├── profile.html (Profile management)
+├── welcome-messages.html (Welcome messages config)
+├── test-widget.html (Widget test page)
+└── PROJECT_CONTEXT.txt (This file)
+
+================================================================================

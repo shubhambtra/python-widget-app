@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ChatApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 520px;
+            transition: max-width 0.3s ease;
+        }
+
+        .register-container.wide {
+            max-width: 900px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #fff;
+        }
+
+        .step.completed .step-number {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: #fff;
+        }
+
+        .step-connector {
+            width: 40px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .step-connector.active {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        label .optional {
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input::placeholder {
+            color: #64748b;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M2.5 4.5L6 8L9.5 4.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        select option {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1.1rem;
+        }
+
+        .password-toggle:hover {
+            color: #94a3b8;
+        }
+
+        .password-strength {
+            margin-top: 0.75rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .strength-fill.weak {
+            width: 25%;
+            background: #ef4444;
+        }
+
+        .strength-fill.fair {
+            width: 50%;
+            background: #f59e0b;
+        }
+
+        .strength-fill.good {
+            width: 75%;
+            background: #22c55e;
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: #10b981;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .strength-text.weak { color: #ef4444; }
+        .strength-text.fair { color: #f59e0b; }
+        .strength-text.good { color: #22c55e; }
+        .strength-text.strong { color: #10b981; }
+
+        .form-error {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #94a3b8;
+        }
+
+        .login-link a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            display: block;
+        }
+
+        .alert.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            display: block;
+        }
+
+        /* Plan Cards */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            border-color: rgba(37, 99, 235, 0.5);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .plan-card.selected {
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .plan-card.popular {
+            border-color: rgba(234, 179, 8, 0.5);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .plan-header {
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .plan-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .plan-price .price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .plan-price .period {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .plan-description {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            padding: 0.35rem 0;
+        }
+
+        .plan-features .check {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-plan:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-plan-selected {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border: none;
+        }
+
+        /* Payment Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .payment-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-summary h4 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-summary p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .billing-select {
+            margin-bottom: 1.5rem;
+        }
+
+        .billing-select label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .billing-select select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .billing-select select option {
+            background: #1e293b;
+        }
+
+        .payment-total {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-total .amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .payment-total .period {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .payment-btn.razorpay {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .payment-btn.razorpay:hover {
+            background: #1d4ed8;
+        }
+
+        .payment-btn.paypal {
+            background: #0070ba;
+            color: #fff;
+        }
+
+        .payment-btn.paypal:hover {
+            background: #005ea6;
+        }
+
+        .payment-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .payment-secure {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .plans-container {
+                grid-template-columns: 1fr;
+            }
+
+            .register-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .step-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <a href="/" class="logo">
+            <div class="logo-icon" data-brand="icon">C</div>
+            <span data-brand="name">ChatApp</span>
+        </a>
+
+        <div class="register-card">
+            <div class="step-indicator">
+                <div class="step active" id="step1-indicator">
+                    <div class="step-number">1</div>
+                    <span class="step-label">Account</span>
+                </div>
+                <div class="step-connector" id="connector1"></div>
+                <div class="step" id="step2-indicator">
+                    <div class="step-number">2</div>
+                    <span class="step-label">Site Setup</span>
+                </div>
+                <div class="step-connector" id="connector2"></div>
+                <div class="step" id="step3-indicator">
+                    <div class="step-number">3</div>
+                    <span class="step-label">Choose Plan</span>
+                </div>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <!-- Step 1: Account Info -->
+            <div class="form-step active" id="step1">
+                <h2 class="form-title">Create Your Account</h2>
+                <p class="form-subtitle">Start your free trial today</p>
+
+                <form id="step1-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="you@company.com" required>
+                        <div class="form-error" id="email-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="johndoe" required>
+                        <div class="form-error" id="username-error"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name <span class="optional">(optional)</span></label>
+                            <input type="text" id="firstName" name="firstName" placeholder="John">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name <span class="optional">(optional)</span></label>
+                            <input type="text" id="lastName" name="lastName" placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('password')">&#128065;</button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strength-fill"></div>
+                            </div>
+                            <span class="strength-text" id="strength-text"></span>
+                        </div>
+                        <div class="form-error" id="password-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">&#128065;</button>
+                        </div>
+                        <div class="form-error" id="confirm-error"></div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="submit" class="btn btn-primary">
+                            Continue
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <p class="login-link">
+                    Already have an account? <a href="/site-login">Sign in</a>
+                </p>
+            </div>
+
+            <!-- Step 2: Site Setup -->
+            <div class="form-step" id="step2">
+                <h2 class="form-title">Set Up Your Site</h2>
+                <p class="form-subtitle">Configure your first support site</p>
+
+                <form id="step2-form">
+                    <div class="form-group">
+                        <label for="siteName">Site Name</label>
+                        <input type="text" id="siteName" name="siteName" placeholder="My Awesome App" required>
+                        <div class="form-error" id="siteName-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="domain">Domain</label>
+                        <input type="text" id="domain" name="domain" placeholder="myapp.com" required>
+                        <div class="form-error" id="domain-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="companyName">Company Name <span class="optional">(optional)</span></label>
+                        <input type="text" id="companyName" name="companyName" placeholder="Acme Inc.">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="industry">Industry <span class="optional">(optional)</span></label>
+                        <select id="industry" name="industry">
+                            <option value="">Select an industry</option>
+                            <option value="technology">Technology</option>
+                            <option value="ecommerce">E-Commerce</option>
+                            <option value="saas">SaaS</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance</option>
+                            <option value="education">Education</option>
+                            <option value="retail">Retail</option>
+                            <option value="travel">Travel & Hospitality</option>
+                            <option value="media">Media & Entertainment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(1)">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                            Back
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Continue
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 3: Choose Plan -->
+            <div class="form-step" id="step3">
+                <h2 class="form-title">Choose Your Plan</h2>
+                <p class="form-subtitle">Select the plan that fits your needs</p>
+
+                <div class="plans-container" id="plansContainer">
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        Loading plans...
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                        Back
+                    </button>
+                    <button type="button" class="btn btn-primary" id="submitBtn" onclick="submitRegistration()">
+                        <span id="submitText">Create My Site</span>
+                        <div class="spinner" id="submitSpinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Complete Your Purchase</h2>
+            <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+
+            <div class="payment-summary" id="paymentSummary">
+                <h4 id="paymentPlanName">Professional Plan</h4>
+                <p id="paymentPlanDesc">Best for growing businesses</p>
+            </div>
+
+            <div class="billing-select">
+                <label for="billingCycle">Billing Cycle</label>
+                <select id="billingCycle" onchange="updatePaymentTotal()">
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly (Save 17%)</option>
+                </select>
+            </div>
+
+            <div class="payment-total">
+                <div class="amount" id="paymentAmount">$79</div>
+                <div class="period" id="paymentPeriod">per month</div>
+            </div>
+
+            <div class="payment-methods">
+                <button class="payment-btn razorpay" id="razorpayBtn" onclick="payWithRazorpay()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    Pay with Razorpay
+                </button>
+                <button class="payment-btn paypal" id="paypalBtn" onclick="payWithPayPal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
+                    </svg>
+                    Pay with PayPal
+                </button>
+            </div>
+
+            <div class="payment-secure">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                </svg>
+                Secure payment processing. Your data is encrypted.
+            </div>
+        </div>
+    </div>
+
+    <script src="/config.js"></script>
+    <script src="/branding.js"></script>
+    <script>
+        const API_BASE = CONFIG.API_URL;
+        let accessToken = null;
+        let userData = {};
+        let siteData = {};
+        let selectedPlan = 'free';
+        let createdSiteId = null;
+        let createdSiteName = null;
+
+        // Plans loaded from API
+        let availablePlans = [];
+        let selectedPlanData = null;
+
+        // Fetch plans from API
+        async function fetchPlans() {
+            try {
+                const response = await fetch(`${API_BASE}/api/subscriptions/plans`);
+                const result = await response.json();
+                if (result.success && result.data) {
+                    availablePlans = result.data.sort((a, b) => a.sortOrder - b.sortOrder);
+                    renderPlans();
+                    // Select first plan by default
+                    if (availablePlans.length > 0) {
+                        selectPlan(availablePlans[0].id);
+                    }
+                } else {
+                    document.getElementById('plansContainer').innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            Failed to load plans. Please refresh the page.
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error fetching plans:', err);
+                document.getElementById('plansContainer').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        Failed to load plans. Please refresh the page.
+                    </div>
+                `;
+            }
+        }
+
+        // Render plan cards
+        function renderPlans() {
+            const container = document.getElementById('plansContainer');
+            container.innerHTML = availablePlans.map((plan, index) => {
+                const isPopular = plan.name.toLowerCase() === 'pro' || plan.sortOrder === 3;
+                const isFree = plan.monthlyPrice === 0;
+
+                // Build features list
+                const features = [];
+                features.push(`${plan.maxAgents} Support Agent${plan.maxAgents > 1 ? 's' : ''}`);
+                features.push(`${plan.maxConversationsPerMonth ? plan.maxConversationsPerMonth.toLocaleString() : 'Unlimited'} Conversations/month`);
+                features.push(`${plan.maxMessagesPerMonth ? plan.maxMessagesPerMonth.toLocaleString() : 'Unlimited'} Messages/month`);
+                features.push(`${plan.maxStorageMb >= 1000 ? (plan.maxStorageMb / 1000) + 'GB' : plan.maxStorageMb + 'MB'} File Storage`);
+                if (plan.aiAnalysisEnabled) features.push('AI Analysis');
+                if (plan.aiAutoReplyEnabled) features.push('AI Auto-Reply');
+
+                return `
+                    <div class="plan-card ${isPopular ? 'popular' : ''}" data-plan-id="${plan.id}">
+                        ${isPopular ? '<div class="popular-badge">Most Popular</div>' : ''}
+                        <div class="plan-header">
+                            <h3 class="plan-name">${plan.name}</h3>
+                            <div class="plan-price">
+                                <span class="price">$${plan.monthlyPrice}</span>
+                                <span class="period">/month</span>
+                            </div>
+                        </div>
+                        <p class="plan-description">${plan.description || ''}</p>
+                        <ul class="plan-features">
+                            ${features.map(f => `<li><span class="check">&#10003;</span> ${f}</li>`).join('')}
+                        </ul>
+                        <button type="button" class="btn btn-plan" onclick="selectPlan('${plan.id}')">
+                            Select Plan
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize plans on page load
+        fetchPlans();
+
+        // Password visibility toggle
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.type = field.type === 'password' ? 'text' : 'password';
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/\d/)) strength++;
+            if (password.match(/[^a-zA-Z\d]/)) strength++;
+
+            const fill = document.getElementById('strength-fill');
+            const text = document.getElementById('strength-text');
+
+            fill.className = 'strength-fill';
+            text.className = 'strength-text';
+
+            if (password.length === 0) {
+                text.textContent = '';
+                return;
+            }
+
+            if (strength <= 1) {
+                fill.classList.add('weak');
+                text.classList.add('weak');
+                text.textContent = 'Weak - Add uppercase, numbers, and symbols';
+            } else if (strength === 2) {
+                fill.classList.add('fair');
+                text.classList.add('fair');
+                text.textContent = 'Fair - Add more variety';
+            } else if (strength === 3) {
+                fill.classList.add('good');
+                text.classList.add('good');
+                text.textContent = 'Good password';
+            } else {
+                fill.classList.add('strong');
+                text.classList.add('strong');
+                text.textContent = 'Strong password';
+            }
+        }
+
+        document.getElementById('password').addEventListener('input', (e) => {
+            checkPasswordStrength(e.target.value);
+        });
+
+        // Show alert
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = 'alert ' + type;
+        }
+
+        // Clear alert
+        function clearAlert() {
+            const alert = document.getElementById('alert');
+            alert.className = 'alert';
+            alert.textContent = '';
+        }
+
+        // Show field error
+        function showFieldError(fieldId, message) {
+            const error = document.getElementById(fieldId + '-error');
+            if (error) {
+                error.textContent = message;
+                error.classList.add('visible');
+            }
+        }
+
+        // Clear field errors
+        function clearFieldErrors() {
+            document.querySelectorAll('.form-error').forEach(el => {
+                el.classList.remove('visible');
+                el.textContent = '';
+            });
+        }
+
+        // Navigate to step
+        function goToStep(stepNum) {
+            clearAlert();
+            clearFieldErrors();
+
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < stepNum) {
+                    step.classList.add('completed');
+                } else if (index + 1 === stepNum) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Update connectors
+            const connector1 = document.getElementById('connector1');
+            const connector2 = document.getElementById('connector2');
+
+            if (stepNum > 1) {
+                connector1.classList.add('active');
+            } else {
+                connector1.classList.remove('active');
+            }
+
+            if (stepNum > 2) {
+                connector2.classList.add('active');
+            } else {
+                connector2.classList.remove('active');
+            }
+
+            // Toggle wide container for step 3
+            const container = document.querySelector('.register-container');
+            if (stepNum === 3) {
+                container.classList.add('wide');
+            } else {
+                container.classList.remove('wide');
+            }
+
+            // Show/hide steps
+            document.querySelectorAll('.form-step').forEach((step, index) => {
+                step.classList.remove('active');
+                if (index + 1 === stepNum) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // Validate step 1
+        function validateStep1() {
+            clearFieldErrors();
+            let valid = true;
+
+            const email = document.getElementById('email').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showFieldError('email', 'Please enter a valid email address');
+                valid = false;
+            }
+
+            if (!username || username.length < 3) {
+                showFieldError('username', 'Username must be at least 3 characters');
+                valid = false;
+            }
+
+            if (!password || password.length < 8) {
+                showFieldError('password', 'Password must be at least 8 characters');
+                valid = false;
+            }
+
+            if (password !== confirmPassword) {
+                showFieldError('confirm', 'Passwords do not match');
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        // Validate step 2
+        function validateStep2() {
+            clearFieldErrors();
+            let valid = true;
+
+            const siteName = document.getElementById('siteName').value.trim();
+            const domain = document.getElementById('domain').value.trim();
+
+            if (!siteName || siteName.length < 2) {
+                showFieldError('siteName', 'Site name must be at least 2 characters');
+                valid = false;
+            }
+
+            if (!domain || !domain.match(/^[a-zA-Z0-9][a-zA-Z0-9-_.]+\.[a-zA-Z]{2,}$/)) {
+                showFieldError('domain', 'Please enter a valid domain (e.g., myapp.com)');
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        // Step 1 form submission
+        document.getElementById('step1-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!validateStep1()) return;
+
+            // Store user data for later
+            userData = {
+                email: document.getElementById('email').value.trim(),
+                username: document.getElementById('username').value.trim(),
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                password: document.getElementById('password').value
+            };
+
+            goToStep(2);
+        });
+
+        // Step 2 form submission
+        document.getElementById('step2-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!validateStep2()) return;
+
+            // Store site data for later
+            siteData = {
+                Name: document.getElementById('siteName').value.trim(),
+                Domain: document.getElementById('domain').value.trim(),
+                CompanyName: document.getElementById('companyName').value.trim() || undefined,
+                Industry: document.getElementById('industry').value || undefined
+            };
+
+            goToStep(3);
+        });
+
+        // Plan selection
+        function selectPlan(planId) {
+            selectedPlan = planId;
+            selectedPlanData = availablePlans.find(p => p.id === planId);
+
+            // Update UI
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+                const btn = card.querySelector('.btn-plan');
+                btn.classList.remove('btn-plan-selected');
+                btn.textContent = 'Select Plan';
+            });
+
+            const selectedCard = document.querySelector(`.plan-card[data-plan-id="${planId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                const selectedBtn = selectedCard.querySelector('.btn-plan');
+                selectedBtn.classList.add('btn-plan-selected');
+                selectedBtn.textContent = 'Selected';
+            }
+        }
+
+        // Final submission
+        async function submitRegistration() {
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+
+            submitBtn.disabled = true;
+            submitText.textContent = 'Creating account...';
+            submitSpinner.style.display = 'block';
+
+            try {
+                // Step 1: Register user
+                const registerResponse = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Email: userData.email,
+                        Password: userData.password,
+                        Username: userData.username,
+                        FirstName: userData.firstName || undefined,
+                        LastName: userData.lastName || undefined
+                    })
+                });
+
+                const registerResult = await registerResponse.json();
+
+                if (!registerResponse.ok || !registerResult.success) {
+                    const errorMsg = registerResult.message ||
+                                    (registerResult.errors && registerResult.errors.length > 0 ? registerResult.errors.join(', ') : null) ||
+                                    'Registration failed';
+                    throw new Error(errorMsg);
+                }
+
+                accessToken = registerResult.data.accessToken;
+                submitText.textContent = 'Creating site...';
+
+                // Step 2: Create site (always starts with free, upgrade after payment)
+                const sitePayload = {
+                    ...siteData
+                };
+
+                const siteResponse = await fetch('/api/sites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify(sitePayload)
+                });
+
+                const siteResult = await siteResponse.json();
+
+                if (!siteResponse.ok || !siteResult.success) {
+                    const errorMsg = siteResult.message ||
+                                    (siteResult.errors && siteResult.errors.length > 0 ? siteResult.errors.join(', ') : null) ||
+                                    'Site creation failed';
+                    throw new Error(errorMsg);
+                }
+
+                createdSiteId = siteResult.data.id;
+                createdSiteName = siteResult.data.name;
+
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = 'Create My Site';
+                submitSpinner.style.display = 'none';
+
+                // Redirect or show payment based on plan
+                const isFree = !selectedPlanData || selectedPlanData.monthlyPrice === 0;
+                if (isFree) {
+                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                } else {
+                    // Show payment modal for paid plans
+                    openPaymentModal();
+                }
+
+            } catch (error) {
+                showAlert(error.message || 'An error occurred. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitText.textContent = 'Create My Site';
+                submitSpinner.style.display = 'none';
+            }
+        }
+
+        // ==================== PAYMENT MODAL ====================
+        function openPaymentModal() {
+            if (!selectedPlanData) return;
+
+            document.getElementById('paymentPlanName').textContent = selectedPlanData.name + ' Plan';
+            document.getElementById('paymentPlanDesc').textContent = selectedPlanData.description || '';
+            document.getElementById('billingCycle').value = 'monthly';
+            updatePaymentTotal();
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function updatePaymentTotal() {
+            if (!selectedPlanData) return;
+
+            const cycle = document.getElementById('billingCycle').value;
+            const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
+            const period = cycle === 'yearly' ? 'per year' : 'per month';
+
+            document.getElementById('paymentAmount').textContent = '$' + amount;
+            document.getElementById('paymentPeriod').textContent = period;
+        }
+
+        // ==================== RAZORPAY PAYMENT ====================
+        async function payWithRazorpay() {
+            const btn = document.getElementById('razorpayBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                if (!selectedPlanData) throw new Error('No plan selected');
+                const cycle = document.getElementById('billingCycle').value;
+                const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
+
+                // Create Razorpay order on backend
+                const orderResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/razorpay/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        currency: selectedPlanData.currency || 'INR',
+                        planId: selectedPlanData.id,
+                        billingCycle: cycle
+                    })
+                });
+
+                const orderData = await orderResponse.json();
+                if (!orderResponse.ok || !orderData.success) {
+                    throw new Error(orderData.message || 'Failed to create order');
+                }
+
+                // Open Razorpay checkout
+                const options = {
+                    key: orderData.data.razorpayKeyId,
+                    amount: amount * 100,
+                    currency: 'USD',
+                    name: 'ChatApp',
+                    description: `${selectedPlanData.name} Plan - ${cycle}`,
+                    order_id: orderData.data.orderId,
+                    handler: async function(response) {
+                        try {
+                            const verifyResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/razorpay/verify`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${accessToken}`
+                                },
+                                body: JSON.stringify({
+                                    razorpayOrderId: response.razorpay_order_id,
+                                    razorpayPaymentId: response.razorpay_payment_id,
+                                    razorpaySignature: response.razorpay_signature,
+                                    planId: selectedPlanData.id,
+                                    billingCycle: cycle
+                                })
+                            });
+
+                            const verifyData = await verifyResponse.json();
+                            if (verifyResponse.ok && verifyData.success) {
+                                showAlert('Payment successful! Redirecting...', 'success');
+                                closePaymentModal();
+                                setTimeout(() => {
+                                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                                }, 1500);
+                            } else {
+                                showAlert(verifyData.message || 'Payment verification failed', 'error');
+                            }
+                        } catch (err) {
+                            showAlert('Payment verification failed. Please contact support.', 'error');
+                        }
+                    },
+                    prefill: {
+                        email: userData.email,
+                        name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || userData.username
+                    },
+                    theme: {
+                        color: '#2563eb'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            btn.disabled = false;
+                            btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+                        }
+                    }
+                };
+
+                const razorpay = new Razorpay(options);
+                razorpay.on('payment.failed', function(response) {
+                    showAlert('Payment failed: ' + response.error.description, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+                });
+                razorpay.open();
+
+            } catch (err) {
+                console.error('Razorpay error:', err);
+                showAlert(err.message || 'Failed to initiate payment', 'error');
+                btn.disabled = false;
+                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+            }
+        }
+
+        // ==================== PAYPAL PAYMENT ====================
+        async function payWithPayPal() {
+            const btn = document.getElementById('paypalBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                if (!selectedPlanData) throw new Error('No plan selected');
+                const cycle = document.getElementById('billingCycle').value;
+                const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
+
+                // Create PayPal order on backend
+                const orderResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/paypal/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        currency: selectedPlanData.currency || 'USD',
+                        planId: selectedPlanData.id,
+                        billingCycle: cycle
+                    })
+                });
+
+                const orderData = await orderResponse.json();
+                if (!orderResponse.ok || !orderData.success) {
+                    throw new Error(orderData.message || 'Failed to create PayPal order');
+                }
+
+                // Store data for return callback
+                sessionStorage.setItem('paypalOrderId', orderData.data.orderId);
+                sessionStorage.setItem('paypalPlanId', selectedPlanData.id);
+                sessionStorage.setItem('paypalBillingCycle', cycle);
+                sessionStorage.setItem('paypalSiteId', createdSiteId);
+                sessionStorage.setItem('paypalSiteName', createdSiteName);
+                sessionStorage.setItem('paypalToken', accessToken);
+
+                // Redirect to PayPal
+                if (orderData.data.approvalUrl) {
+                    window.location.href = orderData.data.approvalUrl;
+                } else {
+                    throw new Error('PayPal approval URL not received');
+                }
+
+            } catch (err) {
+                console.error('PayPal error:', err);
+                showAlert(err.message || 'Failed to initiate PayPal payment', 'error');
+                btn.disabled = false;
+                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/></svg> Pay with PayPal`;
+            }
+        }
+
+        // Handle PayPal return
+        (function handlePayPalReturn() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const provider = urlParams.get('provider');
+            const payment = urlParams.get('payment');
+
+            if (provider === 'paypal') {
+                if (payment === 'success') {
+                    const orderId = sessionStorage.getItem('paypalOrderId');
+                    const planId = sessionStorage.getItem('paypalPlanId');
+                    const billingCycle = sessionStorage.getItem('paypalBillingCycle');
+                    const siteId = sessionStorage.getItem('paypalSiteId');
+                    const siteName = sessionStorage.getItem('paypalSiteName');
+                    const token = sessionStorage.getItem('paypalToken');
+
+                    if (orderId && siteId && token) {
+                        // Capture PayPal payment
+                        fetch(`${API_BASE}/api/sites/${siteId}/payments/paypal/capture`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                orderId: orderId,
+                                planId: planId,
+                                billingCycle: billingCycle
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Clear session storage
+                                sessionStorage.removeItem('paypalOrderId');
+                                sessionStorage.removeItem('paypalPlanCode');
+                                sessionStorage.removeItem('paypalBillingCycle');
+                                sessionStorage.removeItem('paypalSiteId');
+                                sessionStorage.removeItem('paypalSiteName');
+                                sessionStorage.removeItem('paypalToken');
+
+                                // Redirect to site admin
+                                window.location.href = `/site-admin.html?siteId=${siteId}&token=${encodeURIComponent(token)}&siteName=${encodeURIComponent(siteName)}`;
+                            } else {
+                                showAlert(data.message || 'PayPal capture failed', 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('PayPal capture error:', err);
+                            showAlert('Failed to capture PayPal payment', 'error');
+                        });
+                    }
+                } else if (payment === 'cancelled') {
+                    showAlert('PayPal payment was cancelled', 'error');
+                    // Clear session storage
+                    sessionStorage.removeItem('paypalOrderId');
+                    sessionStorage.removeItem('paypalPlanCode');
+                    sessionStorage.removeItem('paypalBillingCycle');
+                    sessionStorage.removeItem('paypalSiteId');
+                    sessionStorage.removeItem('paypalSiteName');
+                    sessionStorage.removeItem('paypalToken');
+                }
+
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Admin Login - ChatApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.4);
+  padding: 48px 40px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-area {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.logo-icon {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.5);
+}
+
+.logo-icon svg {
+  width: 36px;
+  height: 36px;
+  color: white;
+}
+
+.logo-area h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.logo-area p {
+  font-size: 15px;
+  color: #64748b;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-family: inherit;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.form-group input:focus {
+  border-color: #0ea5e9;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #94a3b8;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  color: white;
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(14, 165, 233, 0.5);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}
+
+.btn-login:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-login .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
+.btn-login.loading .spinner {
+  display: block;
+}
+
+.btn-login.loading .btn-text {
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.toast.error {
+  background: #ef4444;
+  color: white;
+}
+
+.toast.success {
+  background: #22c55e;
+  color: white;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 28px 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.divider span {
+  padding: 0 16px;
+}
+
+.alt-login {
+  text-align: center;
+}
+
+.alt-login a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.alt-login a:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+}
+
+.alt-login a svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-text {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* Site selector modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  animation: slideUp 0.3s ease;
+}
+
+.modal h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.modal p {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.site-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.site-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.site-item:hover {
+  border-color: #0ea5e9;
+  background: #f0f9ff;
+}
+
+.site-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.site-info {
+  flex: 1;
+}
+
+.site-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.site-info span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+
+.back-home:hover {
+  color: #fff;
+}
+
+.logo-area {
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.logo-area:hover {
+  transform: scale(1.02);
+}
+
+.logo-area h1,
+.logo-area p {
+  transition: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Site selector modal -->
+<div class="modal-overlay" id="siteModal">
+  <div class="modal">
+    <h2>Select a Site</h2>
+    <p>Choose which site you want to manage</p>
+    <div class="site-list" id="siteList">
+      <!-- Sites will be populated here -->
+    </div>
+  </div>
+</div>
+
+<div class="login-container">
+  <a href="/" class="back-home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Home
+  </a>
+  <div class="login-card">
+    <a href="/" class="logo-area">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      </div>
+      <h1>Site Admin</h1>
+      <p>Manage your site, agents, and settings</p>
+    </a>
+
+    <form id="loginForm" onsubmit="login(event)">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="admin@yourcompany.com" required autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password" />
+      </div>
+
+      <button type="submit" class="btn-login" id="loginBtn">
+        <span class="spinner"></span>
+        <span class="btn-text">Sign In as Admin</span>
+      </button>
+    </form>
+
+    <div class="divider"><span>or</span></div>
+
+    <div class="alt-login">
+      <a href="/support/login">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+        </svg>
+        Sign in as Support Agent
+      </a>
+    </div>
+
+    <div class="footer-text">
+      Site owners and administrators only
+    </div>
+  </div>
+</div>
+
+<script src="/config.js"></script>
+<script>
+const API_BASE = CONFIG.API_BASE;
+const toast = document.getElementById('toast');
+const loginBtn = document.getElementById('loginBtn');
+const siteModal = document.getElementById('siteModal');
+const siteList = document.getElementById('siteList');
+
+let authToken = null;
+let userSites = [];
+
+function showToast(message, type = 'error') {
+  toast.textContent = message;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+async function login(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    showToast('Please fill in all fields');
+    return;
+  }
+
+  loginBtn.classList.add('loading');
+  loginBtn.disabled = true;
+
+  try {
+    console.log('Attempting login with:', email);
+
+    // Use the standard login endpoint with email
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Email: email, Password: password })
+    });
+
+    console.log('Login response status:', res.status);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      console.error('Login error:', data);
+      throw new Error(data.message || data.errors?.[0] || 'Invalid credentials');
+    }
+
+    const result = await res.json();
+    console.log('Login result:', result);
+
+    if (!result.success) {
+      throw new Error(result.message || 'Login failed');
+    }
+
+    authToken = result.data.accessToken;
+    const user = result.data.user;
+
+    // Check if user has site_admin role
+    if (user.role !== 'site_admin') {
+      throw new Error('Access denied. This login is for site administrators only. If you are a support agent, please use the Agent Login.');
+    }
+
+    // Fetch sites owned by this user
+    console.log('Fetching sites with token');
+    const sitesRes = await fetch(`${API_BASE}/sites`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    console.log('Sites response status:', sitesRes.status);
+
+    if (!sitesRes.ok) {
+      const err = await sitesRes.json().catch(() => ({}));
+      console.error('Sites error:', err);
+      throw new Error('Failed to fetch sites');
+    }
+
+    const sitesResult = await sitesRes.json();
+    console.log('Sites result:', sitesResult);
+
+    if (!sitesResult.success || !sitesResult.data?.items?.length) {
+      throw new Error('You do not own any sites. Please contact support.');
+    }
+
+    userSites = sitesResult.data.items;
+    console.log('Found sites:', userSites.length);
+
+    // If user owns only one site, go directly to admin
+    if (userSites.length === 1) {
+      goToAdmin(userSites[0]);
+    } else {
+      // Show site selector modal
+      showSiteSelector();
+    }
+
+  } catch (err) {
+    showToast(err.message || 'Login failed. Please try again.');
+    loginBtn.classList.remove('loading');
+    loginBtn.disabled = false;
+  }
+}
+
+function showSiteSelector() {
+  loginBtn.classList.remove('loading');
+  loginBtn.disabled = false;
+
+  siteList.innerHTML = userSites.map(site => `
+    <div class="site-item" onclick="goToAdmin(${JSON.stringify(site).replace(/"/g, '&quot;')})">
+      <div class="site-icon">${(site.name || 'S')[0].toUpperCase()}</div>
+      <div class="site-info">
+        <h3>${escapeHtml(site.name || 'Unnamed Site')}</h3>
+        <span>${escapeHtml(site.domain || 'No domain')}</span>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#94a3b8">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </div>
+  `).join('');
+
+  siteModal.classList.add('show');
+}
+
+function goToAdmin(site) {
+  console.log('Redirecting to admin for site:', site.name);
+  const params = new URLSearchParams({
+    siteId: site.id,
+    token: authToken,
+    siteName: site.name || ''
+  });
+  const url = `/site-admin.html?${params.toString()}`;
+  console.log('Redirect URL:', url);
+  location.href = url;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Close modal when clicking outside
+siteModal.addEventListener('click', (e) => {
+  if (e.target === siteModal) {
+    siteModal.classList.remove('show');
+  }
+});
+
+// Allow Enter to submit
+document.querySelectorAll('input').forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      login(e);
+    }
+  });
+});
+</script>
+</body>
+</html>

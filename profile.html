@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Settings - Support Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+/* ==================== TOP BAR ==================== */
+.topbar {
+  height: 60px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-logo {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.topbar-logo svg {
+  width: 20px;
+  height: 20px;
+}
+
+.topbar-brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.topbar-brand span {
+  color: #2563eb;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-back:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.btn-back svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.main-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  color: #64748b;
+}
+
+/* ==================== CARDS ==================== */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title svg {
+  width: 20px;
+  height: 20px;
+  color: #2563eb;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+/* ==================== PROFILE HEADER ==================== */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 600;
+  color: white;
+  position: relative;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 32px;
+  height: 32px;
+  background: #2563eb;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-edit-btn:hover {
+  background: #1d4ed8;
+  transform: scale(1.1);
+}
+
+.avatar-edit-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.profile-info h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.profile-info p {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #166534;
+  margin-top: 8px;
+}
+
+.profile-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ==================== FORM STYLES ==================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #1e293b;
+  transition: all 0.2s;
+  background: #fff;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-input:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #fecaca;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==================== PASSWORD SECTION ==================== */
+.password-requirements {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.password-requirements h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.password-requirements ul {
+  list-style: none;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.password-requirements li svg {
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+}
+
+.password-requirements li.valid svg {
+  color: #22c55e;
+}
+
+/* ==================== TOAST ==================== */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.3s ease;
+  min-width: 300px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast.success {
+  border-left: 4px solid #22c55e;
+}
+
+.toast.error {
+  border-left: 4px solid #ef4444;
+}
+
+.toast.info {
+  border-left: 4px solid #3b82f6;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast.success .toast-icon {
+  background: #dcfce7;
+  color: #22c55e;
+}
+
+.toast.error .toast-icon {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.toast.info .toast-icon {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+/* ==================== LOADING ==================== */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .btn {
+    justify-content: center;
+  }
+}
+</style>
+</head>
+
+<body>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      </div>
+      <div class="topbar-brand">Chat<span>App</span></div>
+    </div>
+    <div class="topbar-right">
+      <a href="#" class="btn-back" onclick="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Profile Settings</h1>
+      <p class="page-subtitle">Manage your personal information and account settings</p>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="card">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">
+          <span id="avatarInitials">--</span>
+        </div>
+        <div class="profile-info">
+          <h2 id="profileName">Loading...</h2>
+          <p id="profileEmail">loading@example.com</p>
+          <div class="profile-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span id="profileRole">Support Agent</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form id="profileForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-input" id="firstName" placeholder="Enter your first name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-input" id="lastName" placeholder="Enter your last name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-input" id="username" disabled>
+              <span class="form-hint">Username cannot be changed</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="email" disabled>
+              <span class="form-hint">Contact support to change email</span>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Avatar URL</label>
+              <input type="url" class="form-input" id="avatarUrl" placeholder="https://example.com/avatar.jpg">
+              <span class="form-hint">Enter a URL to your profile picture (optional)</span>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="btn btn-secondary" onclick="resetProfileForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Change Password Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          Change Password
+        </div>
+      </div>
+      <div class="card-body">
+        <form id="passwordForm">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-input" id="currentPassword" placeholder="Enter your current password">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+            </div>
+          </div>
+
+          <div class="password-requirements">
+            <h4>Password Requirements</h4>
+            <ul>
+              <li id="req-length">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                At least 8 characters
+              </li>
+              <li id="req-upper">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                At least one uppercase letter
+              </li>
+              <li id="req-lower">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                At least one lowercase letter
+              </li>
+              <li id="req-number">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                At least one number
+              </li>
+            </ul>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="btn btn-secondary" onclick="resetPasswordForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+              Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+<script src="/config.js"></script>
+<script>
+// ==================== CONFIG ====================
+const params = new URLSearchParams(location.search);
+const siteId = params.get("siteId");
+const token = params.get("token");
+
+if (!siteId || !token) {
+  window.location.href = "/login";
+}
+
+const API_BASE = CONFIG.API_BASE;
+
+// ==================== STATE ====================
+let currentUser = null;
+let originalData = {};
+
+// ==================== INIT ====================
+document.addEventListener("DOMContentLoaded", () => {
+  loadUserProfile();
+  setupPasswordValidation();
+
+  document.getElementById("profileForm").addEventListener("submit", saveProfile);
+  document.getElementById("passwordForm").addEventListener("submit", changePassword);
+});
+
+// ==================== API CALLS ====================
+async function loadUserProfile() {
+  try {
+    const response = await fetch(`${API_BASE}/auth/me`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to load profile");
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      currentUser = result.data;
+      populateForm(currentUser);
+    }
+  } catch (error) {
+    showToast("Failed to load profile", "error");
+    console.error(error);
+  }
+}
+
+function populateForm(user) {
+  document.getElementById("firstName").value = user.firstName || "";
+  document.getElementById("lastName").value = user.lastName || "";
+  document.getElementById("username").value = user.username || "";
+  document.getElementById("email").value = user.email || "";
+  document.getElementById("avatarUrl").value = user.avatarUrl || "";
+
+  // Store original data for cancel
+  originalData = {
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    avatarUrl: user.avatarUrl || ""
+  };
+
+  // Update header
+  const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username;
+  document.getElementById("profileName").textContent = fullName;
+  document.getElementById("profileEmail").textContent = user.email;
+  document.getElementById("profileRole").textContent = formatRole(user.role);
+
+  // Update avatar
+  updateAvatar(user);
+}
+
+function updateAvatar(user) {
+  const avatarEl = document.getElementById("profileAvatar");
+  const initialsEl = document.getElementById("avatarInitials");
+
+  if (user.avatarUrl) {
+    avatarEl.innerHTML = `<img src="${user.avatarUrl}" alt="Avatar">`;
+  } else {
+    const initials = getInitials(user.firstName, user.lastName, user.username);
+    initialsEl.textContent = initials;
+    avatarEl.innerHTML = `<span id="avatarInitials">${initials}</span>`;
+  }
+}
+
+function getInitials(firstName, lastName, username) {
+  if (firstName && lastName) {
+    return `${firstName[0]}${lastName[0]}`.toUpperCase();
+  }
+  if (firstName) {
+    return firstName.substring(0, 2).toUpperCase();
+  }
+  return username ? username.substring(0, 2).toUpperCase() : "??";
+}
+
+function formatRole(role) {
+  const roleMap = {
+    "support_agent": "Support Agent",
+    "admin": "Administrator",
+    "owner": "Site Owner"
+  };
+  return roleMap[role] || role;
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+
+  const btn = document.getElementById("saveProfileBtn");
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<div class="spinner"></div> Saving...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/me`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        firstName: document.getElementById("firstName").value.trim() || null,
+        lastName: document.getElementById("lastName").value.trim() || null,
+        avatarUrl: document.getElementById("avatarUrl").value.trim() || null
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update profile");
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      currentUser = result.data;
+      populateForm(currentUser);
+      showToast("Profile updated successfully!", "success");
+    }
+  } catch (error) {
+    showToast("Failed to update profile", "error");
+    console.error(error);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+function resetProfileForm() {
+  document.getElementById("firstName").value = originalData.firstName;
+  document.getElementById("lastName").value = originalData.lastName;
+  document.getElementById("avatarUrl").value = originalData.avatarUrl;
+}
+
+// ==================== PASSWORD ====================
+function setupPasswordValidation() {
+  const newPasswordInput = document.getElementById("newPassword");
+  newPasswordInput.addEventListener("input", validatePassword);
+}
+
+function validatePassword() {
+  const password = document.getElementById("newPassword").value;
+
+  const requirements = {
+    length: password.length >= 8,
+    upper: /[A-Z]/.test(password),
+    lower: /[a-z]/.test(password),
+    number: /[0-9]/.test(password)
+  };
+
+  Object.keys(requirements).forEach(req => {
+    const el = document.getElementById(`req-${req}`);
+    if (requirements[req]) {
+      el.classList.add("valid");
+    } else {
+      el.classList.remove("valid");
+    }
+  });
+
+  return Object.values(requirements).every(v => v);
+}
+
+async function changePassword(e) {
+  e.preventDefault();
+
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    showToast("Please fill in all password fields", "error");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    showToast("New passwords do not match", "error");
+    return;
+  }
+
+  if (!validatePassword()) {
+    showToast("Password does not meet requirements", "error");
+    return;
+  }
+
+  const btn = document.getElementById("changePasswordBtn");
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<div class="spinner"></div> Updating...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to change password");
+    }
+
+    showToast("Password changed successfully!", "success");
+    resetPasswordForm();
+  } catch (error) {
+    showToast(error.message || "Failed to change password", "error");
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+function resetPasswordForm() {
+  document.getElementById("currentPassword").value = "";
+  document.getElementById("newPassword").value = "";
+  document.getElementById("confirmPassword").value = "";
+
+  ["length", "upper", "lower", "number"].forEach(req => {
+    document.getElementById(`req-${req}`).classList.remove("valid");
+  });
+}
+
+// ==================== NAVIGATION ====================
+function goBack() {
+  window.location.href = `http://${location.hostname}:8000/Support.html?siteId=${siteId}&token=${token}`;
+}
+
+// ==================== TOAST ====================
+function showToast(message, type = "info") {
+  const container = document.getElementById("toastContainer");
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon">
+      ${type === "success" ? `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      ` : type === "error" ? `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ` : `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      `}
+    </div>
+    <span class="toast-message">${message}</span>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = "slideIn 0.3s ease reverse";
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+</script>
+</body>
+</html>
