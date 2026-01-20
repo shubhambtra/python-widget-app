@@ -2,3 +2,10 @@ fastapi
 uvicorn
 httpx
 PyJWT
+flask
+gunicorn
+openai
+faiss-cpu
+numpy
+python-dotenv
+
