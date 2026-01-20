@@ -11,3 +11,4 @@ COPY . .
 ENV PORT=8080
 EXPOSE 8080
 
+CMD gunicorn -b 0.0.0.0:$PORT main:app --worker-class uvicorn.workers.UvicornWorker --workers 1
