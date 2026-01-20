@@ -3,6 +3,3 @@ uvicorn[standard]
 httpx
 PyJWT
 python-dotenv
-openai
-faiss-cpu
-numpy
