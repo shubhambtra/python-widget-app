@@ -1,11 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standard]
 httpx
 PyJWT
-flask
-
+python-dotenv
 openai
 faiss-cpu
 numpy
-python-dotenv
-
