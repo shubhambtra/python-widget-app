@@ -51,7 +51,15 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "widget")), name="stat
 @app.get("/config.js")
 def serve_config():
     return FileResponse(BASE_DIR / "config.js", media_type="application/javascript")
-
+@app.get("/admin-dashboard.css")
+def serve_admin_css():
+    return FileResponse(BASE_DIR / "admin-dashboard.css", media_type="text/css")
+@app.get("/site-admin.css")
+def site_admin_css():
+    return FileResponse(BASE_DIR / "site-admin.css", media_type="text/css")
+@app.get("/Support.css")
+def support_css():
+    return FileResponse(BASE_DIR / "Support.css", media_type="text/css")
 # Serve branding.js
 @app.get("/branding.js")
 def serve_branding():
