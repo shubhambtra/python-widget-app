@@ -2528,7 +2528,7 @@ function showEmailModal(email) {
   modal.className = 'modal-overlay';
   modal.id = 'emailModal';
   modal.innerHTML = `
-    <div class="modal" style="max-width: 700px; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal" style="max-width: 1200px; width: 95vw; height: 85vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <h2>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2542,47 +2542,55 @@ function showEmailModal(email) {
           </svg>
         </button>
       </div>
-      <div class="modal-body" style="overflow-y: auto; flex: 1;">
-        <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-          <div class="detail-item">
+      <div class="modal-body" style="display: flex; gap: 24px; flex: 1; overflow: hidden; padding: 24px;">
+        <!-- Left Side: Details -->
+        <div style="width: 320px; flex-shrink: 0; overflow-y: auto;">
+          <div class="detail-item" style="margin-bottom: 16px;">
             <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">From</label>
-            <div style="color: var(--text-primary);">${escapeHtml(email.fromName || email.fromEmail)} &lt;${escapeHtml(email.fromEmail)}&gt;</div>
+            <div style="color: var(--text-primary);">${escapeHtml(email.fromName || email.fromEmail)}</div>
+            <div style="color: var(--text-secondary); font-size: 13px;">${escapeHtml(email.fromEmail)}</div>
           </div>
-          <div class="detail-item">
+          <div class="detail-item" style="margin-bottom: 16px;">
             <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">To</label>
-            <div style="color: var(--text-primary);">${escapeHtml(email.toName || email.toEmail)} &lt;${escapeHtml(email.toEmail)}&gt;</div>
+            <div style="color: var(--text-primary);">${escapeHtml(email.toName || email.toEmail)}</div>
+            <div style="color: var(--text-secondary); font-size: 13px;">${escapeHtml(email.toEmail)}</div>
           </div>
-          <div class="detail-item">
-            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Type</label>
-            <div><span class="badge" style="background: var(--bg-tertiary); text-transform: capitalize;">${escapeHtml((email.emailType || 'general').replace(/_/g, ' '))}</span></div>
+          <div class="detail-item" style="margin-bottom: 16px;">
+            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Subject</label>
+            <div style="color: var(--text-primary); font-weight: 600;">${escapeHtml(email.subject)}</div>
           </div>
-          <div class="detail-item">
-            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Status</label>
-            <div><span class="badge ${email.status === 'sent' ? 'active' : email.status === 'pending' ? 'pending' : 'inactive'}">${email.status}</span></div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div class="detail-item">
+              <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Type</label>
+              <div><span class="badge" style="background: var(--bg-tertiary); text-transform: capitalize;">${escapeHtml((email.emailType || 'general').replace(/_/g, ' '))}</span></div>
+            </div>
+            <div class="detail-item">
+              <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Status</label>
+              <div><span class="badge ${email.status === 'sent' ? 'active' : email.status === 'pending' ? 'pending' : 'inactive'}">${email.status}</span></div>
+            </div>
           </div>
-          <div class="detail-item">
-            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Created</label>
-            <div style="color: var(--text-primary);">${formatDate(email.createdAt)}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div class="detail-item">
+              <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Created</label>
+              <div style="color: var(--text-primary); font-size: 13px;">${formatDate(email.createdAt)}</div>
+            </div>
+            <div class="detail-item">
+              <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Sent At</label>
+              <div style="color: var(--text-primary); font-size: 13px;">${email.sentAt ? formatDate(email.sentAt) : '-'}</div>
+            </div>
           </div>
-          <div class="detail-item">
-            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Sent At</label>
-            <div style="color: var(--text-primary);">${email.sentAt ? formatDate(email.sentAt) : '-'}</div>
-          </div>
+          ${email.errorMessage ? `
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px;">
+              <label style="font-size: 12px; color: #ef4444; margin-bottom: 4px; display: block;">Error</label>
+              <div style="color: #fca5a5; font-size: 13px;">${escapeHtml(email.errorMessage)}</div>
+            </div>
+          ` : ''}
         </div>
-        ${email.errorMessage ? `
-          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
-            <label style="font-size: 12px; color: #ef4444; margin-bottom: 4px; display: block;">Error</label>
-            <div style="color: #fca5a5;">${escapeHtml(email.errorMessage)}</div>
-          </div>
-        ` : ''}
-        <div class="detail-item" style="margin-bottom: 16px;">
-          <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Subject</label>
-          <div style="color: var(--text-primary); font-weight: 600;">${escapeHtml(email.subject)}</div>
-        </div>
-        <div class="detail-item">
-          <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block;">Body</label>
-          <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 16px; max-height: 300px; overflow-y: auto;">
-            ${email.isHtml ? `<iframe id="emailBodyFrame" style="width: 100%; min-height: 250px; border: none; background: white; border-radius: 4px;" srcdoc="${escapeHtml(email.body)}"></iframe>` : `<pre style="white-space: pre-wrap; word-break: break-word; margin: 0; color: var(--text-primary);">${escapeHtml(email.body)}</pre>`}
+        <!-- Right Side: Email Body -->
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+          <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block;">Email Body</label>
+          <div style="flex: 1; background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);">
+            ${email.isHtml ? `<iframe id="emailBodyFrame" style="width: 100%; height: 100%; border: none; background: white;" srcdoc="${email.body.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}"></iframe>` : `<pre style="white-space: pre-wrap; word-break: break-word; margin: 0; padding: 16px; color: #333; height: 100%; overflow-y: auto;">${escapeHtml(email.body)}</pre>`}
           </div>
         </div>
       </div>
