@@ -2370,7 +2370,8 @@ let aiAnalysisLimitExhausted = false;
 let aiAutoReplyLimitExhausted = false;
 
 // ==================== WEBSOCKET ====================
-const ws = new WebSocket(`ws://${location.host}/ws?siteId=${siteId}&role=support&token=${token}`);
+const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+const ws = new WebSocket(`${wsProtocol}//${location.host}/ws?siteId=${siteId}&role=support&token=${token}`);
 
 ws.onopen = () => {
   console.log("Connected to support WebSocket");
