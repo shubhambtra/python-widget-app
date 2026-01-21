@@ -100,6 +100,16 @@ def register_page():
     return FileResponse(BASE_DIR / "register.html")
 
 
+@app.get("/guide")
+def guide_page():
+    return FileResponse(BASE_DIR / "guide.html")
+
+
+@app.get("/guide.html")
+def guide_page_html():
+    return FileResponse(BASE_DIR / "guide.html")
+
+
 @app.get("/register.html")
 def register_page_html():
     return FileResponse(BASE_DIR / "register.html")
