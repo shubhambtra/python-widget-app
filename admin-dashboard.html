@@ -727,6 +727,12 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+function stripHtmlTags(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html || '';
+  return div.textContent || div.innerText || '';
+}
+
 function viewSite(siteId) {
   const site = allSites.find(s => s.id === siteId);
   if (!site) {
@@ -2427,8 +2433,10 @@ function renderEmailLogsTable(emails) {
     <table>
       <thead>
         <tr>
+          <th>From</th>
           <th>To</th>
           <th>Subject</th>
+          <th>Body</th>
           <th>Type</th>
           <th>Status</th>
           <th>Sent At</th>
@@ -2440,6 +2448,15 @@ function renderEmailLogsTable(emails) {
           <tr>
             <td>
               <div class="site-info">
+                <div class="user-avatar" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;background:linear-gradient(135deg, #22c55e, #16a34a);font-size:14px;">${(email.fromEmail || 'S')[0].toUpperCase()}</div>
+                <div>
+                  <div class="site-name">${escapeHtml(email.fromName || 'System')}</div>
+                  <div class="site-domain">${escapeHtml(email.fromEmail)}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="site-info">
                 <div class="user-avatar" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;background:linear-gradient(135deg, #6366f1, #8b5cf6);font-size:14px;">${(email.toEmail || 'E')[0].toUpperCase()}</div>
                 <div>
                   <div class="site-name">${escapeHtml(email.toName || email.toEmail)}</div>
@@ -2447,8 +2464,11 @@ function renderEmailLogsTable(emails) {
                 </div>
               </div>
             </td>
-            <td style="max-width: 250px;">
+            <td style="max-width: 200px;">
               <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(email.subject)}</div>
+            </td>
+            <td style="max-width: 300px;">
+              <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); font-size: 13px;">${escapeHtml(stripHtmlTags(email.body).substring(0, 100))}${email.body.length > 100 ? '...' : ''}</div>
             </td>
             <td><span class="badge" style="background: var(--bg-tertiary); text-transform: capitalize;">${escapeHtml((email.emailType || 'general').replace(/_/g, ' '))}</span></td>
             <td><span class="badge ${email.status === 'sent' ? 'active' : email.status === 'pending' ? 'pending' : 'inactive'}">${email.status}</span></td>
