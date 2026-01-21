@@ -90,13 +90,19 @@
         </div>
     </div>
 
-    <!-- Chat Widget Configuration -->
+    <!-- Chat Widget (using install code pattern) -->
     <script>
-        window.ChatWidget = {
-            siteId: "3499011b-2965-4417-a773-9f5d6f368e2f",
-            baseUrl: "http://localhost:8000"
-        };
+        (function(w,d,s,o){
+            w.ChatAppWidget=o;w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};
+            var js=d.createElement(s),fs=d.getElementsByTagName(s)[0];
+            js.src='http://localhost:8000/static/widget.js';
+            js.async=1;fs.parentNode.insertBefore(js,fs);
+        })(window,document,'script','chatapp');
+
+        chatapp('init', {
+            siteId: '3499011b-2965-4417-a773-9f5d6f368e2f',
+            apiKey: 'sk_CAKsLM1kDxV978dog00k4n5RCDclNLOfwhp0iei9'
+        });
     </script>
-    <script src="http://localhost:8000/static/widget.js"></script>
 </body>
 </html>

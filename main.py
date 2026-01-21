@@ -58,7 +58,7 @@ def serve_branding():
     return FileResponse(BASE_DIR / "branding.js", media_type="application/javascript")
 
 # .NET API Base URL
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:5000/api")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://chatapp.code2night.com/api")
 
 # Create uploads directory
 UPLOADS_DIR = BASE_DIR / "uploads"
@@ -884,6 +884,28 @@ async def send_welcome_message(site_id: str, visitor_id: str, conversation_id: s
         print(f"Error sending welcome message: {e}")
 
 
+# ------------------ API KEY VALIDATION ------------------
+
+async def validate_api_key(site_id: str, api_key: str) -> bool:
+    """Validate API key against the .NET API"""
+    if not site_id or not api_key:
+        return False
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.post(
+                f"{API_BASE_URL}/sites/{site_id}/validate-api-key",
+                json={"apiKey": api_key},
+                timeout=10.0
+            )
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("success", False) and result.get("data", {}).get("valid", False)
+        except Exception as e:
+            print(f"API key validation error: {e}")
+    return False
+
+
 # ------------------ WEBSOCKET ------------------
 
 @app.websocket("/ws")
@@ -894,6 +916,7 @@ async def websocket_endpoint(ws: WebSocket):
     role = ws.query_params.get("role")
     visitor_id = ws.query_params.get("visitorId")
     token = ws.query_params.get("token")
+    api_key = ws.query_params.get("apiKey")
 
     # -------- AUTH SUPPORT --------
     auth = None
@@ -905,6 +928,14 @@ async def websocket_endpoint(ws: WebSocket):
             auth = ACTIVE_TOKENS.get(token)
         if not auth:
             await ws.close()
+            return
+
+    # -------- AUTH CUSTOMER (API Key validation) --------
+    if role == CUSTOMER:
+        is_valid = await validate_api_key(site_id, api_key)
+        if not is_valid:
+            print(f"Invalid API key for site {site_id}")
+            await ws.close(code=4001, reason="Invalid API key")
             return
 
     # -------- INIT SITE --------

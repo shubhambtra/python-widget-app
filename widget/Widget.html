@@ -720,10 +720,16 @@ body {
 
 <script>
 // ==================== CONFIG ====================
-const siteId = new URLSearchParams(location.search).get("siteId");
+const urlParams = new URLSearchParams(location.search);
+const siteId = urlParams.get("siteId");
+const apiKey = urlParams.get("apiKey");
 
 if (!siteId) {
   console.error("Missing siteId");
+}
+
+if (!apiKey) {
+  console.error("Missing apiKey");
 }
 
 // Use sessionStorage so each browser tab/session gets a fresh visitor
@@ -841,7 +847,8 @@ function connectWebSocket() {
 
   // Use parent window's host to get correct port (widget is in iframe)
   const wsHost = window.parent !== window ? new URL(document.referrer).host : location.host;
-  socket = new WebSocket(`ws://${wsHost}/ws?siteId=${siteId}&role=customer&visitorId=${visitorId}`);
+  const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+  socket = new WebSocket(`${wsProtocol}//${wsHost}/ws?siteId=${siteId}&role=customer&visitorId=${visitorId}&apiKey=${encodeURIComponent(apiKey)}`);
 
   socket.onopen = () => {
     socket.send(JSON.stringify({ type: "init", name: userName }));

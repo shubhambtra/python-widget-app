@@ -3,14 +3,51 @@
   if (window.ChatWidgetLoaded) return;
   window.ChatWidgetLoaded = true;
 
-  const config = window.ChatWidget || {};
+  // Support both initialization patterns:
+  // 1. Legacy: window.ChatWidget = { siteId, baseUrl }
+  // 2. New (from install code): chatapp('init', { siteId, apiKey })
+  let config = window.ChatWidget || {};
+
+  // Check for chatapp queue pattern (from install code)
+  const chatappQueue = window.chatapp && window.chatapp.q;
+  if (chatappQueue && chatappQueue.length > 0) {
+    for (let i = 0; i < chatappQueue.length; i++) {
+      const args = chatappQueue[i];
+      if (args[0] === 'init' && args[1]) {
+        config = {
+          siteId: args[1].siteId,
+          apiKey: args[1].apiKey,
+          baseUrl: args[1].baseUrl || config.baseUrl
+        };
+        break;
+      }
+    }
+  }
+
+  // Get script's own URL to determine baseUrl if not provided
+  const scripts = document.getElementsByTagName('script');
+  let scriptBaseUrl = null;
+  for (let i = 0; i < scripts.length; i++) {
+    const src = scripts[i].src;
+    if (src && (src.includes('widget.js') || src.includes('chat-widget.js'))) {
+      scriptBaseUrl = src.replace(/\/static\/(widget|chat-widget)\.js.*$/, '');
+      break;
+    }
+  }
+
   const siteId = config.siteId;
-  const baseUrl = config.baseUrl || "http://localhost:8000";
+  const baseUrl = config.baseUrl || scriptBaseUrl || "http://localhost:8000";
 
   if (!siteId) {
-    console.error("ChatWidget: siteId is required");
+    console.error("ChatWidget: siteId is required. Use chatapp('init', { siteId: 'your-site-id' })");
     return;
   }
+
+  // Replace chatapp function with a proper API
+  window.chatapp = function(cmd, options) {
+    if (cmd === 'expand' && window.ChatWidgetAPI) window.ChatWidgetAPI.expand();
+    if (cmd === 'collapse' && window.ChatWidgetAPI) window.ChatWidgetAPI.collapse();
+  };
 
   // Create container
   const container = document.createElement("div");
@@ -26,7 +63,8 @@
   // Create iframe
   const iframe = document.createElement("iframe");
   iframe.id = "chat-widget-iframe";
-  iframe.src = `${baseUrl}/static/Widget.html?siteId=${encodeURIComponent(siteId)}`;
+  const apiKey = config.apiKey || "";
+  iframe.src = `${baseUrl}/static/Widget.html?siteId=${encodeURIComponent(siteId)}&apiKey=${encodeURIComponent(apiKey)}`;
   iframe.style.cssText = `
     width: 360px;
     height: 520px;
