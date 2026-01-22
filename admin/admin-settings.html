@@ -75,6 +75,14 @@ let siteSettingsData = {
   supportEmail: '', supportPhone: ''
 };
 
+// Convert relative URL to absolute URL
+function toAbsoluteUrl(url) {
+  if (url && url.startsWith('/')) {
+    return API_URL + url;
+  }
+  return url;
+}
+
 document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
   item.addEventListener('click', (e) => { e.preventDefault(); window.location.href = buildAdminUrl(item.dataset.page); });
 });
@@ -166,7 +174,7 @@ async function uploadSiteLogo() {
       if (response.ok) {
         const result = await response.json();
         siteSettingsData.siteLogo = result.data;
-        document.getElementById('logoPreviewImg').src = result.data;
+        document.getElementById('logoPreviewImg').src = toAbsoluteUrl(result.data);
         document.getElementById('logoPreviewImg').style.display = 'block';
         document.getElementById('logoPlaceholder').style.display = 'none';
         showToast('Logo uploaded successfully', 'success');
@@ -201,7 +209,7 @@ async function uploadFavicon() {
       if (response.ok) {
         const result = await response.json();
         siteSettingsData.favicon = result.data;
-        document.getElementById('faviconPreviewImg').src = result.data;
+        document.getElementById('faviconPreviewImg').src = toAbsoluteUrl(result.data);
         document.getElementById('faviconPreviewImg').style.display = 'block';
         document.getElementById('faviconPlaceholder').style.display = 'none';
         showToast('Favicon uploaded successfully', 'success');
@@ -244,8 +252,8 @@ function renderSettingsView() {
               <div class="settings-form-group"><label>Copyright Text</label><input type="text" id="settingCopyright" value="${escapeHtml(siteSettingsData.copyrightText || '')}" placeholder="e.g., &copy; 2024 Your Company"><span class="input-hint">Displayed in the footer</span></div>
             </div>
             <div class="settings-form-row">
-              <div class="settings-form-group"><label>Site Logo</label><div class="logo-upload-area"><div class="logo-preview"><img id="logoPreviewImg" src="${siteSettingsData.siteLogo || ''}" style="display: ${siteSettingsData.siteLogo ? 'block' : 'none'}"><svg id="logoPlaceholder" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: ${siteSettingsData.siteLogo ? 'none' : 'block'}"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div><div class="logo-upload-content"><h4>Upload Logo</h4><p>Recommended size: 200x50px. Max 5MB.</p><button type="button" class="upload-btn" onclick="uploadSiteLogo()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>Choose File</button></div></div></div>
-              <div class="settings-form-group"><label>Favicon</label><div class="logo-upload-area"><div class="logo-preview" style="width: 48px; height: 48px;"><img id="faviconPreviewImg" src="${siteSettingsData.favicon || ''}" style="display: ${siteSettingsData.favicon ? 'block' : 'none'}"><svg id="faviconPlaceholder" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: ${siteSettingsData.favicon ? 'none' : 'block'}"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg></div><div class="logo-upload-content"><h4>Upload Favicon</h4><p>Recommended: 32x32px ICO or PNG</p><button type="button" class="upload-btn" onclick="uploadFavicon()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>Choose File</button></div></div></div>
+              <div class="settings-form-group"><label>Site Logo</label><div class="logo-upload-area"><div class="logo-preview"><img id="logoPreviewImg" src="${toAbsoluteUrl(siteSettingsData.siteLogo) || ''}" style="display: ${siteSettingsData.siteLogo ? 'block' : 'none'}"><svg id="logoPlaceholder" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: ${siteSettingsData.siteLogo ? 'none' : 'block'}"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div><div class="logo-upload-content"><h4>Upload Logo</h4><p>Recommended size: 200x50px. Max 5MB.</p><button type="button" class="upload-btn" onclick="uploadSiteLogo()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>Choose File</button></div></div></div>
+              <div class="settings-form-group"><label>Favicon</label><div class="logo-upload-area"><div class="logo-preview" style="width: 48px; height: 48px;"><img id="faviconPreviewImg" src="${toAbsoluteUrl(siteSettingsData.favicon) || ''}" style="display: ${siteSettingsData.favicon ? 'block' : 'none'}"><svg id="faviconPlaceholder" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: ${siteSettingsData.favicon ? 'none' : 'block'}"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg></div><div class="logo-upload-content"><h4>Upload Favicon</h4><p>Recommended: 32x32px ICO or PNG</p><button type="button" class="upload-btn" onclick="uploadFavicon()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>Choose File</button></div></div></div>
             </div>
           </div>
         </div>
