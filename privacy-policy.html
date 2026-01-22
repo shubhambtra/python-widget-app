@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - ChatApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .signup-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border: none;
+            color: #fff;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 120px 2rem 4rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .policy-content {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+        }
+
+        .policy-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .policy-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .policy-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .policy-section h2 .section-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .policy-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        .policy-section p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .policy-section ul {
+            color: #94a3b8;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .policy-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .policy-section a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .policy-section a:hover {
+            text-decoration: underline;
+        }
+
+        .effective-date {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .effective-date svg {
+            color: #60a5fa;
+            flex-shrink: 0;
+        }
+
+        .effective-date span {
+            color: #94a3b8;
+        }
+
+        .effective-date strong {
+            color: #fff;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .footer-social a:hover {
+            background: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .footer-column a {
+            display: block;
+            color: #64748b;
+            text-decoration: none;
+            padding: 0.4rem 0;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-bottom-links a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-bottom-links a:hover {
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .policy-content {
+                padding: 1.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon" data-brand="icon">C</div>
+            <span data-brand="name">ChatApp</span>
+        </a>
+        <div class="nav-buttons">
+            <a href="/login.html" class="login-btn">Log In</a>
+            <a href="/register.html" class="signup-btn">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Privacy Policy</h1>
+            <p>How we collect, use, and protect your information</p>
+        </div>
+
+        <div class="policy-content">
+            <div class="effective-date">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span><strong>Effective Date:</strong> January 1, 2025 | <strong>Last Updated:</strong> January 23, 2025</span>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">1</span> Introduction</h2>
+                <p>Welcome to <span data-brand="name">ChatApp</span> ("we," "our," or "us"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered customer support platform.</p>
+                <p>By accessing or using our services, you agree to this Privacy Policy. If you do not agree with the terms of this policy, please do not access the platform.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">2</span> Information We Collect</h2>
+
+                <h3>2.1 Information You Provide</h3>
+                <ul>
+                    <li><strong>Account Information:</strong> Name, email address, password, company name, and contact details when you register for an account.</li>
+                    <li><strong>Payment Information:</strong> Billing address and payment card details (processed securely through our payment providers).</li>
+                    <li><strong>Communication Data:</strong> Messages, chat transcripts, and support tickets you create or receive through our platform.</li>
+                    <li><strong>Profile Information:</strong> Optional profile details such as profile picture, job title, and preferences.</li>
+                </ul>
+
+                <h3>2.2 Information Collected Automatically</h3>
+                <ul>
+                    <li><strong>Usage Data:</strong> Information about how you interact with our services, including pages visited, features used, and actions taken.</li>
+                    <li><strong>Device Information:</strong> Browser type, operating system, device identifiers, and IP address.</li>
+                    <li><strong>Cookies and Tracking:</strong> We use cookies and similar technologies to enhance your experience and analyze usage patterns.</li>
+                    <li><strong>Log Data:</strong> Server logs that record requests made to our servers, including timestamps and referring URLs.</li>
+                </ul>
+
+                <h3>2.3 Information from Third Parties</h3>
+                <ul>
+                    <li>Information from authentication providers if you choose to sign in using third-party services.</li>
+                    <li>Data from integrated services and APIs that you connect to your account.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">3</span> How We Use Your Information</h2>
+                <p>We use the collected information for the following purposes:</p>
+                <ul>
+                    <li><strong>Service Delivery:</strong> To provide, maintain, and improve our customer support platform.</li>
+                    <li><strong>AI Training:</strong> To train and improve our AI models for better response accuracy (using anonymized and aggregated data).</li>
+                    <li><strong>Communication:</strong> To send service updates, security alerts, and support messages.</li>
+                    <li><strong>Analytics:</strong> To understand usage patterns and optimize our services.</li>
+                    <li><strong>Security:</strong> To detect, prevent, and address technical issues, fraud, and security threats.</li>
+                    <li><strong>Legal Compliance:</strong> To comply with applicable laws, regulations, and legal processes.</li>
+                    <li><strong>Marketing:</strong> To send promotional communications (with your consent, where required).</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">4</span> Data Sharing and Disclosure</h2>
+                <p>We may share your information in the following circumstances:</p>
+                <ul>
+                    <li><strong>Service Providers:</strong> With trusted third-party vendors who assist in operating our platform (hosting, analytics, payment processing).</li>
+                    <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets.</li>
+                    <li><strong>Legal Requirements:</strong> When required by law or to respond to legal process.</li>
+                    <li><strong>Protection of Rights:</strong> To protect the rights, property, or safety of our users and the public.</li>
+                    <li><strong>With Your Consent:</strong> When you have given explicit permission to share your data.</li>
+                </ul>
+                <p>We do not sell your personal information to third parties.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">5</span> Data Security</h2>
+                <p>We implement robust security measures to protect your information:</p>
+                <ul>
+                    <li><strong>Encryption:</strong> All data is encrypted in transit (TLS/SSL) and at rest (AES-256).</li>
+                    <li><strong>Access Controls:</strong> Strict access controls and authentication mechanisms.</li>
+                    <li><strong>Regular Audits:</strong> Periodic security assessments and vulnerability testing.</li>
+                    <li><strong>Secure Infrastructure:</strong> Enterprise-grade cloud infrastructure with redundancy and backup systems.</li>
+                    <li><strong>Employee Training:</strong> Regular security awareness training for all team members.</li>
+                </ul>
+                <p>While we strive to protect your data, no method of transmission over the internet is 100% secure. We cannot guarantee absolute security.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">6</span> Data Retention</h2>
+                <p>We retain your personal information for as long as necessary to:</p>
+                <ul>
+                    <li>Provide our services and maintain your account.</li>
+                    <li>Comply with legal obligations and resolve disputes.</li>
+                    <li>Enforce our agreements and protect our legitimate interests.</li>
+                </ul>
+                <p>Chat transcripts and conversation data are retained according to your subscription plan settings. You can request deletion of your data at any time, subject to legal retention requirements.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">7</span> Your Rights and Choices</h2>
+                <p>Depending on your location, you may have the following rights:</p>
+                <ul>
+                    <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
+                    <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data.</li>
+                    <li><strong>Deletion:</strong> Request deletion of your personal data.</li>
+                    <li><strong>Portability:</strong> Receive your data in a structured, machine-readable format.</li>
+                    <li><strong>Opt-Out:</strong> Unsubscribe from marketing communications at any time.</li>
+                    <li><strong>Restriction:</strong> Request restriction of processing in certain circumstances.</li>
+                    <li><strong>Objection:</strong> Object to processing based on legitimate interests.</li>
+                </ul>
+                <p>To exercise these rights, please contact us at <a href="mailto:privacy@chatapp.com">privacy@chatapp.com</a>.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">8</span> Cookies and Tracking</h2>
+                <p>We use cookies and similar tracking technologies to:</p>
+                <ul>
+                    <li>Remember your preferences and settings.</li>
+                    <li>Authenticate and secure your sessions.</li>
+                    <li>Analyze traffic and usage patterns.</li>
+                    <li>Deliver relevant content and advertisements.</li>
+                </ul>
+                <p>You can manage cookie preferences through your browser settings. Note that disabling certain cookies may affect the functionality of our services.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">9</span> International Data Transfers</h2>
+                <p>Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place, including:</p>
+                <ul>
+                    <li>Standard Contractual Clauses approved by relevant authorities.</li>
+                    <li>Compliance with applicable data protection frameworks.</li>
+                    <li>Data processing agreements with all service providers.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">10</span> Children's Privacy</h2>
+                <p>Our services are not intended for individuals under the age of 16. We do not knowingly collect personal information from children. If we become aware that we have collected data from a child without parental consent, we will take steps to delete that information.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">11</span> Changes to This Policy</h2>
+                <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by:</p>
+                <ul>
+                    <li>Posting the updated policy on our website.</li>
+                    <li>Sending an email notification to registered users.</li>
+                    <li>Displaying a prominent notice within our platform.</li>
+                </ul>
+                <p>Your continued use of our services after any changes indicates your acceptance of the updated policy.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">12</span> Contact Us</h2>
+                <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
+                <ul>
+                    <li><strong>Email:</strong> <a href="mailto:privacy@chatapp.com">privacy@chatapp.com</a></li>
+                    <li><strong>Address:</strong> 123 Tech Street, San Francisco, CA 94105</li>
+                    <li><strong>Support:</strong> <a href="/guide.html">Help Center</a></li>
+                </ul>
+                <p>We will respond to your inquiry within 30 days.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="/" class="logo">
+                    <div class="logo-icon" data-brand="icon">C</div>
+                    <span data-brand="name">ChatApp</span>
+                </a>
+                <p>AI-powered customer support platform that helps businesses deliver exceptional experiences.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Twitter">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z"/>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="GitHub">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>Product</h4>
+                <a href="/#features">Features</a>
+                <a href="/#pricing">Pricing</a>
+                <a href="/guide.html">Documentation</a>
+                <a href="#">API Reference</a>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <a href="/#about">About Us</a>
+                <a href="#">Blog</a>
+                <a href="#">Careers</a>
+                <a href="/#contact">Contact</a>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <a href="/privacy-policy.html">Privacy Policy</a>
+                <a href="/terms-of-service.html">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+                <a href="#">GDPR</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span data-brand="copyright">&copy; 2025 ChatApp. All rights reserved.</span>
+            <div class="footer-bottom-links">
+                <a href="/privacy-policy.html">Privacy</a>
+                <a href="/terms-of-service.html">Terms</a>
+                <a href="#">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/config.js"></script>
+    <script src="/branding.js"></script>
+</body>
+</html>
