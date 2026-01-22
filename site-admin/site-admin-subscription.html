@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription - Site Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<link rel="stylesheet" href="/site-admin.css">
+</head>
+
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <div class="sidebar-logo-text" data-brand="name">ChatApp</div>
+      </div>
+      <div class="site-selector" id="siteSelector">
+        <div class="site-selector-name" id="siteName">Loading...</div>
+        <div class="site-selector-domain" id="siteDomain">---</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Dashboard</div>
+        <div class="nav-item" data-page="site-admin-overview.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          Overview
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <div class="nav-item" data-page="site-admin-agents.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Agents
+        </div>
+        <div class="nav-item" data-page="site-admin-messages.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          Welcome Messages
+        </div>
+        <div class="nav-item" id="knowledgeBaseLink">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          Knowledge Base
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Configuration</div>
+        <div class="nav-item" data-page="site-admin-settings.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Site Settings
+        </div>
+        <div class="nav-item" data-page="site-admin-widget.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+          Widget Design
+        </div>
+        <div class="nav-item active" data-page="site-admin-subscription.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Subscription
+        </div>
+        <div class="nav-item" data-page="site-admin-billing.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          Billing
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info" onclick="logout()">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="userName">Admin</div>
+          <div class="user-role">Site Owner</div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#64748b">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="topbar">
+      <h1 class="topbar-title">Subscription</h1>
+      <div class="topbar-actions">
+        <a href="/support/login" class="btn btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          Open Support Chat
+        </a>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Current Plan
+          </div>
+        </div>
+        <div class="card-body" id="planInfo">
+          <div style="text-align: center; padding: 40px; color: #64748b;">Loading plan information...</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Usage This Month
+          </div>
+        </div>
+        <div class="card-body" id="usageInfo">
+          <div style="text-align: center; padding: 40px; color: #64748b;">Loading usage data...</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Upgrade Plan
+          </div>
+        </div>
+        <div class="card-body" id="upgradePlansContainer">
+          <div style="text-align: center; padding: 40px; color: #64748b;">Loading available plans...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-header">
+      <h2 class="modal-title">Choose Payment Method</h2>
+      <button class="modal-close" onclick="closeModal('paymentModal')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div style="padding: 0 24px 24px;">
+      <div id="paymentPlanSummary" style="background: #f8fafc; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+        <!-- Plan summary will be inserted here -->
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Billing Cycle</label>
+        <select class="form-input" id="billingCycle" onchange="updatePaymentSummary()">
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly (Save 20%)</option>
+        </select>
+      </div>
+
+      <div id="paymentTotal" style="background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border-radius: 8px; padding: 16px; margin: 20px 0; text-align: center;">
+        <!-- Total will be inserted here -->
+      </div>
+
+      <div style="font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 12px; text-align: center;">Select Payment Method</div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Razorpay Button -->
+        <button onclick="payWithRazorpay()" class="btn" style="width: 100%; padding: 16px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4.5 7.5L12 3l7.5 4.5v9L12 21l-7.5-4.5v-9zm7.5 9l6-3.5V8.5l-6 3.5v4.5zm-6-4.5l6 3.5V11L6 7.5v4.5zm6-1.5l6-3.5-6-3.5-6 3.5 6 3.5z"/>
+          </svg>
+          Pay with Razorpay
+        </button>
+
+        <!-- PayPal Button -->
+        <button onclick="payWithPayPal()" class="btn" style="width: 100%; padding: 16px; background: #0070ba; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.59 3.025-2.566 6.082-8.557 6.082H9.927l-1.67 10.588h4.083c.458 0 .85-.332.922-.784l.038-.196.73-4.617.047-.254c.071-.452.464-.784.922-.784h.58c3.761 0 6.705-1.528 7.566-5.95.36-1.847.174-3.388-.924-4.476z"/>
+          </svg>
+          Pay with PayPal
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-top: 16px; font-size: 12px; color: #94a3b8;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Secure payment processing. Your data is encrypted.
+      </div>
+
+      <div class="modal-footer" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')" style="width: 100%;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/config.js"></script>
+<script src="/branding.js"></script>
+<script src="/js/site-admin-shared.js"></script>
+<script>
+// ==================== STATE ====================
+let availablePlans = [];
+let currentPlanId = null;
+let selectedUpgradePlan = null;
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', async () => {
+  setupNavigation();
+  await loadSiteInfo();
+  await Promise.all([
+    loadSubscriptionInfo(),
+    loadAvailablePlans()
+  ]);
+  handlePayPalReturn();
+  hideLoading();
+});
+
+// ==================== SUBSCRIPTION INFO ====================
+async function loadSubscriptionInfo() {
+  try {
+    const overview = await apiGet(`/subscriptions/sites/${siteId}/overview`);
+    renderPlanInfo(overview);
+    renderUsageInfo(overview);
+  } catch (err) {
+    console.error('Subscription error:', err);
+    document.getElementById('planInfo').innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #ef4444;">
+        Failed to load subscription information
+      </div>
+    `;
+    document.getElementById('usageInfo').innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #ef4444;">
+        Failed to load usage information
+      </div>
+    `;
+  }
+}
+
+function renderPlanInfo(overview) {
+  const container = document.getElementById('planInfo');
+
+  if (!overview.plan) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#128274;</div>
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">No Active Plan</div>
+        <div style="color: #64748b; margin-bottom: 24px;">Contact support to get started with a plan.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const plan = overview.plan;
+  const subscription = overview.subscription;
+  currentPlanId = plan.id;
+
+  container.innerHTML = `
+    <div style="display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 280px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0ea5e9, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <svg width="24" height="24" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: 700;">${plan.name}</div>
+            <div style="color: #64748b; font-size: 14px;">${plan.description || 'Standard plan'}</div>
+          </div>
+        </div>
+
+        ${subscription ? `
+          <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 20px;">
+            <div>
+              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Status</div>
+              <div style="font-size: 14px; font-weight: 600; color: ${subscription.status === 'active' ? '#10b981' : '#f59e0b'}; margin-top: 4px;">
+                ${subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Billing Cycle</div>
+              <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">
+                ${subscription.billingCycle.charAt(0).toUpperCase() + subscription.billingCycle.slice(1)}
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Renews On</div>
+              <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">
+                ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+
+      <div style="background: #f8fafc; border-radius: 12px; padding: 20px; min-width: 200px;">
+        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Plan Limits</div>
+        <div style="display: grid; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Agents</span>
+            <span style="font-weight: 600;">${plan.maxAgents || 'Unlimited'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Conversations/mo</span>
+            <span style="font-weight: 600;">${plan.maxConversationsPerMonth || 'Unlimited'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Messages/mo</span>
+            <span style="font-weight: 600;">${plan.maxMessagesPerMonth || 'Unlimited'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Max File Size</span>
+            <span style="font-weight: 600;">${plan.maxFileSizeMb || 10} MB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderUsageInfo(overview) {
+  const container = document.getElementById('usageInfo');
+  const usage = overview.usage || [];
+
+  if (usage.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #64748b;">
+        No usage data available for this billing period.
+      </div>
+    `;
+    return;
+  }
+
+  const usageItems = usage.map(item => {
+    const percentage = item.percentageUsed || 0;
+    const color = percentage > 90 ? '#ef4444' : percentage > 70 ? '#f59e0b' : '#10b981';
+
+    return `
+      <div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-size: 14px; font-weight: 600; text-transform: capitalize;">${item.metricName.replace(/_/g, ' ')}</div>
+          <div style="font-size: 14px; color: #64748b;">
+            <span style="font-weight: 600; color: #1e293b;">${item.used}</span> / ${item.limit || '&infin;'}
+          </div>
+        </div>
+        <div style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+          <div style="height: 100%; width: ${Math.min(percentage, 100)}%; background: ${color}; border-radius: 4px; transition: width 0.3s;"></div>
+        </div>
+        <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
+          ${percentage.toFixed(1)}% used
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+      ${usageItems}
+    </div>
+    <div style="margin-top: 16px; font-size: 12px; color: #64748b;">
+      Period: ${usage[0] ? new Date(usage[0].periodStart).toLocaleDateString() : ''} - ${usage[0] ? new Date(usage[0].periodEnd).toLocaleDateString() : ''}
+    </div>
+  `;
+}
+
+// ==================== UPGRADE PLANS ====================
+async function loadAvailablePlans() {
+  try {
+    const plans = await apiGet('/subscriptions/plans');
+    availablePlans = plans || [];
+    renderUpgradePlans();
+  } catch (err) {
+    console.error('Plans error:', err);
+    document.getElementById('upgradePlansContainer').innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #ef4444;">
+        Failed to load available plans
+      </div>
+    `;
+  }
+}
+
+function renderUpgradePlans() {
+  const container = document.getElementById('upgradePlansContainer');
+
+  if (availablePlans.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #64748b;">
+        No upgrade plans available at this time.
+      </div>
+    `;
+    return;
+  }
+
+  const upgradePlans = availablePlans.filter(plan => plan.id !== currentPlanId);
+
+  if (upgradePlans.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">&#127775;</div>
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">You're on the best plan!</div>
+        <div style="color: #64748b;">There are no higher tier plans available.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const plansHtml = upgradePlans.map(plan => {
+    const isPopular = plan.name.toLowerCase().includes('pro') || plan.name.toLowerCase().includes('business');
+    return `
+      <div style="background: ${isPopular ? 'linear-gradient(135deg, #f0f9ff, #e0f2fe)' : '#f8fafc'}; border: 2px solid ${isPopular ? '#0ea5e9' : '#e2e8f0'}; border-radius: 16px; padding: 24px; position: relative; transition: transform 0.2s, box-shadow 0.2s;"
+           onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1)';"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+        ${isPopular ? '<div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;">POPULAR</div>' : ''}
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 24px; font-weight: 700; color: #1e293b;">${plan.name}</div>
+          <div style="font-size: 14px; color: #64748b; margin-top: 4px;">${plan.description || 'Professional features'}</div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+            <span style="font-size: 14px; color: #64748b;">$</span>
+            <span style="font-size: 48px; font-weight: 800; color: #1e293b;">${plan.monthlyPrice || 0}</span>
+            <span style="font-size: 14px; color: #64748b;">/mo</span>
+          </div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 4px;">or $${plan.annualPrice || (plan.monthlyPrice * 12 * 0.8).toFixed(0)}/year (save 20%)</div>
+        </div>
+
+        <div style="display: grid; gap: 12px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Up to ${plan.maxAgents || 'Unlimited'} agents</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>${plan.maxConversationsPerMonth || 'Unlimited'} conversations/mo</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>${plan.maxMessagesPerMonth || 'Unlimited'} messages/mo</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>${plan.maxFileSizeMb || 10} MB file uploads</span>
+          </div>
+        </div>
+
+        <button onclick="selectUpgradePlan('${plan.id}')" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px;">
+          Upgrade to ${plan.name}
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+      ${plansHtml}
+    </div>
+  `;
+}
+
+function selectUpgradePlan(planId) {
+  selectedUpgradePlan = availablePlans.find(p => p.id === planId);
+  if (!selectedUpgradePlan) {
+    showToast('Plan not found', 'error');
+    return;
+  }
+  openPaymentModal();
+}
+
+function openPaymentModal() {
+  if (!selectedUpgradePlan) return;
+
+  const plan = selectedUpgradePlan;
+
+  document.getElementById('paymentPlanSummary').innerHTML = `
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0ea5e9, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <svg width="24" height="24" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size: 18px; font-weight: 700;">${plan.name}</div>
+        <div style="font-size: 14px; color: #64748b;">${plan.description || 'Upgrade your subscription'}</div>
+      </div>
+    </div>
+  `;
+
+  updatePaymentSummary();
+  openModal('paymentModal');
+}
+
+function updatePaymentSummary() {
+  if (!selectedUpgradePlan) return;
+
+  const plan = selectedUpgradePlan;
+  const billingCycle = document.getElementById('billingCycle').value;
+  const isYearly = billingCycle === 'yearly';
+  const price = isYearly ? (plan.annualPrice || plan.monthlyPrice * 12 * 0.8) : plan.monthlyPrice;
+  const period = isYearly ? 'year' : 'month';
+
+  document.getElementById('paymentTotal').innerHTML = `
+    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">Total Amount</div>
+    <div style="font-size: 32px; font-weight: 700;">$${price.toFixed(2)}<span style="font-size: 16px; font-weight: 400;">/${period}</span></div>
+    ${isYearly ? '<div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">You save 20% with yearly billing!</div>' : ''}
+  `;
+}
+
+// ==================== RAZORPAY PAYMENT ====================
+async function payWithRazorpay() {
+  if (!selectedUpgradePlan) {
+    showToast('Please select a plan first', 'error');
+    return;
+  }
+
+  const billingCycle = document.getElementById('billingCycle').value;
+  const isYearly = billingCycle === 'yearly';
+  const amount = isYearly
+    ? (selectedUpgradePlan.annualPrice || selectedUpgradePlan.monthlyPrice * 12 * 0.8)
+    : selectedUpgradePlan.monthlyPrice;
+
+  try {
+    const orderResponse = await apiPost(`/sites/${siteId}/payments/razorpay/create-order`, {
+      amount: amount,
+      currency: selectedUpgradePlan.currency || 'INR',
+      planId: selectedUpgradePlan.id,
+      billingCycle: billingCycle
+    });
+
+    const options = {
+      key: orderResponse.keyId,
+      amount: amount * 100,
+      currency: orderResponse.currency || 'INR',
+      name: 'ChatApp',
+      description: `${selectedUpgradePlan.name} Plan - ${billingCycle} subscription`,
+      order_id: orderResponse.orderId,
+      handler: async function(response) {
+        try {
+          const verifyResponse = await apiPost(`/sites/${siteId}/payments/razorpay/verify`, {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            siteId: siteId,
+            planId: selectedUpgradePlan.id,
+            billingCycle: billingCycle
+          });
+
+          if (verifyResponse.success) {
+            showToast('Payment successful! Subscription upgraded.', 'success');
+            closeModal('paymentModal');
+            await loadSubscriptionInfo();
+            await loadAvailablePlans();
+          } else {
+            showToast(verifyResponse.message || 'Payment verification failed', 'error');
+          }
+        } catch (err) {
+          console.error('Verification error:', err);
+          showToast('Payment verification failed. Please contact support.', 'error');
+        }
+      },
+      prefill: {
+        name: siteData?.companyName || '',
+        email: siteData?.contactEmail || '',
+      },
+      theme: {
+        color: '#2563eb'
+      },
+      modal: {
+        ondismiss: function() {
+          showToast('Payment cancelled', 'info');
+        }
+      }
+    };
+
+    const razorpay = new Razorpay(options);
+    razorpay.on('payment.failed', function(response) {
+      showToast('Payment failed: ' + response.error.description, 'error');
+    });
+    razorpay.open();
+
+  } catch (err) {
+    console.error('Razorpay error:', err);
+    showToast(err.message || 'Failed to initiate payment', 'error');
+  }
+}
+
+// ==================== PAYPAL PAYMENT ====================
+async function payWithPayPal() {
+  if (!selectedUpgradePlan) {
+    showToast('Please select a plan first', 'error');
+    return;
+  }
+
+  const billingCycle = document.getElementById('billingCycle').value;
+  const isYearly = billingCycle === 'yearly';
+  const amount = isYearly
+    ? (selectedUpgradePlan.annualPrice || selectedUpgradePlan.monthlyPrice * 12 * 0.8)
+    : selectedUpgradePlan.monthlyPrice;
+
+  try {
+    const orderResponse = await apiPost(`/sites/${siteId}/payments/paypal/create-order`, {
+      amount: amount,
+      currency: 'USD',
+      planId: selectedUpgradePlan.id,
+      billingCycle: billingCycle
+    });
+
+    sessionStorage.setItem('paypalOrderId', orderResponse.orderId);
+    sessionStorage.setItem('paypalPlanId', selectedUpgradePlan.id);
+    sessionStorage.setItem('paypalBillingCycle', billingCycle);
+
+    if (orderResponse.approvalUrl) {
+      window.location.href = orderResponse.approvalUrl;
+    } else {
+      throw new Error('PayPal approval URL not received');
+    }
+
+  } catch (err) {
+    console.error('PayPal error:', err);
+    showToast(err.message || 'Failed to initiate PayPal payment', 'error');
+  }
+}
+
+async function handlePayPalReturn() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const payment = urlParams.get('payment');
+  const provider = urlParams.get('provider');
+
+  if (provider === 'paypal') {
+    if (payment === 'success') {
+      const orderId = sessionStorage.getItem('paypalOrderId');
+      const planId = sessionStorage.getItem('paypalPlanId');
+      const billingCycle = sessionStorage.getItem('paypalBillingCycle');
+
+      if (orderId && planId) {
+        try {
+          const captureResponse = await apiPost(`/sites/${siteId}/payments/paypal/capture`, {
+            orderId: orderId,
+            planId: planId,
+            billingCycle: billingCycle
+          });
+
+          if (captureResponse.success) {
+            showToast('Payment successful! Subscription upgraded.', 'success');
+            sessionStorage.removeItem('paypalOrderId');
+            sessionStorage.removeItem('paypalPlanId');
+            sessionStorage.removeItem('paypalBillingCycle');
+            await loadSubscriptionInfo();
+            await loadAvailablePlans();
+          } else {
+            showToast(captureResponse.message || 'PayPal capture failed', 'error');
+          }
+        } catch (err) {
+          console.error('PayPal capture error:', err);
+          showToast('Failed to capture PayPal payment', 'error');
+        }
+      }
+    } else if (payment === 'cancelled') {
+      showToast('PayPal payment was cancelled', 'info');
+      sessionStorage.removeItem('paypalOrderId');
+      sessionStorage.removeItem('paypalPlanId');
+      sessionStorage.removeItem('paypalBillingCycle');
+    }
+
+    const cleanUrl = buildSiteAdminUrl('site-admin-subscription.html');
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+}
+</script>
+</body>
+</html>

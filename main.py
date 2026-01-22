@@ -267,7 +267,51 @@ def site_login_page_html():
 
 @app.get("/site-admin.html")
 def site_admin_page():
-    return FileResponse(BASE_DIR / "site-admin.html")
+    # Redirect to the new overview page
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-overview.html")
+
+
+# Site admin pages (split from monolithic site-admin.html)
+@app.get("/site-admin-overview.html")
+def site_admin_overview():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-overview.html")
+
+
+@app.get("/site-admin-agents.html")
+def site_admin_agents():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-agents.html")
+
+
+@app.get("/site-admin-messages.html")
+def site_admin_messages():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-messages.html")
+
+
+@app.get("/site-admin-settings.html")
+def site_admin_settings():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-settings.html")
+
+
+@app.get("/site-admin-widget.html")
+def site_admin_widget():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-widget.html")
+
+
+@app.get("/site-admin-subscription.html")
+def site_admin_subscription():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-subscription.html")
+
+
+@app.get("/site-admin-billing.html")
+def site_admin_billing():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-billing.html")
+
+
+# Serve site admin shared JS
+@app.get("/js/site-admin-shared.js")
+def serve_site_admin_shared_js():
+    return FileResponse(BASE_DIR / "site-admin" / "js" / "site-admin-shared.js", media_type="application/javascript")
+
 
 @app.get("/knowledge-base.html")
 def knowledge_base_page():

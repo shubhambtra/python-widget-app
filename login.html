@@ -731,7 +731,7 @@ function goToSiteAdmin(site) {
     token: authToken,
     siteName: site.name || ''
   });
-  location.href = `/site-admin.html?${params.toString()}`;
+  location.href = `/site-admin-overview.html?${params.toString()}`;
 }
 
 function escapeHtml(text) {
