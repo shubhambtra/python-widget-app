@@ -135,22 +135,22 @@ def unified_login_page_html():
 
 @app.get("/admin-login")
 def admin_login_page():
-    return FileResponse(BASE_DIR / "login.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-login.html")
 
 
 @app.get("/admin-login.html")
 def admin_login_page_html():
-    return FileResponse(BASE_DIR / "login.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-login.html")
 
 
 @app.get("/admin-dashboard")
 def admin_dashboard_page():
-    return FileResponse(BASE_DIR / "admin-dashboard.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-dashboard.html")
 
 
 @app.get("/admin-dashboard.html")
 def admin_dashboard_page_html():
-    return FileResponse(BASE_DIR / "admin-dashboard.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-dashboard.html")
 
 
 @app.get("/support/login")
@@ -171,78 +171,78 @@ def support_page_html():
 # Serve admin shared JS
 @app.get("/js/admin-shared.js")
 def serve_admin_shared_js():
-    return FileResponse(BASE_DIR / "js" / "admin-shared.js", media_type="application/javascript")
+    return FileResponse(BASE_DIR / "admin" / "js" / "admin-shared.js", media_type="application/javascript")
 
 
 # Admin page routes
 @app.get("/admin-users")
 def admin_users_page():
-    return FileResponse(BASE_DIR / "admin-users.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-users.html")
 
 
 @app.get("/admin-users.html")
 def admin_users_page_html():
-    return FileResponse(BASE_DIR / "admin-users.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-users.html")
 
 
 @app.get("/admin-conversations")
 def admin_conversations_page():
-    return FileResponse(BASE_DIR / "admin-conversations.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-conversations.html")
 
 
 @app.get("/admin-conversations.html")
 def admin_conversations_page_html():
-    return FileResponse(BASE_DIR / "admin-conversations.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-conversations.html")
 
 
 @app.get("/admin-plans")
 def admin_plans_page():
-    return FileResponse(BASE_DIR / "admin-plans.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-plans.html")
 
 
 @app.get("/admin-plans.html")
 def admin_plans_page_html():
-    return FileResponse(BASE_DIR / "admin-plans.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-plans.html")
 
 
 @app.get("/admin-payments")
 def admin_payments_page():
-    return FileResponse(BASE_DIR / "admin-payments.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-payments.html")
 
 
 @app.get("/admin-payments.html")
 def admin_payments_page_html():
-    return FileResponse(BASE_DIR / "admin-payments.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-payments.html")
 
 
 @app.get("/admin-subscriptions")
 def admin_subscriptions_page():
-    return FileResponse(BASE_DIR / "admin-subscriptions.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-subscriptions.html")
 
 
 @app.get("/admin-subscriptions.html")
 def admin_subscriptions_page_html():
-    return FileResponse(BASE_DIR / "admin-subscriptions.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-subscriptions.html")
 
 
 @app.get("/admin-email-logs")
 def admin_email_logs_page():
-    return FileResponse(BASE_DIR / "admin-email-logs.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-email-logs.html")
 
 
 @app.get("/admin-email-logs.html")
 def admin_email_logs_page_html():
-    return FileResponse(BASE_DIR / "admin-email-logs.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-email-logs.html")
 
 
 @app.get("/admin-settings")
 def admin_settings_page():
-    return FileResponse(BASE_DIR / "admin-settings.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-settings.html")
 
 
 @app.get("/admin-settings.html")
 def admin_settings_page_html():
-    return FileResponse(BASE_DIR / "admin-settings.html")
+    return FileResponse(BASE_DIR / "admin" / "admin-settings.html")
 
 
 @app.get("/profile.html")
