@@ -431,7 +431,7 @@ body {
 .topbar-logo {
   width: 36px;
   height: 36px;
-  background: var(--accent-gradient);
+  background: white;
   border-radius: 10px;
   display: flex;
   align-items: center;
