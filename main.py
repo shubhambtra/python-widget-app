@@ -66,7 +66,7 @@ def serve_branding():
     return FileResponse(BASE_DIR / "branding.js", media_type="application/javascript")
 
 # .NET API Base URL
-API_BASE_URL = os.getenv("API_BASE_URL", "https://chatapp.code2night.com/api")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:5000/api")
 
 # Create uploads directory
 UPLOADS_DIR = BASE_DIR / "uploads"
@@ -131,6 +131,26 @@ def unified_login_page():
 @app.get("/login.html")
 def unified_login_page_html():
     return FileResponse(BASE_DIR / "login.html")
+
+
+@app.get("/forgot-password")
+def forgot_password_page():
+    return FileResponse(BASE_DIR / "forgot-password.html")
+
+
+@app.get("/forgot-password.html")
+def forgot_password_page_html():
+    return FileResponse(BASE_DIR / "forgot-password.html")
+
+
+@app.get("/reset-password")
+def reset_password_page():
+    return FileResponse(BASE_DIR / "reset-password.html")
+
+
+@app.get("/reset-password.html")
+def reset_password_page_html():
+    return FileResponse(BASE_DIR / "reset-password.html")
 
 
 @app.get("/admin-login")

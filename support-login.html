@@ -252,6 +252,25 @@ body {
   height: 18px;
 }
 
+.forgot-password-link {
+  display: block;
+  text-align: right;
+  margin-top: 8px;
+}
+
+.forgot-password-link a {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-password-link a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 .back-home {
   display: inline-flex;
   align-items: center;
@@ -311,6 +330,9 @@ a.logo-area:hover {
       <div class="form-group">
         <label for="pass">Password</label>
         <input type="password" id="pass" placeholder="Enter your password" required autocomplete="current-password" />
+        <div class="forgot-password-link">
+          <a href="/forgot-password.html">Forgot password?</a>
+        </div>
       </div>
 
       <button type="submit" class="btn-login" id="loginBtn">
