@@ -15,7 +15,7 @@
 <!-- Sidebar -->
 <aside class="sidebar">
   <a href="/" class="sidebar-logo">
-    <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg></div>
+    <div class="logo-icon" data-brand="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg></div>
     <span><span data-brand="name">ChatApp</span> Admin</span>
   </a>
 
@@ -50,6 +50,7 @@
 </main>
 
 <script src="/config.js"></script>
+<script src="/branding.js"></script>
 <script src="/js/admin-shared.js"></script>
 <script>
 const themes = [
@@ -159,8 +160,8 @@ async function uploadSiteLogo() {
     formData.append('file', file);
     try {
       showToast('Uploading logo...', 'info');
-      const response = await fetch(`${API_BASE}/SiteSettings/logo`, {
-        method: 'POST', headers: { 'Authorization': `Bearer ${authToken}` }, body: formData
+      const response = await apiFetch(`${API_BASE}/SiteSettings/logo`, {
+        method: 'POST', body: formData
       });
       if (response.ok) {
         const result = await response.json();
@@ -169,8 +170,16 @@ async function uploadSiteLogo() {
         document.getElementById('logoPreviewImg').style.display = 'block';
         document.getElementById('logoPlaceholder').style.display = 'none';
         showToast('Logo uploaded successfully', 'success');
-      } else { showToast('Failed to upload logo', 'error'); }
-    } catch (error) { showToast('Failed to upload logo', 'error'); }
+        // Clear branding cache so changes appear immediately
+        if (typeof Branding !== 'undefined') Branding.clearCache();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        showToast(err.message || 'Failed to upload logo', 'error');
+      }
+    } catch (error) {
+      console.error('Logo upload error:', error);
+      showToast('Failed to upload logo', 'error');
+    }
   };
   input.click();
 }
@@ -186,8 +195,8 @@ async function uploadFavicon() {
     formData.append('file', file);
     try {
       showToast('Uploading favicon...', 'info');
-      const response = await fetch(`${API_BASE}/SiteSettings/favicon`, {
-        method: 'POST', headers: { 'Authorization': `Bearer ${authToken}` }, body: formData
+      const response = await apiFetch(`${API_BASE}/SiteSettings/favicon`, {
+        method: 'POST', body: formData
       });
       if (response.ok) {
         const result = await response.json();
@@ -196,8 +205,16 @@ async function uploadFavicon() {
         document.getElementById('faviconPreviewImg').style.display = 'block';
         document.getElementById('faviconPlaceholder').style.display = 'none';
         showToast('Favicon uploaded successfully', 'success');
-      } else { showToast('Failed to upload favicon', 'error'); }
-    } catch (error) { showToast('Failed to upload favicon', 'error'); }
+        // Clear branding cache so changes appear immediately
+        if (typeof Branding !== 'undefined') Branding.clearCache();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        showToast(err.message || 'Failed to upload favicon', 'error');
+      }
+    } catch (error) {
+      console.error('Favicon upload error:', error);
+      showToast('Failed to upload favicon', 'error');
+    }
   };
   input.click();
 }

@@ -842,12 +842,9 @@ restoreChat();
 
 // ==================== WEBSOCKET ====================
 function connectWebSocket() {
-  const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-  const host = new URL(document.referrer || location.href).host || location.host;
-
-  // Use parent window's host to get correct port (widget is in iframe)
-  const wsHost = window.parent !== window ? new URL(document.referrer).host : location.host;
+  // Use iframe's own origin (ChatApp server), not the parent website's domain
   const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+  const wsHost = location.host;
   socket = new WebSocket(`${wsProtocol}//${wsHost}/ws?siteId=${siteId}&role=customer&visitorId=${visitorId}&apiKey=${encodeURIComponent(apiKey)}`);
 
   socket.onopen = () => {
