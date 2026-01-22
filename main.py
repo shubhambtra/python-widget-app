@@ -153,6 +153,16 @@ def reset_password_page_html():
     return FileResponse(BASE_DIR / "reset-password.html")
 
 
+@app.get("/privacy-policy")
+def privacy_policy_page():
+    return FileResponse(BASE_DIR / "privacy-policy.html")
+
+
+@app.get("/privacy-policy.html")
+def privacy_policy_page_html():
+    return FileResponse(BASE_DIR / "privacy-policy.html")
+
+
 @app.get("/admin-login")
 def admin_login_page():
     return FileResponse(BASE_DIR / "admin" / "admin-login.html")
