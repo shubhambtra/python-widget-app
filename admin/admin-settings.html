@@ -78,7 +78,7 @@ let siteSettingsData = {
 // Convert relative URL to absolute URL
 function toAbsoluteUrl(url) {
   if (url && url.startsWith('/')) {
-    return API_URL + url;
+    return CONFIG.API_URL + url;
   }
   return url;
 }
