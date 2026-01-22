@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plans - ChatApp Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin-dashboard.css">
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Plan Modal -->
+<div class="modal-overlay" id="planModal">
+  <div class="modal" style="max-width: 720px; max-height: 90vh; background: #ffffff; border: none;">
+    <div class="modal-header" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-radius: 12px 12px 0 0; padding: 20px 24px;">
+      <h2 style="display: flex; align-items: center; gap: 12px; margin: 0; font-size: 1.25rem;">
+        <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <span id="planModalTitle">Create Subscription Plan</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('planModal')" style="color: white; opacity: 0.8;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="planModalBody" style="padding: 0; overflow-y: auto; max-height: calc(90vh - 160px);">
+      <form id="planForm">
+        <input type="hidden" id="planId" value="">
+
+        <!-- Basic Info Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#6366f1">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Basic Information</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+            <div class="form-group" style="margin: 0;">
+              <label for="planName" style="font-size: 0.85rem; font-weight: 500; color: #4b5563; margin-bottom: 6px; display: block;">Plan Name <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="planName" required placeholder="e.g., Professional" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s;" onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="planSortOrder" style="font-size: 0.85rem; font-weight: 500; color: #4b5563; margin-bottom: 6px; display: block;">Display Order</label>
+              <input type="number" id="planSortOrder" value="0" min="0" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem;" onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
+            </div>
+          </div>
+          <div class="form-group" style="margin: 16px 0 0 0;">
+            <label for="planDescription" style="font-size: 0.85rem; font-weight: 500; color: #4b5563; margin-bottom: 6px; display: block;">Description</label>
+            <textarea id="planDescription" rows="2" placeholder="Briefly describe what this plan offers..." style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit;" onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.1)'" onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"></textarea>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Pricing</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Monthly <span style="color: #ef4444;">*</span></label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <span style="font-size: 1.5rem; color: #374151; margin-right: 4px;">$</span>
+                <input type="number" id="planMonthlyPrice" required min="0" step="0.01" placeholder="0" style="width: 80px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">/month</span>
+            </div>
+            <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Annual</label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <span style="font-size: 1.5rem; color: #374151; margin-right: 4px;">$</span>
+                <input type="number" id="planAnnualPrice" min="0" step="0.01" placeholder="0" style="width: 80px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">/year</span>
+            </div>
+            <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Trial Period</label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <input type="number" id="planTrialDays" min="0" value="0" style="width: 60px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">days free</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Limits Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#f59e0b">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Usage Limits</span>
+            <span style="font-size: 0.75rem; color: #9ca3af; margin-left: auto;">Leave empty for unlimited</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#ca8a04">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #854d0e;">Users</label>
+              </div>
+              <input type="number" id="planMaxAgents" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #fef08a; border-radius: 6px; font-size: 0.9rem; background: white;">
+            </div>
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#2563eb">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #1e40af;">Conversations</label>
+              </div>
+              <input type="number" id="planMaxConversations" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#16a34a">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #166534;">Messages</label>
+              </div>
+              <input type="number" id="planMaxMessages" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+            <div style="background: #fdf4ff; border: 1px solid #f5d0fe; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#a855f7">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #7e22ce;">Storage</label>
+              </div>
+              <input type="number" id="planMaxStorage" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #f5d0fe; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">MB total</span>
+            </div>
+            <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#ea580c">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #c2410c;">File Size</label>
+              </div>
+              <input type="number" id="planMaxFileSize" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #fed7aa; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">MB max</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Features Section -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; background: #f0f9ff;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#0ea5e9">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">AI Features</span>
+            <span style="font-size: 0.75rem; color: #9ca3af; margin-left: auto;">Configure AI capabilities for this plan</span>
+          </div>
+
+          <!-- AI Feature Toggles -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 14px 16px; background: white; border: 1px solid #bae6fd; border-radius: 10px;">
+              <input type="checkbox" id="planAiAnalysisEnabled" style="width: 18px; height: 18px; accent-color: #0ea5e9;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0ea5e9">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  AI Analysis
+                </div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Conversation insights & analytics</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 14px 16px; background: white; border: 1px solid #c4b5fd; border-radius: 10px;">
+              <input type="checkbox" id="planAiAutoReplyEnabled" style="width: 18px; height: 18px; accent-color: #8b5cf6;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#8b5cf6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                  AI Auto Reply
+                </div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Automated AI responses</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- AI Usage Limits -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: white; border: 1px solid #bae6fd; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#0284c7">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #0369a1;">AI Analyses Limit</label>
+              </div>
+              <input type="number" id="planMaxAiAnalyses" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #bae6fd; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+            <div style="background: white; border: 1px solid #c4b5fd; border-radius: 10px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#7c3aed">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <label style="font-size: 0.8rem; font-weight: 500; color: #6d28d9;">AI Auto Replies Limit</label>
+              </div>
+              <input type="number" id="planMaxAiAutoReplies" min="1" placeholder="Unlimited" style="width: 100%; padding: 8px 10px; border: 1px solid #c4b5fd; border-radius: 6px; font-size: 0.9rem; background: white;">
+              <span style="font-size: 0.7rem; color: #6b7280;">/month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Section -->
+        <div style="padding: 20px 24px; background: #f9fafb;">
+          <div style="display: flex; gap: 24px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px 16px; background: white; border: 1px solid #d1d5db; border-radius: 10px; flex: 1;">
+              <input type="checkbox" id="planIsActive" checked style="width: 18px; height: 18px; accent-color: #22c55e;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem;">Active</div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Plan is available for subscription</div>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px 16px; background: white; border: 1px solid #d1d5db; border-radius: 10px; flex: 1;">
+              <input type="checkbox" id="planIsPublic" checked style="width: 18px; height: 18px; accent-color: #6366f1;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem;">Public</div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Visible on pricing page</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer" style="padding: 16px 24px; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 12px;">
+      <button class="btn btn-secondary" onclick="closeModal('planModal')" style="padding: 10px 20px; border-radius: 8px;">Cancel</button>
+      <button class="btn btn-primary" onclick="savePlan()" style="padding: 10px 24px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #4f46e5); display: flex; align-items: center; gap: 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Save Plan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    </div>
+    <span><span data-brand="name">ChatApp</span> Admin</span>
+  </a>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="#" class="nav-item" data-page="admin-dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+      <span>All Sites</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-users.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <span>Users</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-conversations.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      <span>Conversations</span>
+    </a>
+    <a href="#" class="nav-item active" data-page="admin-plans.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+      <span>Plans</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-payments.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+      <span>Payments</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-subscriptions.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+      </svg>
+      <span>Subscriptions</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-email-logs.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+      <span>Email Logs</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-settings.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div class="user-details">
+        <div class="name" id="userName">Admin</div>
+        <div class="role">Platform Owner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>Subscription Plans</h1>
+      <p>Manage subscription plans and pricing</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="loadPlansView()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Plans</h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="tableHeaderActions">
+          <button class="btn btn-primary" onclick="openCreatePlanModal()" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; font-weight: 500; background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Create Plan
+          </button>
+        </div>
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search plans..." oninput="filterPlans()">
+        </div>
+      </div>
+    </div>
+
+    <div id="tableContainer">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading plans...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/config.js"></script>
+<script src="/js/admin-shared.js"></script>
+<script>
+let allPlans = [];
+
+// Setup navigation links
+document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const page = item.dataset.page;
+    window.location.href = buildAdminUrl(page);
+  });
+});
+
+async function loadPlansView() {
+  if (!checkAuth()) return;
+
+  showLoadingState('tableContainer', 'Loading plans...');
+
+  try {
+    const response = await apiFetch(`${API_BASE}/admin/plans`);
+    const result = await handleApiResponse(response, 'Failed to fetch plans');
+
+    if (result && result.success) {
+      allPlans = result.data || [];
+      renderPlansTable(allPlans);
+    }
+  } catch (err) {
+    showToast(err.message || 'Failed to load plans');
+    showErrorState('tableContainer', err.message);
+  }
+}
+
+function filterPlans() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allPlans.filter(plan =>
+    (plan.name || '').toLowerCase().includes(query) ||
+    (plan.description || '').toLowerCase().includes(query)
+  );
+  renderPlansTable(filtered);
+}
+
+function renderPlansTable(plans) {
+  if (!plans || plans.length === 0) {
+    document.getElementById('tableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <p>No subscription plans found</p>
+        <button class="btn btn-primary" onclick="openCreatePlanModal()">Create First Plan</button>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Price</th>
+          <th>Limits</th>
+          <th>AI Features</th>
+          <th>Subscribers</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${plans.map(plan => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="site-icon" style="background: linear-gradient(135deg, ${plan.monthlyPrice === 0 ? '#6b7280, #4b5563' : '#6366f1, #4f46e5'});">
+                  ${plan.name[0].toUpperCase()}
+                </div>
+                <div>
+                  <div class="site-name">${escapeHtml(plan.name)}</div>
+                  <div class="site-domain">${escapeHtml(plan.description || 'No description')}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #22c55e;">$${plan.monthlyPrice}/mo</div>
+              ${plan.annualPrice ? `<div style="font-size: 12px; color: #6b7280;">$${plan.annualPrice}/yr</div>` : ''}
+            </td>
+            <td>
+              <div style="font-size: 12px; line-height: 1.6;">
+                <div>${plan.maxAgents ? plan.maxAgents + ' users' : 'Unlimited users'}</div>
+                <div>${plan.maxConversationsPerMonth ? plan.maxConversationsPerMonth + ' convs/mo' : 'Unlimited convs'}</div>
+                <div>${plan.maxStorageMb ? plan.maxStorageMb + ' MB' : 'Unlimited storage'}</div>
+              </div>
+            </td>
+            <td>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span class="badge ${plan.aiAnalysisEnabled ? 'active' : 'inactive'}" style="font-size: 10px;">
+                  ${plan.aiAnalysisEnabled ? '&#10003; Analysis' : '&#10007; Analysis'}${plan.aiAnalysisEnabled && plan.maxAiAnalysesPerMonth ? ' (' + plan.maxAiAnalysesPerMonth + '/mo)' : ''}
+                </span>
+                <span class="badge ${plan.aiAutoReplyEnabled ? 'pro' : 'inactive'}" style="font-size: 10px;">
+                  ${plan.aiAutoReplyEnabled ? '&#10003; Auto Reply' : '&#10007; Auto Reply'}${plan.aiAutoReplyEnabled && plan.maxAiAutoRepliesPerMonth ? ' (' + plan.maxAiAutoRepliesPerMonth + '/mo)' : ''}
+                </span>
+              </div>
+            </td>
+            <td><span class="badge ${plan.subscribersCount > 0 ? 'active' : 'free'}">${plan.subscribersCount || 0} subscribers</span></td>
+            <td>
+              <span class="badge ${plan.isActive ? 'active' : 'inactive'}">${plan.isActive ? 'Active' : 'Inactive'}</span>
+              ${plan.isPublic ? '' : '<span class="badge pro" style="margin-left: 4px;">Hidden</span>'}
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="Edit Plan" onclick="openEditPlanModal('${plan.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button class="action-btn" title="Delete Plan" onclick="deletePlan('${plan.id}', '${escapeHtml(plan.name)}')" ${plan.subscribersCount > 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('tableContainer').innerHTML = html;
+}
+
+function openCreatePlanModal() {
+  document.getElementById('planModalTitle').textContent = 'Create Subscription Plan';
+  document.getElementById('planForm').reset();
+  document.getElementById('planId').value = '';
+  document.getElementById('planIsActive').checked = true;
+  document.getElementById('planIsPublic').checked = true;
+  document.getElementById('planTrialDays').value = '0';
+  document.getElementById('planSortOrder').value = '0';
+  document.getElementById('planAiAnalysisEnabled').checked = false;
+  document.getElementById('planAiAutoReplyEnabled').checked = false;
+  document.getElementById('planMaxAiAnalyses').value = '';
+  document.getElementById('planMaxAiAutoReplies').value = '';
+  openModal('planModal');
+}
+
+function openEditPlanModal(planId) {
+  const plan = allPlans.find(p => p.id === planId);
+  if (!plan) {
+    showToast('Plan not found');
+    return;
+  }
+
+  document.getElementById('planModalTitle').textContent = 'Edit Plan: ' + plan.name;
+  document.getElementById('planId').value = plan.id;
+  document.getElementById('planName').value = plan.name;
+  document.getElementById('planDescription').value = plan.description || '';
+  document.getElementById('planMonthlyPrice').value = plan.monthlyPrice;
+  document.getElementById('planAnnualPrice').value = plan.annualPrice || '';
+  document.getElementById('planMaxAgents').value = plan.maxAgents || '';
+  document.getElementById('planMaxConversations').value = plan.maxConversationsPerMonth || '';
+  document.getElementById('planMaxMessages').value = plan.maxMessagesPerMonth || '';
+  document.getElementById('planMaxStorage').value = plan.maxStorageMb || '';
+  document.getElementById('planMaxFileSize').value = plan.maxFileSizeMb || '';
+  document.getElementById('planTrialDays').value = plan.trialDays || 0;
+  document.getElementById('planSortOrder').value = plan.sortOrder || 0;
+  document.getElementById('planIsActive').checked = plan.isActive;
+  document.getElementById('planIsPublic').checked = plan.isPublic;
+  document.getElementById('planAiAnalysisEnabled').checked = plan.aiAnalysisEnabled || false;
+  document.getElementById('planAiAutoReplyEnabled').checked = plan.aiAutoReplyEnabled || false;
+  document.getElementById('planMaxAiAnalyses').value = plan.maxAiAnalysesPerMonth || '';
+  document.getElementById('planMaxAiAutoReplies').value = plan.maxAiAutoRepliesPerMonth || '';
+
+  openModal('planModal');
+}
+
+async function savePlan() {
+  const planId = document.getElementById('planId').value;
+  const isEdit = !!planId;
+
+  const planData = {
+    name: document.getElementById('planName').value,
+    description: document.getElementById('planDescription').value || null,
+    monthlyPrice: parseFloat(document.getElementById('planMonthlyPrice').value) || 0,
+    annualPrice: parseFloat(document.getElementById('planAnnualPrice').value) || null,
+    maxAgents: parseInt(document.getElementById('planMaxAgents').value) || null,
+    maxConversationsPerMonth: parseInt(document.getElementById('planMaxConversations').value) || null,
+    maxMessagesPerMonth: parseInt(document.getElementById('planMaxMessages').value) || null,
+    maxStorageMb: parseInt(document.getElementById('planMaxStorage').value) || null,
+    maxFileSizeMb: parseInt(document.getElementById('planMaxFileSize').value) || null,
+    trialDays: parseInt(document.getElementById('planTrialDays').value) || 0,
+    sortOrder: parseInt(document.getElementById('planSortOrder').value) || 0,
+    isActive: document.getElementById('planIsActive').checked,
+    isPublic: document.getElementById('planIsPublic').checked,
+    aiAnalysisEnabled: document.getElementById('planAiAnalysisEnabled').checked,
+    aiAutoReplyEnabled: document.getElementById('planAiAutoReplyEnabled').checked,
+    maxAiAnalysesPerMonth: parseInt(document.getElementById('planMaxAiAnalyses').value) || null,
+    maxAiAutoRepliesPerMonth: parseInt(document.getElementById('planMaxAiAutoReplies').value) || null
+  };
+
+  if (!planData.name) {
+    showToast('Plan name is required');
+    return;
+  }
+
+  try {
+    const url = isEdit ? `${API_BASE}/admin/plans/${planId}` : `${API_BASE}/admin/plans`;
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const response = await apiFetch(url, {
+      method: method,
+      body: JSON.stringify(planData)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showToast(isEdit ? 'Plan updated successfully' : 'Plan created successfully', 'success');
+      closeModal('planModal');
+      loadPlansView();
+    } else {
+      showToast(data.message || 'Failed to save plan');
+    }
+  } catch (error) {
+    console.error('Error saving plan:', error);
+    showToast('Failed to save plan');
+  }
+}
+
+async function deletePlan(planId, planName) {
+  if (!confirm(`Are you sure you want to delete the plan "${planName}"? This action cannot be undone.`)) {
+    return;
+  }
+
+  try {
+    const response = await apiFetch(`${API_BASE}/admin/plans/${planId}`, {
+      method: 'DELETE'
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showToast('Plan deleted successfully', 'success');
+      loadPlansView();
+    } else {
+      showToast(data.message || 'Failed to delete plan');
+    }
+  } catch (error) {
+    console.error('Error deleting plan:', error);
+    showToast('Failed to delete plan');
+  }
+}
+
+// Load data on page load
+loadPlansView();
+</script>
+</body>
+</html>

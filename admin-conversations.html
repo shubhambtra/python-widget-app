@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversations - ChatApp Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin-dashboard.css">
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Conversation Messages Modal -->
+<div class="modal-overlay messages-modal" id="conversationModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>
+        <div class="modal-avatar conversation" id="conversationModalAvatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <span id="conversationModalTitle">Conversation Messages</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('conversationModal')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="conversationModalBody">
+      <!-- Content will be injected -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('conversationModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    </div>
+    <span><span data-brand="name">ChatApp</span> Admin</span>
+  </a>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="#" class="nav-item" data-page="admin-dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+      <span>All Sites</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-users.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <span>Users</span>
+    </a>
+    <a href="#" class="nav-item active" data-page="admin-conversations.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      <span>Conversations</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-plans.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+      <span>Plans</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-payments.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+      <span>Payments</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-subscriptions.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+      </svg>
+      <span>Subscriptions</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-email-logs.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+      <span>Email Logs</span>
+    </a>
+    <a href="#" class="nav-item" data-page="admin-settings.html">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div class="user-details">
+        <div class="name" id="userName">Admin</div>
+        <div class="role">Platform Owner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>All Conversations</h1>
+      <p>View all chat conversations across the platform</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="loadConversationsView()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Conversations</h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search conversations..." oninput="filterConversations()">
+        </div>
+      </div>
+    </div>
+
+    <div id="tableContainer">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading conversations...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/config.js"></script>
+<script src="/js/admin-shared.js"></script>
+<script>
+let allConversations = [];
+
+// Setup navigation links
+document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const page = item.dataset.page;
+    window.location.href = buildAdminUrl(page);
+  });
+});
+
+async function loadConversationsView() {
+  if (!checkAuth()) return;
+
+  showLoadingState('tableContainer', 'Loading conversations...');
+
+  try {
+    const response = await apiFetch(`${API_BASE}/conversations`);
+    const result = await handleApiResponse(response, 'Failed to fetch conversations');
+
+    if (result) {
+      allConversations = result.data?.items || result.data || [];
+      renderConversationsTable(allConversations);
+    }
+  } catch (err) {
+    showToast(err.message || 'Failed to load conversations');
+    showErrorState('tableContainer', err.message);
+  }
+}
+
+function filterConversations() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allConversations.filter(conv =>
+    (conv.visitorName || '').toLowerCase().includes(query) ||
+    (conv.visitorEmail || '').toLowerCase().includes(query) ||
+    (conv.siteName || '').toLowerCase().includes(query) ||
+    (conv.status || '').toLowerCase().includes(query) ||
+    (conv.id || '').toLowerCase().includes(query)
+  );
+  renderConversationsTable(filtered);
+}
+
+function renderConversationsTable(conversations) {
+  if (!conversations.length) {
+    document.getElementById('tableContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3>No conversations yet</h3>
+        <p>Conversations will appear here once visitors start chatting</p>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Visitor</th>
+          <th>Site</th>
+          <th>Assigned Agent</th>
+          <th>Messages</th>
+          <th>Status</th>
+          <th>Started</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${conversations.map(conv => `
+          <tr>
+            <td>
+              <div class="site-info">
+                <div class="site-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">${(conv.visitorName || conv.visitorEmail || 'V')[0].toUpperCase()}</div>
+                <div>
+                  <div class="site-name">${escapeHtml(conv.visitorName || 'Anonymous Visitor')}</div>
+                  <div class="site-domain">${escapeHtml(conv.visitorEmail || 'No email')}</div>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(conv.siteName || conv.siteId || '-')}</td>
+            <td>
+              ${conv.assignedUserName ? `
+                <div class="site-info">
+                  <div class="site-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">${conv.assignedUserName[0].toUpperCase()}</div>
+                  <div>
+                    <div class="site-name">${escapeHtml(conv.assignedUserName)}</div>
+                  </div>
+                </div>
+              ` : '<span class="badge inactive">Unassigned</span>'}
+            </td>
+            <td><span class="badge free">${conv.messageCount || conv.messages?.length || 0} messages</span></td>
+            <td><span class="badge ${conv.status === 'active' || conv.status === 'open' ? 'active' : conv.status === 'closed' ? 'inactive' : 'pro'}">${escapeHtml(conv.status || 'Unknown')}</span></td>
+            <td>${formatDate(conv.createdAt || conv.startedAt)}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="View Messages" onclick="viewConversation('${conv.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button class="action-btn delete" title="Delete Conversation" onclick="deleteConversation('${conv.id}', '${conv.siteId}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('tableContainer').innerHTML = html;
+}
+
+async function viewConversation(conversationId) {
+  const conversation = allConversations.find(c => c.id === conversationId);
+  if (!conversation) {
+    showToast('Conversation not found');
+    return;
+  }
+
+  document.getElementById('conversationModalTitle').textContent = `Conversation with ${conversation.visitorName || 'Anonymous Visitor'}`;
+
+  document.getElementById('conversationModalBody').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading messages...</p>
+    </div>
+  `;
+
+  openModal('conversationModal');
+
+  try {
+    const response = await apiFetch(`${API_BASE}/conversations/${conversationId}/messages`);
+    let messages = [];
+
+    if (response.ok) {
+      const messagesResult = await response.json();
+      messages = messagesResult.data?.items || messagesResult.data || messagesResult.messages || [];
+    } else if (conversation.messages) {
+      messages = conversation.messages;
+    }
+
+    renderConversationMessages(conversation, messages);
+
+  } catch (err) {
+    if (conversation.messages && conversation.messages.length > 0) {
+      renderConversationMessages(conversation, conversation.messages);
+    } else {
+      document.getElementById('conversationModalBody').innerHTML = `
+        <div class="empty-messages">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <h3>Failed to load messages</h3>
+          <p>${err.message}</p>
+        </div>
+      `;
+    }
+  }
+}
+
+async function deleteConversation(conversationId, siteId) {
+  const conversation = allConversations.find(c => c.id === conversationId);
+  const visitorName = conversation?.visitorName || 'this visitor';
+
+  const confirmDelete = confirm(`Are you sure you want to delete the conversation with ${visitorName}? This action cannot be undone.`);
+  if (!confirmDelete) return;
+
+  try {
+    const response = await apiFetch(`${API_BASE}/sites/${siteId}/conversations/${conversationId}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      showToast('Conversation deleted successfully', 'success');
+      allConversations = allConversations.filter(c => c.id !== conversationId);
+      renderConversationsTable(allConversations);
+    } else {
+      const error = await response.json();
+      showToast('Failed to delete conversation: ' + (error.detail || 'Unknown error'), 'error');
+    }
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
+    showToast('Failed to delete conversation', 'error');
+  }
+}
+
+function renderConversationMessages(conversation, messages) {
+  const statusBadge = conversation.status === 'active' || conversation.status === 'open' ?
+    '<span class="badge active">Active</span>' :
+    conversation.status === 'closed' ?
+    '<span class="badge inactive">Closed</span>' :
+    `<span class="badge pro">${escapeHtml(conversation.status || 'Unknown')}</span>`;
+
+  let messagesHtml = '';
+
+  if (!messages || messages.length === 0) {
+    messagesHtml = `
+      <div class="empty-messages">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3>No messages</h3>
+        <p>This conversation has no messages yet</p>
+      </div>
+    `;
+  } else {
+    messagesHtml = `
+      <div class="messages-container">
+        ${messages.map(msg => {
+          const senderType = msg.senderType || msg.type || (msg.isBot ? 'bot' : msg.isAgent ? 'agent' : 'visitor');
+          const senderName = msg.senderName || msg.sender || (senderType === 'bot' ? 'Bot' : senderType === 'agent' ? 'Support Agent' : conversation.visitorName || 'Visitor');
+          const avatar = senderName[0].toUpperCase();
+          const time = formatDateTime(msg.createdAt || msg.timestamp || msg.sentAt);
+
+          return `
+            <div class="message-item ${senderType}">
+              <div class="message-avatar">${avatar}</div>
+              <div class="message-content">
+                <div class="message-header">
+                  <span class="message-sender">${escapeHtml(senderName)}</span>
+                  <span class="message-time">${time}</span>
+                </div>
+                <div class="message-text">${escapeHtml(msg.content || msg.text || msg.message || '')}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  document.getElementById('conversationModalBody').innerHTML = `
+    <div class="conversation-info">
+      <div class="conversation-info-item">
+        <label>Visitor</label>
+        <div class="value">${escapeHtml(conversation.visitorName || 'Anonymous')}</div>
+      </div>
+      <div class="conversation-info-item">
+        <label>Status</label>
+        <div class="value">${statusBadge}</div>
+      </div>
+      <div class="conversation-info-item">
+        <label>Messages</label>
+        <div class="value">${messages.length}</div>
+      </div>
+      <div class="conversation-info-item">
+        <label>Started</label>
+        <div class="value">${formatDate(conversation.createdAt || conversation.startedAt)}</div>
+      </div>
+    </div>
+    ${messagesHtml}
+  `;
+}
+
+// Load data on page load
+loadConversationsView();
+</script>
+</body>
+</html>

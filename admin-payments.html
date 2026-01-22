@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payments - ChatApp Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin-dashboard.css">
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    </div>
+    <span><span data-brand="name">ChatApp</span> Admin</span>
+  </a>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="#" class="nav-item" data-page="admin-dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Dashboard</span></a>
+    <a href="#" class="nav-item" data-page="admin-dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg><span>All Sites</span></a>
+    <a href="#" class="nav-item" data-page="admin-users.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span>Users</span></a>
+    <a href="#" class="nav-item" data-page="admin-conversations.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg><span>Conversations</span></a>
+    <a href="#" class="nav-item" data-page="admin-plans.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg><span>Plans</span></a>
+    <a href="#" class="nav-item active" data-page="admin-payments.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg><span>Payments</span></a>
+    <a href="#" class="nav-item" data-page="admin-subscriptions.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg><span>Subscriptions</span></a>
+    <a href="#" class="nav-item" data-page="admin-email-logs.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><span>Email Logs</span></a>
+    <a href="#" class="nav-item" data-page="admin-settings.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Settings</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div class="user-details">
+        <div class="name" id="userName">Admin</div>
+        <div class="role">Platform Owner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Logout</span></button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>Payments & Invoices</h1>
+      <p>View all payment transactions and invoices</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="loadPaymentsView()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div class="stat-value" id="totalRevenue">$0</div><div class="stat-label">Total Revenue</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></div><div class="stat-value" id="monthlyRevenue">$0</div><div class="stat-label">This Month</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div class="stat-value" id="successfulPayments">0</div><div class="stat-label">Successful Payments</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div><div class="stat-value" id="invoiceStats">0/0</div><div class="stat-label">Paid Invoices</div></div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2 id="tableTitle">Payments</h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="tableHeaderActions" style="display: flex; gap: 8px;">
+          <button class="btn btn-primary" onclick="switchPaymentsView('payments')" id="paymentsBtn" style="padding: 8px 16px; border-radius: 8px;">Payments</button>
+          <button class="btn btn-secondary" onclick="switchPaymentsView('invoices')" id="invoicesBtn" style="padding: 8px 16px; border-radius: 8px;">Invoices</button>
+        </div>
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input type="text" id="searchInput" placeholder="Search payments..." oninput="filterData()">
+        </div>
+      </div>
+    </div>
+    <div id="tableContainer"><div class="loading-state"><div class="loading-spinner"></div><p>Loading payments...</p></div></div>
+  </div>
+</main>
+
+<script src="/config.js"></script>
+<script src="/js/admin-shared.js"></script>
+<script>
+let allPayments = [];
+let allInvoices = [];
+let paymentStats = null;
+let paymentsViewMode = 'payments';
+
+document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = buildAdminUrl(item.dataset.page);
+  });
+});
+
+async function loadPaymentsView() {
+  if (!checkAuth()) return;
+
+  showLoadingState('tableContainer', 'Loading payments...');
+
+  try {
+    const [statsRes, paymentsRes, invoicesRes] = await Promise.all([
+      apiFetch(`${API_BASE}/admin/payments/stats`),
+      apiFetch(`${API_BASE}/admin/payments`),
+      apiFetch(`${API_BASE}/admin/payments/invoices`)
+    ]);
+
+    const statsData = await statsRes.json();
+    const paymentsData = await paymentsRes.json();
+    const invoicesData = await invoicesRes.json();
+
+    if (statsData.success) {
+      paymentStats = statsData.data;
+      document.getElementById('totalRevenue').textContent = '$' + (paymentStats.totalRevenue || 0).toLocaleString();
+      document.getElementById('monthlyRevenue').textContent = '$' + (paymentStats.monthlyRevenue || 0).toLocaleString();
+      document.getElementById('successfulPayments').textContent = paymentStats.successfulPayments || 0;
+      document.getElementById('invoiceStats').textContent = (paymentStats.paidInvoices || 0) + '/' + (paymentStats.totalInvoices || 0);
+    }
+
+    if (paymentsData.success) allPayments = paymentsData.data?.items || [];
+    if (invoicesData.success) allInvoices = invoicesData.data?.items || [];
+
+    renderPaymentsView();
+  } catch (err) {
+    showToast(err.message || 'Failed to load payments');
+    showErrorState('tableContainer', err.message);
+  }
+}
+
+function switchPaymentsView(mode) {
+  paymentsViewMode = mode;
+  document.getElementById('paymentsBtn').className = mode === 'payments' ? 'btn btn-primary' : 'btn btn-secondary';
+  document.getElementById('invoicesBtn').className = mode === 'invoices' ? 'btn btn-primary' : 'btn btn-secondary';
+  document.getElementById('tableTitle').textContent = mode === 'payments' ? 'Payments' : 'Invoices';
+  document.getElementById('searchInput').placeholder = mode === 'payments' ? 'Search payments...' : 'Search invoices...';
+  renderPaymentsView();
+}
+
+function filterData() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  if (paymentsViewMode === 'payments') {
+    const filtered = allPayments.filter(p => (p.siteName || '').toLowerCase().includes(query) || (p.status || '').toLowerCase().includes(query));
+    renderPaymentsTable(filtered);
+  } else {
+    const filtered = allInvoices.filter(i => (i.siteName || '').toLowerCase().includes(query) || (i.invoiceNumber || '').toLowerCase().includes(query));
+    renderInvoicesTable(filtered);
+  }
+}
+
+function renderPaymentsView() {
+  if (paymentsViewMode === 'payments') renderPaymentsTable(allPayments);
+  else renderInvoicesTable(allInvoices);
+}
+
+function renderPaymentsTable(payments) {
+  if (!payments || payments.length === 0) {
+    document.getElementById('tableContainer').innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg><p>No payments found</p></div>';
+    return;
+  }
+
+  document.getElementById('tableContainer').innerHTML = `
+    <table><thead><tr><th>Date</th><th>Site</th><th>Amount</th><th>Status</th><th>Payment ID</th></tr></thead>
+    <tbody>${payments.map(p => `<tr>
+      <td>${formatDate(p.createdAt)}</td>
+      <td><div class="site-info"><div class="site-icon">${(p.siteName || 'S')[0].toUpperCase()}</div><span>${escapeHtml(p.siteName || '-')}</span></div></td>
+      <td style="font-weight: 600; color: #10b981;">${p.currency || 'USD'} ${(p.amount || 0).toLocaleString()}</td>
+      <td><span class="badge ${p.status === 'succeeded' ? 'active' : p.status === 'pending' ? 'pro' : 'inactive'}">${p.status}</span></td>
+      <td style="font-family: monospace; font-size: 12px; color: #94a3b8;">${(p.razorpayPaymentId || p.stripePaymentIntentId || p.id || '').substring(0, 16)}...</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function renderInvoicesTable(invoices) {
+  if (!invoices || invoices.length === 0) {
+    document.getElementById('tableContainer').innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><p>No invoices found</p></div>';
+    return;
+  }
+
+  document.getElementById('tableContainer').innerHTML = `
+    <table><thead><tr><th>Date</th><th>Invoice #</th><th>Site</th><th>Amount</th><th>Status</th><th>Period</th><th>Actions</th></tr></thead>
+    <tbody>${invoices.map(i => `<tr>
+      <td>${formatDate(i.createdAt)}</td>
+      <td style="font-family: monospace; font-weight: 500;">${escapeHtml(i.invoiceNumber)}</td>
+      <td><div class="site-info"><div class="site-icon">${(i.siteName || 'S')[0].toUpperCase()}</div><span>${escapeHtml(i.siteName || '-')}</span></div></td>
+      <td style="font-weight: 600; color: #10b981;">${i.currency || 'USD'} ${(i.total || 0).toLocaleString()}</td>
+      <td><span class="badge ${i.status === 'paid' ? 'active' : i.status === 'open' ? 'pro' : 'inactive'}">${i.status}</span></td>
+      <td style="font-size: 12px; color: #94a3b8;">${formatDate(i.periodStart)} - ${formatDate(i.periodEnd)}</td>
+      <td><button class="btn btn-secondary" onclick="downloadInvoice('${i.id}', '${i.invoicePdf || ''}')" style="padding: 6px 12px; font-size: 12px;">Download</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function downloadInvoice(invoiceId, pdfUrl) {
+  if (pdfUrl) { window.open(pdfUrl, '_blank'); return; }
+  window.open(`${API_BASE}/admin/payments/invoices/${invoiceId}/download`, '_blank');
+}
+
+loadPaymentsView();
+</script>
+</body>
+</html>

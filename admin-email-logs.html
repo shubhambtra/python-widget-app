@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Logs - ChatApp Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin-dashboard.css">
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg></div>
+    <span><span data-brand="name">ChatApp</span> Admin</span>
+  </a>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="#" class="nav-item" data-page="admin-dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Dashboard</span></a>
+    <a href="#" class="nav-item" data-page="admin-dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg><span>All Sites</span></a>
+    <a href="#" class="nav-item" data-page="admin-users.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span>Users</span></a>
+    <a href="#" class="nav-item" data-page="admin-conversations.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg><span>Conversations</span></a>
+    <a href="#" class="nav-item" data-page="admin-plans.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg><span>Plans</span></a>
+    <a href="#" class="nav-item" data-page="admin-payments.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg><span>Payments</span></a>
+    <a href="#" class="nav-item" data-page="admin-subscriptions.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg><span>Subscriptions</span></a>
+    <a href="#" class="nav-item active" data-page="admin-email-logs.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><span>Email Logs</span></a>
+    <a href="#" class="nav-item" data-page="admin-settings.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Settings</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info"><div class="user-avatar" id="userAvatar">A</div><div class="user-details"><div class="name" id="userName">Admin</div><div class="role">Platform Owner</div></div></div>
+    <button class="logout-btn" onclick="logout()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Logout</span></button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="page-header">
+    <div><h1>Email Logs</h1><p>View all emails sent by the platform</p></div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="loadEmailLogsView()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div><div class="stat-value" id="totalEmails">0</div><div class="stat-label">Total Emails</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div><div class="stat-value" id="sentCount">0</div><div class="stat-label">Sent</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></div><div class="stat-value" id="failedCount">0</div><div class="stat-label">Failed</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div class="stat-value" id="todayCount">0</div><div class="stat-label">Today</div></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Email History</h2>
+      <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        <input type="text" id="searchInput" placeholder="Search emails..." oninput="filterEmails()">
+      </div>
+    </div>
+    <div id="tableContainer"><div class="loading-state"><div class="loading-spinner"></div><p>Loading email logs...</p></div></div>
+  </div>
+</main>
+
+<script src="/config.js"></script>
+<script src="/js/admin-shared.js"></script>
+<script>
+let allEmailLogs = [];
+let emailLogsPagination = { page: 1, pageSize: 20, totalPages: 1 };
+
+document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
+  item.addEventListener('click', (e) => { e.preventDefault(); window.location.href = buildAdminUrl(item.dataset.page); });
+});
+
+async function loadEmailLogsView() {
+  if (!checkAuth()) return;
+  showLoadingState('tableContainer', 'Loading email logs...');
+
+  try {
+    const [statsRes, logsRes] = await Promise.all([
+      apiFetch(`${API_BASE}/admin/email-logs/stats`),
+      apiFetch(`${API_BASE}/admin/email-logs?page=${emailLogsPagination.page}&pageSize=${emailLogsPagination.pageSize}`)
+    ]);
+
+    const statsData = await statsRes.json();
+    const logsData = await logsRes.json();
+
+    if (statsData.success) {
+      document.getElementById('totalEmails').textContent = (statsData.data.totalEmails || 0).toLocaleString();
+      document.getElementById('sentCount').textContent = (statsData.data.sentCount || 0).toLocaleString();
+      document.getElementById('failedCount').textContent = (statsData.data.failedCount || 0).toLocaleString();
+      document.getElementById('todayCount').textContent = (statsData.data.todayCount || 0).toLocaleString();
+    }
+
+    if (logsData.success) {
+      allEmailLogs = logsData.data.emailLogs || [];
+      emailLogsPagination.totalPages = logsData.data.totalPages || 1;
+      renderEmailLogsTable(allEmailLogs);
+    } else {
+      throw new Error(logsData.message || 'Failed to load email logs');
+    }
+  } catch (err) {
+    showToast(err.message);
+    showErrorState('tableContainer', err.message);
+  }
+}
+
+function filterEmails() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allEmailLogs.filter(e =>
+    (e.toEmail || '').toLowerCase().includes(query) ||
+    (e.subject || '').toLowerCase().includes(query) ||
+    (e.emailType || '').toLowerCase().includes(query)
+  );
+  renderEmailLogsTable(filtered);
+}
+
+function renderEmailLogsTable(emails) {
+  if (!emails.length) {
+    document.getElementById('tableContainer').innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><h3>No emails sent yet</h3><p>Email logs will appear here once emails are sent</p></div>';
+    return;
+  }
+
+  document.getElementById('tableContainer').innerHTML = `
+    <table><thead><tr><th>From</th><th>To</th><th>Subject</th><th>Type</th><th>Status</th><th>Sent At</th><th>Actions</th></tr></thead>
+    <tbody>${emails.map(e => `<tr>
+      <td><div class="site-info"><div class="user-avatar" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;background:linear-gradient(135deg, #22c55e, #16a34a);font-size:14px;">${(e.fromEmail || 'S')[0].toUpperCase()}</div><div><div class="site-name">${escapeHtml(e.fromName || 'System')}</div><div class="site-domain">${escapeHtml(e.fromEmail)}</div></div></div></td>
+      <td><div class="site-info"><div class="user-avatar" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;background:linear-gradient(135deg, #6366f1, #8b5cf6);font-size:14px;">${(e.toEmail || 'E')[0].toUpperCase()}</div><div><div class="site-name">${escapeHtml(e.toName || e.toEmail)}</div><div class="site-domain">${escapeHtml(e.toEmail)}</div></div></div></td>
+      <td style="max-width: 200px;"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(e.subject)}</div></td>
+      <td><span class="badge" style="background: var(--bg-tertiary); text-transform: capitalize;">${escapeHtml((e.emailType || 'general').replace(/_/g, ' '))}</span></td>
+      <td><span class="badge ${e.status === 'sent' ? 'active' : e.status === 'pending' ? 'pro' : 'inactive'}">${e.status}</span></td>
+      <td>${formatDate(e.sentAt || e.createdAt)}</td>
+      <td><button class="action-btn" title="View Details" onclick="viewEmailLog('${e.id}')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button></td>
+    </tr>`).join('')}</tbody></table>
+    ${emailLogsPagination.totalPages > 1 ? `<div style="display: flex; justify-content: center; gap: 8px; padding: 16px; border-top: 1px solid var(--border-color);"><button class="btn btn-secondary" onclick="loadEmailLogsPage(${emailLogsPagination.page - 1})" ${emailLogsPagination.page <= 1 ? 'disabled' : ''}>Previous</button><span style="display: flex; align-items: center; color: var(--text-secondary);">Page ${emailLogsPagination.page} of ${emailLogsPagination.totalPages}</span><button class="btn btn-secondary" onclick="loadEmailLogsPage(${emailLogsPagination.page + 1})" ${emailLogsPagination.page >= emailLogsPagination.totalPages ? 'disabled' : ''}>Next</button></div>` : ''}`;
+}
+
+async function loadEmailLogsPage(page) {
+  if (page < 1 || page > emailLogsPagination.totalPages) return;
+  emailLogsPagination.page = page;
+  await loadEmailLogsView();
+}
+
+async function viewEmailLog(emailId) {
+  try {
+    const response = await apiFetch(`${API_BASE}/admin/email-logs/${emailId}`);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+    showEmailModal(data.data);
+  } catch (err) {
+    showToast(err.message || 'Failed to load email details');
+  }
+}
+
+function showEmailModal(email) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'emailModal';
+  modal.innerHTML = `
+    <div class="modal" style="max-width: 1200px; width: 95vw; height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header"><h2><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>Email Details</h2><button class="close-btn" onclick="closeEmailModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>
+      <div class="modal-body" style="display: flex; gap: 24px; flex: 1; overflow: hidden; padding: 24px;">
+        <div style="width: 320px; flex-shrink: 0; overflow-y: auto;">
+          <div style="margin-bottom: 16px;"><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">From</label><div style="color: var(--text-primary);">${escapeHtml(email.fromName || email.fromEmail)}</div><div style="color: var(--text-secondary); font-size: 13px;">${escapeHtml(email.fromEmail)}</div></div>
+          <div style="margin-bottom: 16px;"><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">To</label><div style="color: var(--text-primary);">${escapeHtml(email.toName || email.toEmail)}</div><div style="color: var(--text-secondary); font-size: 13px;">${escapeHtml(email.toEmail)}</div></div>
+          <div style="margin-bottom: 16px;"><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Subject</label><div style="color: var(--text-primary); font-weight: 600;">${escapeHtml(email.subject)}</div></div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;"><div><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Type</label><span class="badge" style="background: var(--bg-tertiary); text-transform: capitalize;">${escapeHtml((email.emailType || 'general').replace(/_/g, ' '))}</span></div><div><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Status</label><span class="badge ${email.status === 'sent' ? 'active' : email.status === 'pending' ? 'pro' : 'inactive'}">${email.status}</span></div></div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;"><div><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Created</label><div style="color: var(--text-primary); font-size: 13px;">${formatDate(email.createdAt)}</div></div><div><label style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Sent At</label><div style="color: var(--text-primary); font-size: 13px;">${email.sentAt ? formatDate(email.sentAt) : '-'}</div></div></div>
+          ${email.errorMessage ? `<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px;"><label style="font-size: 12px; color: #ef4444; margin-bottom: 4px; display: block;">Error</label><div style="color: #fca5a5; font-size: 13px;">${escapeHtml(email.errorMessage)}</div></div>` : ''}
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+          <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block;">Email Body</label>
+          <div style="flex: 1; background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);">
+            ${email.isHtml ? `<iframe style="width: 100%; height: 100%; border: none; background: white;" srcdoc="${(email.body || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}"></iframe>` : `<pre style="white-space: pre-wrap; word-break: break-word; margin: 0; padding: 16px; color: #333; height: 100%; overflow-y: auto;">${escapeHtml(email.body)}</pre>`}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeEmailModal()">Close</button></div>
+    </div>`;
+  document.body.appendChild(modal);
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeEmailModal() {
+  const modal = document.getElementById('emailModal');
+  if (modal) { modal.classList.remove('show'); setTimeout(() => modal.remove(), 300); }
+}
+
+loadEmailLogsView();
+</script>
+</body>
+</html>
