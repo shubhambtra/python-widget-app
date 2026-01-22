@@ -94,6 +94,17 @@ const Branding = (function() {
     }
 
     /**
+     * Convert relative URL to absolute URL using API base
+     */
+    function toAbsoluteUrl(url) {
+        if (url && url.startsWith('/')) {
+            const apiUrl = typeof CONFIG !== 'undefined' ? CONFIG.API_URL : 'https://chatapp.code2night.com';
+            return apiUrl + url;
+        }
+        return url;
+    }
+
+    /**
      * Apply branding to DOM elements
      */
     function applyBranding(settings) {
@@ -106,7 +117,8 @@ const Branding = (function() {
         document.querySelectorAll('[data-brand="icon"]').forEach(el => {
             if (settings.siteLogo) {
                 // If there's a logo image, replace with img element
-                el.innerHTML = `<img src="${settings.siteLogo}" alt="${settings.siteName}" style="width: 100%; height: 100%; object-fit: contain;">`;
+                const logoUrl = toAbsoluteUrl(settings.siteLogo);
+                el.innerHTML = `<img src="${logoUrl}" alt="${settings.siteName}" style="width: 100%; height: 100%; object-fit: contain;">`;
             } else {
                 // Use first letter of site name
                 el.textContent = getIconLetter(settings.siteName);
@@ -162,7 +174,7 @@ const Branding = (function() {
             link.rel = 'icon';
             document.head.appendChild(link);
         }
-        link.href = faviconUrl;
+        link.href = toAbsoluteUrl(faviconUrl);
     }
 
     /**
