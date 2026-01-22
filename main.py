@@ -163,6 +163,16 @@ def privacy_policy_page_html():
     return FileResponse(BASE_DIR / "privacy-policy.html")
 
 
+@app.get("/terms-of-service")
+def terms_of_service_page():
+    return FileResponse(BASE_DIR / "terms-of-service.html")
+
+
+@app.get("/terms-of-service.html")
+def terms_of_service_page_html():
+    return FileResponse(BASE_DIR / "terms-of-service.html")
+
+
 @app.get("/admin-login")
 def admin_login_page():
     return FileResponse(BASE_DIR / "admin" / "admin-login.html")
