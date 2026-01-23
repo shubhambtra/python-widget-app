@@ -148,19 +148,15 @@ const Branding = (function() {
     }
 
     /**
-     * Update page title while preserving the page-specific part
+     * Update page title - replace all occurrences of ChatApp with the site name
      */
     function updatePageTitle(settings) {
         const currentTitle = document.title;
         const siteName = settings.siteName;
 
-        // Common patterns: "Page - SiteName" or "SiteName - Description"
-        if (currentTitle.includes(' - ChatApp')) {
-            document.title = currentTitle.replace(' - ChatApp', ` - ${siteName}`);
-        } else if (currentTitle.startsWith('ChatApp - ')) {
-            document.title = currentTitle.replace('ChatApp - ', `${siteName} - `);
-        } else if (currentTitle === 'ChatApp') {
-            document.title = siteName;
+        // Replace all occurrences of "ChatApp" with the site name
+        if (currentTitle.includes('ChatApp')) {
+            document.title = currentTitle.replace(/ChatApp/g, siteName);
         }
     }
 
