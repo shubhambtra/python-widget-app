@@ -50,9 +50,71 @@
     </div>
   </div>
 
+  <!-- Expiration Stats Cards -->
+  <div class="stats-grid" style="margin-bottom: 24px;">
+    <div class="stat-card clickable" onclick="filterByExpiration('today')" id="statToday">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="countToday">0</div>
+      <div class="stat-label">Ending Today</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterByExpiration('week')" id="statWeek">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="countWeek">0</div>
+      <div class="stat-label">Ending This Week</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterByExpiration('month')" id="statMonth">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <div class="stat-value" id="countMonth">0</div>
+      <div class="stat-label">Ending This Month</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterByExpiration('year')" id="statYear">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="countYear">0</div>
+      <div class="stat-label">Ending This Year</div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+    <button class="filter-tab active" data-filter="all" onclick="filterByExpiration('all')">
+      All Subscriptions
+    </button>
+    <button class="filter-tab" data-filter="today" onclick="filterByExpiration('today')">
+      <span class="tab-dot" style="background: #ef4444;"></span> Ending Today
+    </button>
+    <button class="filter-tab" data-filter="week" onclick="filterByExpiration('week')">
+      <span class="tab-dot" style="background: #f59e0b;"></span> This Week
+    </button>
+    <button class="filter-tab" data-filter="month" onclick="filterByExpiration('month')">
+      <span class="tab-dot" style="background: #3b82f6;"></span> This Month
+    </button>
+    <button class="filter-tab" data-filter="year" onclick="filterByExpiration('year')">
+      <span class="tab-dot" style="background: #22c55e;"></span> This Year
+    </button>
+    <button class="filter-tab" data-filter="expired" onclick="filterByExpiration('expired')">
+      <span class="tab-dot" style="background: #6b7280;"></span> Expired
+    </button>
+  </div>
+
   <div class="table-card">
     <div class="table-header">
-      <h2>All Subscriptions</h2>
+      <h2 id="tableTitle">All Subscriptions</h2>
       <div class="search-box">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         <input type="text" id="searchInput" placeholder="Search subscriptions..." oninput="filterSubscriptions()">
@@ -62,10 +124,90 @@
   </div>
 </main>
 
+<style>
+.stat-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+.stat-card.clickable.selected {
+  border: 2px solid var(--accent-primary);
+  background: rgba(37, 99, 235, 0.05);
+}
+.filter-tabs {
+  background: var(--card-bg);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-tab:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+.filter-tab.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+.tab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.expiry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.expiry-badge.today {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+.expiry-badge.week {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+.expiry-badge.month {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+.expiry-badge.year {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+.expiry-badge.expired {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+</style>
+
 <script src="/config.js"></script>
 <script src="/js/admin-shared.js"></script>
 <script>
 let allSubscriptions = [];
+let currentFilter = 'all';
 
 document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
   item.addEventListener('click', (e) => { e.preventDefault(); window.location.href = buildAdminUrl(item.dataset.page); });
@@ -81,7 +223,8 @@ async function loadSubscriptionsView() {
 
     if (data.success) {
       allSubscriptions = data.data || [];
-      renderSubscriptionsTable(allSubscriptions);
+      updateExpirationStats();
+      filterByExpiration(currentFilter);
     } else {
       throw new Error(data.message || 'Failed to load subscriptions');
     }
@@ -91,33 +234,151 @@ async function loadSubscriptionsView() {
   }
 }
 
-function filterSubscriptions() {
+// Get expiration category for a subscription
+function getExpirationCategory(endDate) {
+  if (!endDate) return 'unknown';
+
+  const end = new Date(endDate);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+  // Calculate differences
+  const diffTime = endDay - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'expired';
+  if (diffDays === 0) return 'today';
+  if (diffDays <= 7) return 'week';
+  if (diffDays <= 30) return 'month';
+  if (diffDays <= 365) return 'year';
+  return 'future';
+}
+
+// Update the stats cards with counts
+function updateExpirationStats() {
+  const counts = { today: 0, week: 0, month: 0, year: 0, expired: 0 };
+
+  allSubscriptions.forEach(sub => {
+    const category = getExpirationCategory(sub.currentPeriodEnd);
+    if (category === 'today') counts.today++;
+    if (category === 'today' || category === 'week') counts.week++;
+    if (category === 'today' || category === 'week' || category === 'month') counts.month++;
+    if (category !== 'expired' && category !== 'future') counts.year++;
+    if (category === 'expired') counts.expired++;
+  });
+
+  document.getElementById('countToday').textContent = counts.today;
+  document.getElementById('countWeek').textContent = counts.week;
+  document.getElementById('countMonth').textContent = counts.month;
+  document.getElementById('countYear').textContent = counts.year;
+}
+
+// Filter subscriptions by expiration period
+function filterByExpiration(filter) {
+  currentFilter = filter;
+
+  // Update active tab
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.filter === filter);
+  });
+
+  // Update selected stat card
+  document.querySelectorAll('.stat-card.clickable').forEach(card => {
+    card.classList.remove('selected');
+  });
+  const statCard = document.getElementById('stat' + filter.charAt(0).toUpperCase() + filter.slice(1));
+  if (statCard) statCard.classList.add('selected');
+
+  // Update table title
+  const titles = {
+    all: 'All Subscriptions',
+    today: 'Subscriptions Ending Today',
+    week: 'Subscriptions Ending This Week',
+    month: 'Subscriptions Ending This Month',
+    year: 'Subscriptions Ending This Year',
+    expired: 'Expired Subscriptions'
+  };
+  document.getElementById('tableTitle').textContent = titles[filter] || 'All Subscriptions';
+
+  // Filter subscriptions
+  let filtered = allSubscriptions;
+  if (filter !== 'all') {
+    filtered = allSubscriptions.filter(sub => {
+      const category = getExpirationCategory(sub.currentPeriodEnd);
+      switch (filter) {
+        case 'today': return category === 'today';
+        case 'week': return category === 'today' || category === 'week';
+        case 'month': return category === 'today' || category === 'week' || category === 'month';
+        case 'year': return category !== 'expired' && category !== 'future';
+        case 'expired': return category === 'expired';
+        default: return true;
+      }
+    });
+  }
+
+  // Apply search filter if any
   const query = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = allSubscriptions.filter(s =>
-    (s.siteName || '').toLowerCase().includes(query) ||
-    (s.planName || '').toLowerCase().includes(query) ||
-    (s.status || '').toLowerCase().includes(query)
-  );
+  if (query) {
+    filtered = filtered.filter(s =>
+      (s.siteName || '').toLowerCase().includes(query) ||
+      (s.planName || '').toLowerCase().includes(query) ||
+      (s.status || '').toLowerCase().includes(query)
+    );
+  }
+
   renderSubscriptionsTable(filtered);
+}
+
+function filterSubscriptions() {
+  filterByExpiration(currentFilter);
+}
+
+// Get days until expiration text
+function getDaysUntilExpiration(endDate) {
+  if (!endDate) return '';
+
+  const end = new Date(endDate);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+  const diffDays = Math.ceil((endDay - today) / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return `${Math.abs(diffDays)} days ago`;
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  if (diffDays <= 7) return `${diffDays} days`;
+  if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks`;
+  if (diffDays <= 365) return `${Math.ceil(diffDays / 30)} months`;
+  return `${Math.ceil(diffDays / 365)} years`;
 }
 
 function renderSubscriptionsTable(subscriptions) {
   if (subscriptions.length === 0) {
-    document.getElementById('tableContainer').innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg><h3>No Subscriptions Yet</h3><p>No site subscriptions have been created.</p></div>';
+    const emptyMessage = currentFilter === 'all'
+      ? 'No site subscriptions have been created.'
+      : `No subscriptions found for this period.`;
+    document.getElementById('tableContainer').innerHTML = `<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg><h3>No Subscriptions</h3><p>${emptyMessage}</p></div>`;
     return;
   }
 
   document.getElementById('tableContainer').innerHTML = `
-    <table><thead><tr><th>Site</th><th>Plan</th><th>Status</th><th>Billing</th><th>Start Date</th><th>Period End</th><th>Actions</th></tr></thead>
-    <tbody>${subscriptions.map(sub => `<tr>
+    <table><thead><tr><th>Site</th><th>Plan</th><th>Status</th><th>Billing</th><th>Start Date</th><th>Expires</th><th>Time Left</th><th>Actions</th></tr></thead>
+    <tbody>${subscriptions.map(sub => {
+      const category = getExpirationCategory(sub.currentPeriodEnd);
+      const daysText = getDaysUntilExpiration(sub.currentPeriodEnd);
+      return `<tr>
       <td><div class="site-info"><div class="site-icon">${(sub.siteName || 'S')[0].toUpperCase()}</div><div><div class="site-name">${escapeHtml(sub.siteName)}</div><div class="site-domain">${escapeHtml(sub.siteDomain || '')}</div></div></div></td>
       <td style="font-weight: 600; color: var(--accent-primary);">${escapeHtml(sub.planName)}</td>
       <td><span class="badge ${sub.status === 'active' ? 'active' : sub.status === 'trialing' ? 'pro' : 'inactive'}">${sub.status}</span></td>
       <td style="text-transform: capitalize;">${sub.billingCycle || '-'}</td>
       <td style="font-size: 13px;">${formatDate(sub.currentPeriodStart)}</td>
-      <td style="font-size: 13px;">${formatDate(sub.currentPeriodEnd)}${isExpiringSoon(sub.currentPeriodEnd) ? ' <span style="color: #f59e0b; font-size: 11px;">(Expiring soon)</span>' : ''}</td>
+      <td style="font-size: 13px;">${formatDate(sub.currentPeriodEnd)}</td>
+      <td><span class="expiry-badge ${category}">${daysText}</span></td>
       <td><button class="btn-icon" onclick="openExtendModal('${sub.id}', '${escapeHtml(sub.siteName)}', '${sub.currentPeriodEnd}')" title="Extend Subscription"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg></button></td>
-    </tr>`).join('')}</tbody></table>`;
+    </tr>`;
+    }).join('')}</tbody></table>`;
 }
 
 function isExpiringSoon(endDate) {
