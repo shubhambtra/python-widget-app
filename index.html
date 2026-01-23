@@ -1168,7 +1168,7 @@
                 <div class="contact-info">
                     <h3>Contact Information</h3>
                     <p>Fill out the form and our team will get back to you within 24 hours. You can also reach us directly through the following channels.</p>
-                    <div class="contact-methods">
+                    <div class="contact-methods" id="contactMethods">
                         <div class="contact-method">
                             <div class="contact-method-icon">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1177,7 +1177,7 @@
                             </div>
                             <div class="contact-method-text">
                                 <h4>Email</h4>
-                                <p>support@chatapp.com</p>
+                                <p id="contactEmail">support@chatapp.com</p>
                             </div>
                         </div>
                         <div class="contact-method">
@@ -1188,7 +1188,7 @@
                             </div>
                             <div class="contact-method-text">
                                 <h4>Phone</h4>
-                                <p>+1 (555) 123-4567</p>
+                                <p id="contactPhone">+1 (555) 123-4567</p>
                             </div>
                         </div>
                         <div class="contact-method">
@@ -1200,7 +1200,7 @@
                             </div>
                             <div class="contact-method-text">
                                 <h4>Office</h4>
-                                <p>123 Tech Street, San Francisco, CA 94105</p>
+                                <p id="contactAddress">123 Tech Street, San Francisco, CA 94105</p>
                             </div>
                         </div>
                     </div>
@@ -1402,8 +1402,41 @@
         }
     }
 
-    // Load plans when page loads
-    document.addEventListener('DOMContentLoaded', loadPricingPlans);
+    // Load contact information from API
+    async function loadContactInfo() {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE}/SiteSettings`);
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                const data = result.data;
+
+                // Update contact email
+                if (data.supportEmail) {
+                    document.getElementById('contactEmail').textContent = data.supportEmail;
+                }
+
+                // Update contact phone
+                if (data.supportPhone) {
+                    document.getElementById('contactPhone').textContent = data.supportPhone;
+                }
+
+                // Update office address
+                if (data.supportAddress) {
+                    document.getElementById('contactAddress').textContent = data.supportAddress;
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load contact info:', error);
+            // Keep default values on error
+        }
+    }
+
+    // Load plans and contact info when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPricingPlans();
+        loadContactInfo();
+    });
     </script>
 </body>
 </html>
