@@ -215,6 +215,12 @@ def serve_admin_shared_js():
     return FileResponse(BASE_DIR / "admin" / "js" / "admin-shared.js", media_type="application/javascript")
 
 
+# Serve visitor tracker JS
+@app.get("/js/visitor-tracker.js")
+def serve_visitor_tracker_js():
+    return FileResponse(BASE_DIR / "js" / "visitor-tracker.js", media_type="application/javascript")
+
+
 # Admin page routes
 @app.get("/admin-users")
 def admin_users_page():
@@ -294,6 +300,16 @@ def admin_settings_page():
 @app.get("/admin-settings.html")
 def admin_settings_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-settings.html")
+
+
+@app.get("/admin-visitors")
+def admin_visitors_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-visitors.html")
+
+
+@app.get("/admin-visitors.html")
+def admin_visitors_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-visitors.html")
 
 
 @app.get("/profile.html")

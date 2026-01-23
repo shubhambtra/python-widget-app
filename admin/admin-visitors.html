@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Visitors - ChatApp Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin-dashboard.css">
+<style>
+  .visitors-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1200px) {
+    .visitors-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .visitors-stats-grid { grid-template-columns: 1fr; }
+  }
+  .visitor-stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .visitor-stat-card h4 {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .visitor-stat-card .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .visitor-stat-card .change {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .visitor-stat-card .change.positive { color: #22c55e; }
+  .visitor-stat-card .change.negative { color: #ef4444; }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1000px) {
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+  .chart-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .chart-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .country-list, .page-list, .device-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .country-list li, .page-list li, .device-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .country-list li:last-child, .page-list li:last-child, .device-list li:last-child {
+    border-bottom: none;
+  }
+  .country-name, .page-name, .device-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .country-flag {
+    font-size: 18px;
+  }
+  .country-count, .page-count, .device-count {
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .recent-visitors-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .recent-visitors-table th, .recent-visitors-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .recent-visitors-table th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .recent-visitors-table td {
+    font-size: 14px;
+  }
+  .location-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .device-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    background: var(--hover-bg);
+  }
+
+  .period-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .period-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .period-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+  }
+  .period-btn.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+  }
+
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bar-label {
+    width: 80px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .bar-container {
+    flex: 1;
+    height: 24px;
+    background: var(--hover-bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .bar-value {
+    width: 50px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 600;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-logo">
+    <div class="logo-icon" data-brand="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg></div>
+    <span><span data-brand="name">ChatApp</span> Admin</span>
+  </a>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="#" class="nav-item" data-page="admin-dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Dashboard</span></a>
+    <a href="#" class="nav-item" data-page="admin-dashboard.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg><span>All Sites</span></a>
+    <a href="#" class="nav-item" data-page="admin-users.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span>Users</span></a>
+    <a href="#" class="nav-item" data-page="admin-conversations.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg><span>Conversations</span></a>
+    <a href="#" class="nav-item" data-page="admin-plans.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg><span>Plans</span></a>
+    <a href="#" class="nav-item" data-page="admin-payments.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg><span>Payments</span></a>
+    <a href="#" class="nav-item" data-page="admin-subscriptions.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg><span>Subscriptions</span></a>
+    <a href="#" class="nav-item active" data-page="admin-visitors.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg><span>Website Visitors</span></a>
+    <a href="#" class="nav-item" data-page="admin-email-logs.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><span>Email Logs</span></a>
+    <a href="#" class="nav-item" data-page="admin-smtp-settings.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg><span>SMTP Settings</span></a>
+    <a href="#" class="nav-item" data-page="admin-settings.html"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>Settings</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info"><div class="user-avatar" id="userAvatar">A</div><div class="user-details"><div class="name" id="userName">Admin</div><div class="role">Platform Owner</div></div></div>
+    <button class="logout-btn" onclick="logout()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg><span>Logout</span></button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="page-header">
+    <div><h1>Website Visitors</h1><p>Track and analyze your website traffic</p></div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="loadData()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Period Selector -->
+  <div class="period-selector">
+    <button class="period-btn active" data-period="today" onclick="selectPeriod('today')">Today</button>
+    <button class="period-btn" data-period="week" onclick="selectPeriod('week')">Last 7 Days</button>
+    <button class="period-btn" data-period="month" onclick="selectPeriod('month')">Last 30 Days</button>
+    <button class="period-btn" data-period="year" onclick="selectPeriod('year')">Last Year</button>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="visitors-stats-grid">
+    <div class="visitor-stat-card">
+      <h4>Unique Visitors</h4>
+      <div class="value" id="uniqueVisitors">-</div>
+      <div class="change" id="uniqueChange"></div>
+    </div>
+    <div class="visitor-stat-card">
+      <h4>Total Page Views</h4>
+      <div class="value" id="totalVisits">-</div>
+    </div>
+    <div class="visitor-stat-card">
+      <h4>Top Country</h4>
+      <div class="value" id="topCountry">-</div>
+    </div>
+    <div class="visitor-stat-card">
+      <h4>Top Device</h4>
+      <div class="value" id="topDevice">-</div>
+    </div>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Visitors by Country</h3>
+      <ul class="country-list" id="countryList">
+        <li style="color: var(--text-secondary);">Loading...</li>
+      </ul>
+    </div>
+    <div class="chart-card">
+      <h3>Devices</h3>
+      <div class="bar-chart" id="deviceChart">
+        <div style="color: var(--text-secondary);">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Top Pages</h3>
+      <ul class="page-list" id="pageList">
+        <li style="color: var(--text-secondary);">Loading...</li>
+      </ul>
+    </div>
+    <div class="chart-card">
+      <h3>Browsers</h3>
+      <div class="bar-chart" id="browserChart">
+        <div style="color: var(--text-secondary);">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Visitors Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Recent Visitors</h2>
+    </div>
+    <div id="recentVisitorsContainer">
+      <div class="loading-state"><div class="loading-spinner"></div><p>Loading visitors...</p></div>
+    </div>
+  </div>
+</main>
+
+<script src="/config.js"></script>
+<script src="/branding.js"></script>
+<script src="/js/admin-shared.js"></script>
+<script>
+let currentPeriod = 'today';
+
+document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
+  item.addEventListener('click', (e) => { e.preventDefault(); window.location.href = buildAdminUrl(item.dataset.page); });
+});
+
+function selectPeriod(period) {
+  currentPeriod = period;
+  document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.period-btn[data-period="${period}"]`).classList.add('active');
+  loadData();
+}
+
+function getCountryFlag(countryCode) {
+  if (!countryCode) return '';
+  const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
+
+async function loadData() {
+  if (!checkAuth()) return;
+
+  try {
+    // Fetch stats
+    const statsRes = await apiFetch(`${API_BASE}/WebsiteVisits/stats?from=${getFromDate()}`);
+    if (statsRes.ok) {
+      const result = await statsRes.json();
+      if (result.success && result.data) {
+        renderStats(result.data);
+      }
+    }
+
+    // Fetch unique count with comparison
+    const countRes = await apiFetch(`${API_BASE}/WebsiteVisits/unique-count?period=${currentPeriod}`);
+    if (countRes.ok) {
+      const result = await countRes.json();
+      if (result.success && result.data) {
+        document.getElementById('uniqueVisitors').textContent = result.data.uniqueVisitors;
+        document.getElementById('totalVisits').textContent = result.data.totalVisits;
+
+        const change = result.data.percentageChange;
+        const changeEl = document.getElementById('uniqueChange');
+        if (change > 0) {
+          changeEl.className = 'change positive';
+          changeEl.textContent = `+${change}% vs previous period`;
+        } else if (change < 0) {
+          changeEl.className = 'change negative';
+          changeEl.textContent = `${change}% vs previous period`;
+        } else {
+          changeEl.className = 'change';
+          changeEl.textContent = 'Same as previous period';
+        }
+      }
+    }
+
+  } catch (err) {
+    showToast(err.message || 'Failed to load visitor data', 'error');
+  }
+}
+
+function getFromDate() {
+  const now = new Date();
+  switch (currentPeriod) {
+    case 'today': return now.toISOString().split('T')[0];
+    case 'week': return new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
+    case 'month': return new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
+    case 'year': return new Date(now - 365 * 24 * 60 * 60 * 1000).toISOString();
+    default: return now.toISOString().split('T')[0];
+  }
+}
+
+function renderStats(data) {
+  // Top country
+  if (data.visitsByCountry && data.visitsByCountry.length > 0) {
+    const top = data.visitsByCountry[0];
+    document.getElementById('topCountry').innerHTML = `${getCountryFlag(top.countryCode)} ${top.country}`;
+  }
+
+  // Top device
+  if (data.visitsByDevice && data.visitsByDevice.length > 0) {
+    document.getElementById('topDevice').textContent = data.visitsByDevice[0].deviceType;
+  }
+
+  // Countries list
+  const countryList = document.getElementById('countryList');
+  if (data.visitsByCountry && data.visitsByCountry.length > 0) {
+    countryList.innerHTML = data.visitsByCountry.map(c => `
+      <li>
+        <span class="country-name">
+          <span class="country-flag">${getCountryFlag(c.countryCode)}</span>
+          ${c.country}
+        </span>
+        <span class="country-count">${c.count}</span>
+      </li>
+    `).join('');
+  } else {
+    countryList.innerHTML = '<li style="color: var(--text-secondary);">No data available</li>';
+  }
+
+  // Pages list
+  const pageList = document.getElementById('pageList');
+  if (data.visitsByPage && data.visitsByPage.length > 0) {
+    pageList.innerHTML = data.visitsByPage.map(p => {
+      const pageName = p.pageUrl.replace(/https?:\/\/[^\/]+/, '').replace(/\/$/, '') || '/';
+      return `
+        <li>
+          <span class="page-name">${pageName}</span>
+          <span class="page-count">${p.count}</span>
+        </li>
+      `;
+    }).join('');
+  } else {
+    pageList.innerHTML = '<li style="color: var(--text-secondary);">No data available</li>';
+  }
+
+  // Device chart
+  const deviceChart = document.getElementById('deviceChart');
+  if (data.visitsByDevice && data.visitsByDevice.length > 0) {
+    const maxDevice = Math.max(...data.visitsByDevice.map(d => d.count));
+    deviceChart.innerHTML = data.visitsByDevice.map(d => `
+      <div class="bar-row">
+        <span class="bar-label">${d.deviceType}</span>
+        <div class="bar-container">
+          <div class="bar-fill" style="width: ${(d.count / maxDevice) * 100}%"></div>
+        </div>
+        <span class="bar-value">${d.count}</span>
+      </div>
+    `).join('');
+  } else {
+    deviceChart.innerHTML = '<div style="color: var(--text-secondary);">No data available</div>';
+  }
+
+  // Browser chart
+  const browserChart = document.getElementById('browserChart');
+  if (data.visitsByBrowser && data.visitsByBrowser.length > 0) {
+    const maxBrowser = Math.max(...data.visitsByBrowser.map(b => b.count));
+    browserChart.innerHTML = data.visitsByBrowser.map(b => `
+      <div class="bar-row">
+        <span class="bar-label">${b.browser}</span>
+        <div class="bar-container">
+          <div class="bar-fill" style="width: ${(b.count / maxBrowser) * 100}%"></div>
+        </div>
+        <span class="bar-value">${b.count}</span>
+      </div>
+    `).join('');
+  } else {
+    browserChart.innerHTML = '<div style="color: var(--text-secondary);">No data available</div>';
+  }
+
+  // Recent visitors table
+  const container = document.getElementById('recentVisitorsContainer');
+  if (data.recentVisitors && data.recentVisitors.length > 0) {
+    container.innerHTML = `
+      <table class="recent-visitors-table">
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Location</th>
+            <th>Page</th>
+            <th>Device</th>
+            <th>Browser</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.recentVisitors.map(v => `
+            <tr>
+              <td><code>${v.ipAddress}</code></td>
+              <td class="location-cell">
+                <span>${getCountryFlag(v.countryCode)}</span>
+                <span>${v.city ? `${v.city}, ` : ''}${v.country || 'Unknown'}</span>
+              </td>
+              <td>${v.pageUrl ? v.pageUrl.replace(/https?:\/\/[^\/]+/, '').substring(0, 30) : '-'}</td>
+              <td><span class="device-badge">${getDeviceIcon(v.deviceType)} ${v.deviceType || '-'}</span></td>
+              <td>${v.browser || '-'}</td>
+              <td>${formatTime(v.visitedAt)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        <h3>No visitors yet</h3>
+        <p>Visitors will appear here once they visit your website</p>
+      </div>
+    `;
+  }
+}
+
+function getDeviceIcon(deviceType) {
+  if (!deviceType) return '';
+  switch (deviceType.toLowerCase()) {
+    case 'mobile': return '📱';
+    case 'tablet': return '📱';
+    case 'desktop': return '💻';
+    default: return '🖥️';
+  }
+}
+
+function formatTime(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = now - date;
+
+  if (diff < 60000) return 'Just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+loadData();
+</script>
+</body>
+</html>
