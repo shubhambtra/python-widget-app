@@ -1311,19 +1311,41 @@
     }
 
     // Contact form submission
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Sending...';
 
         const name = document.getElementById('contactName').value;
         const email = document.getElementById('contactEmail').value;
         const subject = document.getElementById('contactSubject').value;
         const message = document.getElementById('contactMessage').value;
 
-        // Here you would typically send this to your backend
-        console.log('Contact form submitted:', { name, email, subject, message });
+        try {
+            const response = await fetch(`${CONFIG.API_BASE}/ContactSubmissions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, subject, message })
+            });
 
-        showToast('Thank you! Your message has been sent.', 'success');
-        this.reset();
+            const result = await response.json();
+
+            if (response.ok) {
+                showToast(result.message || 'Thank you! Your message has been sent.', 'success');
+                this.reset();
+            } else {
+                showToast(result.message || 'Failed to send message. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Contact form error:', error);
+            showToast('Failed to send message. Please try again.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
     });
 
     // Fetch and render pricing plans from API

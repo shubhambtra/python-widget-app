@@ -188,6 +188,15 @@
       <div class="stat-value" id="totalConversations">0</div>
       <div class="stat-label">Conversations</div>
     </div>
+    <div class="stat-card" style="cursor: pointer;" onclick="document.getElementById('contactSubmissionsCard').scrollIntoView({behavior: 'smooth'})">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="unreadContacts">0</div>
+      <div class="stat-label">Unread Messages</div>
+    </div>
   </div>
 
   <!-- Sites Table Card -->
@@ -209,6 +218,26 @@
       <div class="loading-state">
         <div class="loading-spinner"></div>
         <p>Loading sites...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Submissions Card -->
+  <div class="table-card" id="contactSubmissionsCard">
+    <div class="table-header">
+      <h2>Contact Form Submissions</h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <select id="contactFilter" onchange="loadContactSubmissions()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);">
+          <option value="">All Messages</option>
+          <option value="false">Unread</option>
+          <option value="true">Read</option>
+        </select>
+      </div>
+    </div>
+    <div id="contactSubmissionsContainer">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading contact submissions...</p>
       </div>
     </div>
   </div>
@@ -366,6 +395,7 @@ function viewSite(siteId) {
     return;
   }
 
+  document.getElementById('siteEditBtn').style.display = 'flex';
   document.getElementById('siteModalAvatar').textContent = (site.name || 'S')[0].toUpperCase();
   document.getElementById('siteModalTitle').textContent = site.name || 'Unnamed Site';
 
@@ -455,6 +485,187 @@ function editSite(siteId) {
   showToast('Site editing coming soon', 'success');
 }
 
+// Contact Submissions
+let contactSubmissions = [];
+
+async function loadContactSubmissions() {
+  const filterValue = document.getElementById('contactFilter').value;
+  const url = filterValue ? `${API_BASE}/ContactSubmissions?isRead=${filterValue}` : `${API_BASE}/ContactSubmissions`;
+
+  try {
+    const res = await apiFetch(url);
+    if (res.ok) {
+      const result = await res.json();
+      contactSubmissions = result.data?.items || [];
+      renderContactSubmissions(contactSubmissions);
+    }
+  } catch (e) {
+    console.error('Failed to load contact submissions:', e);
+    document.getElementById('contactSubmissionsContainer').innerHTML = `
+      <div class="empty-state">
+        <p>Failed to load contact submissions</p>
+      </div>
+    `;
+  }
+
+  // Load unread count
+  try {
+    const countRes = await apiFetch(`${API_BASE}/ContactSubmissions/unread-count`);
+    if (countRes.ok) {
+      const countResult = await countRes.json();
+      document.getElementById('unreadContacts').textContent = countResult.data || 0;
+    }
+  } catch (e) {
+    document.getElementById('unreadContacts').textContent = '-';
+  }
+}
+
+function renderContactSubmissions(submissions) {
+  if (!submissions.length) {
+    document.getElementById('contactSubmissionsContainer').innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <h3>No contact submissions</h3>
+        <p>Contact form submissions will appear here</p>
+      </div>
+    `;
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>From</th>
+          <th>Subject</th>
+          <th>Message</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${submissions.map(sub => `
+          <tr style="${!sub.isRead ? 'background: rgba(59, 130, 246, 0.1);' : ''}">
+            <td>
+              <span class="badge ${sub.isRead ? 'inactive' : 'active'}">${sub.isRead ? 'Read' : 'Unread'}</span>
+            </td>
+            <td>
+              <div>
+                <div style="font-weight: 500;">${escapeHtml(sub.name)}</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(sub.email)}</div>
+              </div>
+            </td>
+            <td>${escapeHtml(sub.subject || '-')}</td>
+            <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(sub.message)}</td>
+            <td>${formatDate(sub.createdAt)}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="View" onclick="viewContact('${sub.id}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button class="action-btn" title="${sub.isRead ? 'Mark Unread' : 'Mark Read'}" onclick="toggleContactRead('${sub.id}', ${sub.isRead})">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${sub.isRead ? 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}" />
+                  </svg>
+                </button>
+                <button class="action-btn" title="Delete" onclick="deleteContact('${sub.id}')" style="color: #ef4444;">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('contactSubmissionsContainer').innerHTML = html;
+}
+
+function viewContact(id) {
+  const sub = contactSubmissions.find(s => s.id === id);
+  if (!sub) return;
+
+  // Mark as read when viewing
+  if (!sub.isRead) {
+    toggleContactRead(id, false);
+  }
+
+  document.getElementById('siteModalAvatar').textContent = sub.name[0].toUpperCase();
+  document.getElementById('siteModalTitle').textContent = 'Contact Message';
+  document.getElementById('siteModalBody').innerHTML = `
+    <div class="detail-section">
+      <h3>Sender Information</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Name</label>
+          <div class="value">${escapeHtml(sub.name)}</div>
+        </div>
+        <div class="detail-item">
+          <label>Email</label>
+          <div class="value"><a href="mailto:${escapeHtml(sub.email)}" style="color: var(--accent-color);">${escapeHtml(sub.email)}</a></div>
+        </div>
+        <div class="detail-item">
+          <label>Date</label>
+          <div class="value">${formatDate(sub.createdAt)}</div>
+        </div>
+        <div class="detail-item">
+          <label>IP Address</label>
+          <div class="value">${escapeHtml(sub.ipAddress || 'Unknown')}</div>
+        </div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <h3>Message</h3>
+      <div class="detail-grid">
+        <div class="detail-item full-width">
+          <label>Subject</label>
+          <div class="value">${escapeHtml(sub.subject || 'No subject')}</div>
+        </div>
+        <div class="detail-item full-width">
+          <label>Message</label>
+          <div class="value" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(sub.message)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('siteEditBtn').style.display = 'none';
+  openModal('siteModal');
+}
+
+async function toggleContactRead(id, currentStatus) {
+  const endpoint = currentStatus ? 'unread' : 'read';
+  try {
+    const res = await apiFetch(`${API_BASE}/ContactSubmissions/${id}/${endpoint}`, { method: 'PUT' });
+    if (res.ok) {
+      loadContactSubmissions();
+    }
+  } catch (e) {
+    showToast('Failed to update status', 'error');
+  }
+}
+
+async function deleteContact(id) {
+  if (!confirm('Are you sure you want to delete this message?')) return;
+
+  try {
+    const res = await apiFetch(`${API_BASE}/ContactSubmissions/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      showToast('Message deleted', 'success');
+      loadContactSubmissions();
+    }
+  } catch (e) {
+    showToast('Failed to delete message', 'error');
+  }
+}
+
 // Initialize theme on page load
 (function initTheme() {
   const savedTheme = localStorage.getItem('adminDashboardTheme');
@@ -465,6 +676,7 @@ function editSite(siteId) {
 
 // Load data on page load
 loadData();
+loadContactSubmissions();
 </script>
 </body>
 </html>
