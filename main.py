@@ -174,6 +174,26 @@ def terms_of_service_page_html():
     return FileResponse(BASE_DIR / "terms-of-service.html")
 
 
+@app.get("/cookie-policy")
+def cookie_policy_page():
+    return FileResponse(BASE_DIR / "cookie-policy.html")
+
+
+@app.get("/cookie-policy.html")
+def cookie_policy_page_html():
+    return FileResponse(BASE_DIR / "cookie-policy.html")
+
+
+@app.get("/gdpr")
+def gdpr_page():
+    return FileResponse(BASE_DIR / "gdpr.html")
+
+
+@app.get("/gdpr.html")
+def gdpr_page_html():
+    return FileResponse(BASE_DIR / "gdpr.html")
+
+
 @app.get("/admin-login")
 def admin_login_page():
     return FileResponse(BASE_DIR / "admin" / "admin-login.html")

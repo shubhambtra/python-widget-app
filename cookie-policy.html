@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Policy - ChatApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 0.75rem;
+            font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none;
+        }
+        .logo-icon {
+            width: 40px; height: 40px; background: white; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        }
+        .nav-buttons { display: flex; align-items: center; gap: 1rem; }
+        .login-btn {
+            background: transparent; border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; padding: 0.6rem 1.25rem; border-radius: 12px;
+            font-weight: 500; cursor: pointer; font-size: 0.95rem;
+            transition: all 0.2s; text-decoration: none;
+        }
+        .login-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
+        .signup-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border: none; color: #fff; padding: 0.6rem 1.25rem; border-radius: 12px;
+            font-weight: 500; cursor: pointer; font-size: 0.95rem;
+            transition: all 0.2s; text-decoration: none;
+        }
+        .signup-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5); }
+        .main-content { max-width: 900px; margin: 0 auto; padding: 120px 2rem 4rem; }
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .page-header h1 {
+            font-size: 3rem; font-weight: 800; margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .page-header p { color: #94a3b8; font-size: 1.1rem; }
+        .policy-content {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 3rem;
+        }
+        .policy-section { margin-bottom: 2.5rem; }
+        .policy-section:last-child { margin-bottom: 0; }
+        .policy-section h2 {
+            font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .policy-section h2 .section-number {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: 600;
+        }
+        .policy-section h3 { font-size: 1.1rem; font-weight: 600; color: #e2e8f0; margin: 1.5rem 0 0.75rem; }
+        .policy-section p { color: #94a3b8; margin-bottom: 1rem; }
+        .policy-section ul { color: #94a3b8; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .policy-section ul li { margin-bottom: 0.5rem; }
+        .policy-section a { color: #60a5fa; text-decoration: none; }
+        .policy-section a:hover { text-decoration: underline; }
+        .effective-date {
+            background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .effective-date svg { color: #60a5fa; flex-shrink: 0; }
+        .effective-date span { color: #94a3b8; }
+        .effective-date strong { color: #fff; }
+        .cookie-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .cookie-table th, .cookie-table td {
+            padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .cookie-table th { color: #fff; font-weight: 600; background: rgba(255,255,255,0.05); }
+        .cookie-table td { color: #94a3b8; }
+        .footer {
+            padding: 3rem 2rem 2rem; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 4rem;
+        }
+        .footer-content { max-width: 900px; margin: 0 auto; text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .footer-links a { color: #64748b; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-copyright { color: #475569; font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .policy-content { padding: 1.5rem; }
+            .navbar { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon" data-brand="icon">C</div>
+            <span data-brand="name">ChatApp</span>
+        </a>
+        <div class="nav-buttons">
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="signup-btn">Get Started</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Cookie Policy</h1>
+            <p>Understanding how we use cookies to improve your experience</p>
+        </div>
+
+        <div class="policy-content">
+            <div class="effective-date">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Effective Date: <strong>January 1, 2025</strong></span>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">1</span> What Are Cookies?</h2>
+                <p>Cookies are small text files that are stored on your device (computer, tablet, or mobile) when you visit our website. They help us recognize your device and remember certain information about your visit, such as your preferences and actions.</p>
+                <p>Cookies are widely used to make websites work more efficiently and to provide information to website owners.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">2</span> Types of Cookies We Use</h2>
+
+                <h3>Essential Cookies</h3>
+                <p>These cookies are necessary for the website to function properly. They enable basic functions like page navigation, secure areas access, and remembering your login session.</p>
+
+                <table class="cookie-table">
+                    <tr><th>Cookie Name</th><th>Purpose</th><th>Duration</th></tr>
+                    <tr><td>session_id</td><td>Maintains your login session</td><td>Session</td></tr>
+                    <tr><td>auth_token</td><td>Authentication and security</td><td>7 days</td></tr>
+                    <tr><td>csrf_token</td><td>Security protection</td><td>Session</td></tr>
+                </table>
+
+                <h3>Functional Cookies</h3>
+                <p>These cookies enable enhanced functionality and personalization, such as remembering your preferences and settings.</p>
+
+                <table class="cookie-table">
+                    <tr><th>Cookie Name</th><th>Purpose</th><th>Duration</th></tr>
+                    <tr><td>theme_preference</td><td>Remembers your theme choice</td><td>1 year</td></tr>
+                    <tr><td>language</td><td>Stores language preference</td><td>1 year</td></tr>
+                    <tr><td>visitor_session_id</td><td>Tracks your browsing session</td><td>Session</td></tr>
+                </table>
+
+                <h3>Analytics Cookies</h3>
+                <p>These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously.</p>
+
+                <table class="cookie-table">
+                    <tr><th>Cookie Name</th><th>Purpose</th><th>Duration</th></tr>
+                    <tr><td>_analytics</td><td>Tracks page views and interactions</td><td>30 days</td></tr>
+                    <tr><td>visitor_id</td><td>Identifies unique visitors</td><td>1 year</td></tr>
+                </table>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">3</span> How We Use Cookies</h2>
+                <p>We use cookies for the following purposes:</p>
+                <ul>
+                    <li><strong>Authentication:</strong> To keep you logged in and secure your account</li>
+                    <li><strong>Preferences:</strong> To remember your settings and preferences</li>
+                    <li><strong>Security:</strong> To protect against unauthorized access and fraud</li>
+                    <li><strong>Analytics:</strong> To understand how our website is used and improve our services</li>
+                    <li><strong>Performance:</strong> To ensure our website loads quickly and efficiently</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">4</span> Third-Party Cookies</h2>
+                <p>We may use third-party services that set their own cookies. These include:</p>
+                <ul>
+                    <li><strong>Payment Processors:</strong> Razorpay and PayPal for secure payment processing</li>
+                    <li><strong>Analytics:</strong> To help us understand website usage patterns</li>
+                </ul>
+                <p>We do not control these third-party cookies. Please refer to the respective third-party privacy policies for more information.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">5</span> Managing Cookies</h2>
+                <p>You can control and manage cookies in several ways:</p>
+
+                <h3>Browser Settings</h3>
+                <p>Most browsers allow you to refuse cookies or delete existing ones. Here's how:</p>
+                <ul>
+                    <li><strong>Chrome:</strong> Settings > Privacy and Security > Cookies</li>
+                    <li><strong>Firefox:</strong> Options > Privacy & Security > Cookies</li>
+                    <li><strong>Safari:</strong> Preferences > Privacy > Cookies</li>
+                    <li><strong>Edge:</strong> Settings > Privacy > Cookies</li>
+                </ul>
+
+                <h3>Opt-Out</h3>
+                <p>You can opt out of analytics cookies by contacting us or adjusting your browser settings. Note that disabling essential cookies may affect website functionality.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">6</span> Updates to This Policy</h2>
+                <p>We may update this Cookie Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. We will notify you of any material changes by posting the updated policy on this page with a new effective date.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">7</span> Contact Us</h2>
+                <p>If you have any questions about our use of cookies, please contact us:</p>
+                <ul>
+                    <li>Email: <a href="mailto:support@chatapp.com">support@chatapp.com</a></li>
+                    <li>Visit our <a href="/privacy-policy.html">Privacy Policy</a> for more information</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/privacy-policy.html">Privacy Policy</a>
+                <a href="/terms-of-service.html">Terms of Service</a>
+                <a href="/cookie-policy.html">Cookie Policy</a>
+                <a href="/gdpr.html">GDPR</a>
+            </div>
+            <p class="footer-copyright" data-brand="copyright">&copy; 2025 ChatApp. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/config.js"></script>
+    <script src="/js/visitor-tracker.js"></script>
+    <script src="/branding.js"></script>
+</body>
+</html>

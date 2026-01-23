@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR Compliance - ChatApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 0.75rem;
+            font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none;
+        }
+        .logo-icon {
+            width: 40px; height: 40px; background: white; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        }
+        .nav-buttons { display: flex; align-items: center; gap: 1rem; }
+        .login-btn {
+            background: transparent; border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; padding: 0.6rem 1.25rem; border-radius: 12px;
+            font-weight: 500; cursor: pointer; font-size: 0.95rem;
+            transition: all 0.2s; text-decoration: none;
+        }
+        .login-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
+        .signup-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border: none; color: #fff; padding: 0.6rem 1.25rem; border-radius: 12px;
+            font-weight: 500; cursor: pointer; font-size: 0.95rem;
+            transition: all 0.2s; text-decoration: none;
+        }
+        .signup-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5); }
+        .main-content { max-width: 900px; margin: 0 auto; padding: 120px 2rem 4rem; }
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .page-header h1 {
+            font-size: 3rem; font-weight: 800; margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .page-header p { color: #94a3b8; font-size: 1.1rem; }
+        .policy-content {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 3rem;
+        }
+        .policy-section { margin-bottom: 2.5rem; }
+        .policy-section:last-child { margin-bottom: 0; }
+        .policy-section h2 {
+            font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .policy-section h2 .section-number {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: 600;
+        }
+        .policy-section h3 { font-size: 1.1rem; font-weight: 600; color: #e2e8f0; margin: 1.5rem 0 0.75rem; }
+        .policy-section p { color: #94a3b8; margin-bottom: 1rem; }
+        .policy-section ul { color: #94a3b8; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .policy-section ul li { margin-bottom: 0.5rem; }
+        .policy-section a { color: #60a5fa; text-decoration: none; }
+        .policy-section a:hover { text-decoration: underline; }
+        .effective-date {
+            background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .effective-date svg { color: #60a5fa; flex-shrink: 0; }
+        .effective-date span { color: #94a3b8; }
+        .effective-date strong { color: #fff; }
+        .rights-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem; margin: 1.5rem 0;
+        }
+        .right-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 1.25rem;
+        }
+        .right-card h4 { color: #fff; font-size: 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .right-card h4 svg { color: #60a5fa; }
+        .right-card p { color: #94a3b8; font-size: 0.9rem; margin: 0; }
+        .footer {
+            padding: 3rem 2rem 2rem; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 4rem;
+        }
+        .footer-content { max-width: 900px; margin: 0 auto; text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .footer-links a { color: #64748b; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-copyright { color: #475569; font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .policy-content { padding: 1.5rem; }
+            .navbar { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon" data-brand="icon">C</div>
+            <span data-brand="name">ChatApp</span>
+        </a>
+        <div class="nav-buttons">
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="signup-btn">Get Started</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>GDPR Compliance</h1>
+            <p>Your privacy rights under the General Data Protection Regulation</p>
+        </div>
+
+        <div class="policy-content">
+            <div class="effective-date">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>We are committed to <strong>GDPR compliance</strong> for all EU residents</span>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">1</span> Introduction</h2>
+                <p>The General Data Protection Regulation (GDPR) is a comprehensive data protection law that applies to organizations processing personal data of individuals in the European Union (EU) and European Economic Area (EEA).</p>
+                <p>At ChatApp, we are committed to protecting your privacy and ensuring that your personal data is handled in accordance with the GDPR and other applicable data protection laws.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">2</span> Your Rights Under GDPR</h2>
+                <p>As a data subject, you have the following rights:</p>
+
+                <div class="rights-grid">
+                    <div class="right-card">
+                        <h4>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            Right to Access
+                        </h4>
+                        <p>You can request a copy of all personal data we hold about you.</p>
+                    </div>
+                    <div class="right-card">
+                        <h4>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            Right to Rectification
+                        </h4>
+                        <p>You can request correction of inaccurate or incomplete personal data.</p>
+                    </div>
+                    <div class="right-card">
+                        <h4>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            Right to Erasure
+                        </h4>
+                        <p>You can request deletion of your personal data ("right to be forgotten").</p>
+                    </div>
+                    <div class="right-card">
+                        <h4>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                            Right to Restriction
+                        </h4>
+                        <p>You can request limitation of processing of your personal data.</p>
+                    </div>
+                    <div class="right-card">
+                        <h4>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                            Right to Portability
+                        </h4>
+                        <p>You can receive your data in a structured, machine-readable format.</p>
+                    </div>
+                    <div class="right-card">
+                        <h4>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                            Right to Object
+                        </h4>
+                        <p>You can object to processing based on legitimate interests or direct marketing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">3</span> Data We Collect</h2>
+                <p>We collect and process the following categories of personal data:</p>
+                <ul>
+                    <li><strong>Identity Data:</strong> Name, username, email address</li>
+                    <li><strong>Contact Data:</strong> Email address, phone number</li>
+                    <li><strong>Technical Data:</strong> IP address, browser type, device information</li>
+                    <li><strong>Usage Data:</strong> Information about how you use our website and services</li>
+                    <li><strong>Communication Data:</strong> Chat messages and support conversations</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">4</span> Legal Basis for Processing</h2>
+                <p>We process your personal data based on the following legal grounds:</p>
+                <ul>
+                    <li><strong>Consent:</strong> Where you have given explicit consent for specific purposes</li>
+                    <li><strong>Contract:</strong> Where processing is necessary to fulfill our contract with you</li>
+                    <li><strong>Legal Obligation:</strong> Where we must comply with legal requirements</li>
+                    <li><strong>Legitimate Interests:</strong> Where processing is necessary for our legitimate business interests, provided your rights don't override these interests</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">5</span> Data Retention</h2>
+                <p>We retain your personal data only for as long as necessary to fulfill the purposes for which it was collected, including:</p>
+                <ul>
+                    <li>Active account data: Retained while your account is active</li>
+                    <li>Conversation history: Retained for 2 years after last activity</li>
+                    <li>Analytics data: Retained for 1 year</li>
+                    <li>Legal/compliance records: Retained as required by law</li>
+                </ul>
+                <p>Upon account deletion, we will delete or anonymize your personal data within 30 days, unless retention is required for legal purposes.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">6</span> International Transfers</h2>
+                <p>Your personal data may be transferred to and processed in countries outside the EU/EEA. When we transfer data internationally, we ensure appropriate safeguards are in place:</p>
+                <ul>
+                    <li>Standard Contractual Clauses approved by the European Commission</li>
+                    <li>Data processing agreements with all third-party processors</li>
+                    <li>Technical and organizational security measures</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">7</span> Data Security</h2>
+                <p>We implement appropriate technical and organizational measures to protect your personal data, including:</p>
+                <ul>
+                    <li>Encryption of data in transit and at rest</li>
+                    <li>Access controls and authentication mechanisms</li>
+                    <li>Regular security assessments and audits</li>
+                    <li>Employee training on data protection</li>
+                    <li>Incident response procedures</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">8</span> Exercising Your Rights</h2>
+                <p>To exercise any of your GDPR rights, you can:</p>
+                <ul>
+                    <li>Email us at: <a href="mailto:privacy@chatapp.com">privacy@chatapp.com</a></li>
+                    <li>Use the data export feature in your account settings</li>
+                    <li>Submit a request through our <a href="/#contact">contact form</a></li>
+                </ul>
+                <p>We will respond to your request within 30 days. If we need more time, we will inform you of the reason and extension period.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">9</span> Data Protection Officer</h2>
+                <p>For any questions or concerns about our data protection practices, you can contact us at:</p>
+                <ul>
+                    <li>Email: <a href="mailto:dpo@chatapp.com">dpo@chatapp.com</a></li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <h2><span class="section-number">10</span> Supervisory Authority</h2>
+                <p>If you believe we have not adequately addressed your concerns, you have the right to lodge a complaint with your local data protection supervisory authority.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/privacy-policy.html">Privacy Policy</a>
+                <a href="/terms-of-service.html">Terms of Service</a>
+                <a href="/cookie-policy.html">Cookie Policy</a>
+                <a href="/gdpr.html">GDPR</a>
+            </div>
+            <p class="footer-copyright" data-brand="copyright">&copy; 2025 ChatApp. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/config.js"></script>
+    <script src="/js/visitor-tracker.js"></script>
+    <script src="/branding.js"></script>
+</body>
+</html>
