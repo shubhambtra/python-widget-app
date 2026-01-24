@@ -361,6 +361,45 @@ UPDATES (2026-01-17 Session)
    - Dashboard now works on any port (8000, 5000, etc.)
 
 ================================================================================
+UPDATES (2026-01-24 Session)
+================================================================================
+
+1. VISITOR EMAIL COLLECTION - NEW
+
+   Added email field to chat widget pre-chat form:
+
+   Widget Changes (widget/Widget.html):
+   - Added email input field in welcome screen
+   - Added userEmail state variable stored in sessionStorage
+   - Updated startChat() to capture and save email
+   - Updated WebSocket init message to include email
+
+   Python Changes (main.py):
+   - Updated init_chat_session() to accept email parameter
+   - Updated WebSocket init handler to extract email from message
+   - Updated user_joined notification to include email for support dashboard
+
+   Backend Support (already existed):
+   - ChatInitRequest accepts email (ChatController.cs:178)
+   - GetOrCreateVisitorAsync handles email (VisitorService.cs:60,73-76,89)
+   - Visitor entity has Email field (Visitor.cs:10)
+
+2. SUPPORT DASHBOARD EMAIL DISPLAY - NEW
+
+   Shows visitor email in support dashboard:
+
+   HTML Changes (Support.html):
+   - Added chatHeaderEmail element in chat header
+   - Updated user_joined handler to store email
+   - Updated selectUser() to display email in chat header
+   - Updated renderUsers() to show email in user list
+   - Updated loadConversations() to use consistent 'email' property
+
+   CSS Changes (Support.css):
+   - Added .user-email style for user list
+   - Added .chat-header-email style for chat header
+
+================================================================================
 KNOWN ISSUES / TODO
 ================================================================================
 

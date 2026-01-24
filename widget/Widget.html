@@ -670,9 +670,10 @@ body {
       </svg>
     </div>
     <h2>Welcome!</h2>
-    <p>Enter your name to start a conversation</p>
+    <p>Enter your details to start a conversation</p>
     <div class="name-input">
       <input type="text" id="nameInput" placeholder="Your name" />
+      <input type="email" id="emailInput" placeholder="Your email" />
       <button id="btnStartChat">Start Chat</button>
     </div>
   </div>
@@ -742,6 +743,7 @@ let socket = null;
 let isCollapsed = false;
 let unreadCount = 0;
 let userName = sessionStorage.getItem("chatWidgetUserName") || "";
+let userEmail = sessionStorage.getItem("chatWidgetUserEmail") || "";
 let chatStarted = sessionStorage.getItem("chatWidgetStarted") === "true";
 let pendingFile = null;
 
@@ -753,6 +755,7 @@ const inputArea = document.getElementById("inputArea");
 const headerTitle = document.getElementById("headerTitle");
 const headerStatus = document.getElementById("headerStatus");
 const nameInput = document.getElementById("nameInput");
+const emailInput = document.getElementById("emailInput");
 const messageInput = document.getElementById("messageInput");
 const emojiPicker = document.getElementById("emojiPicker");
 const notificationBadge = document.getElementById("notificationBadge");
@@ -806,13 +809,16 @@ nameInput.addEventListener("keydown", (e) => {
 
 function startChat() {
   const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
   if (!name) return;
 
   userName = name;
+  userEmail = email;
   chatStarted = true;
 
   // Save to sessionStorage for page reload persistence
   sessionStorage.setItem("chatWidgetUserName", userName);
+  sessionStorage.setItem("chatWidgetUserEmail", userEmail);
   sessionStorage.setItem("chatWidgetStarted", "true");
 
   // Switch UI
@@ -848,7 +854,7 @@ function connectWebSocket() {
   socket = new WebSocket(`${wsProtocol}//${wsHost}/ws?siteId=${siteId}&role=customer&visitorId=${visitorId}&apiKey=${encodeURIComponent(apiKey)}`);
 
   socket.onopen = () => {
-    socket.send(JSON.stringify({ type: "init", name: userName }));
+    socket.send(JSON.stringify({ type: "init", name: userName, email: userEmail }));
     socket.send(JSON.stringify({ type: "get_state" }));
   };
 

@@ -134,6 +134,7 @@
       <div class="chat-header-avatar" id="chatHeaderAvatar">J</div>
       <div class="chat-header-info">
         <h3 id="chatHeaderName">John Doe</h3>
+        <p id="chatHeaderEmail" class="chat-header-email"></p>
         <p id="chatHeaderStatus">Online</p>
       </div>
     </div>
@@ -345,6 +346,7 @@ ws.onmessage = (e) => {
     if (!users[vid]) {
       users[vid] = {
         name: data.name,
+        email: data.email,
         conversationId: data.conversationId,
         messages: [],
         typing: false,
@@ -358,6 +360,7 @@ ws.onmessage = (e) => {
       users[vid].isOnline = true;
       users[vid].lastActivity = new Date();
       if (data.conversationId) users[vid].conversationId = data.conversationId;
+      if (data.email) users[vid].email = data.email;
     }
     renderUsers();
     if (!currentVisitor) selectUser(vid);
@@ -557,7 +560,7 @@ async function loadHistoricalConversations() {
       if (!users[vid]) {
         users[vid] = {
           name: conv.visitorName || "Visitor",
-          visitorEmail: conv.visitorEmail,
+          email: conv.visitorEmail,
           conversationId: conv.id,
           messages: [],
           typing: false,
@@ -572,8 +575,8 @@ async function loadHistoricalConversations() {
         if (!users[vid].conversationId) {
           users[vid].conversationId = conv.id;
         }
-        if (!users[vid].visitorEmail) {
-          users[vid].visitorEmail = conv.visitorEmail;
+        if (!users[vid].email) {
+          users[vid].email = conv.visitorEmail;
         }
         users[vid].lastMessagePreview = users[vid].lastMessagePreview || conv.lastMessagePreview;
         users[vid].unread = users[vid].unread || conv.unreadCount || 0;
@@ -725,6 +728,7 @@ function renderUsers() {
           </div>
           <div class="user-info">
             <div class="user-name">${escapeHtml(user.name)}</div>
+            ${user.email ? `<div class="user-email">${escapeHtml(user.email)}</div>` : ''}
             <div class="user-preview ${user.typing ? 'typing' : ''}">${escapeHtml(preview)}</div>
           </div>
           <div class="user-meta">
@@ -754,6 +758,13 @@ function selectUser(vid) {
   // Update header
   chatHeaderAvatar.textContent = getInitials(users[vid].name);
   chatHeaderName.textContent = users[vid].name;
+
+  // Update email
+  const emailEl = document.getElementById("chatHeaderEmail");
+  if (emailEl) {
+    emailEl.textContent = users[vid].email || "";
+    emailEl.style.display = users[vid].email ? "block" : "none";
+  }
 
   // Update online status
   const statusEl = document.getElementById("chatHeaderStatus");

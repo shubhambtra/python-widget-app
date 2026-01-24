@@ -1025,7 +1025,7 @@ async def save_message_to_api(conversation_id: str, sender_type: str, sender_id:
     return None
 
 
-async def init_chat_session(site_id: str, visitor_id: str, name: str = None):
+async def init_chat_session(site_id: str, visitor_id: str, name: str = None, email: str = None):
     """Initialize chat session via .NET API"""
     async with httpx.AsyncClient(verify=False) as client:
         try:
@@ -1034,7 +1034,8 @@ async def init_chat_session(site_id: str, visitor_id: str, name: str = None):
                 json={
                     "siteId": site_id,
                     "visitorId": visitor_id,
-                    "name": name
+                    "name": name,
+                    "email": email
                 }
             )
             if response.status_code == 200:
@@ -1224,10 +1225,11 @@ async def websocket_endpoint(ws: WebSocket):
             # ----- INIT USER -----
             elif data.get("type") == "init" and role == CUSTOMER:
                 name = data.get("name", visitor_id)
+                email = data.get("email")
                 site["names"][visitor_id] = name
 
                 # Initialize chat session with API (creates visitor & conversation)
-                chat_data = await init_chat_session(site_id, visitor_id, name)
+                chat_data = await init_chat_session(site_id, visitor_id, name, email)
                 conversation_id = None
                 if chat_data:
                     conversation_id = chat_data.get("conversationId")
@@ -1241,6 +1243,7 @@ async def websocket_endpoint(ws: WebSocket):
                         "type": "user_joined",
                         "visitorId": visitor_id,
                         "name": name,
+                        "email": email,
                         "conversationId": conversation_id
                     })
 
