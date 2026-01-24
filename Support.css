@@ -931,6 +931,12 @@ body {
   font-size: 12px;
   color: var(--text-muted) !important;
   margin: 2px 0;
+  cursor: pointer;
+}
+
+.chat-header-email:hover {
+  color: var(--accent-color) !important;
+  text-decoration: underline;
 }
 
 .messages-container {

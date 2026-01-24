@@ -759,11 +759,14 @@ function selectUser(vid) {
   chatHeaderAvatar.textContent = getInitials(users[vid].name);
   chatHeaderName.textContent = users[vid].name;
 
-  // Update email
+  // Update email (clickable to open mail client)
   const emailEl = document.getElementById("chatHeaderEmail");
   if (emailEl) {
-    emailEl.textContent = users[vid].email || "";
-    emailEl.style.display = users[vid].email ? "block" : "none";
+    const email = users[vid].email || "";
+    emailEl.textContent = email;
+    emailEl.style.display = email ? "block" : "none";
+    emailEl.onclick = email ? () => window.open(`mailto:${email}`) : null;
+    emailEl.title = email ? "Click to send email" : "";
   }
 
   // Update online status
