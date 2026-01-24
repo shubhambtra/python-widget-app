@@ -234,6 +234,8 @@
 <script>
 // ==================== STATE ====================
 let agents = [];
+let statusSocket = null;
+let refreshInterval = null;
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -241,7 +243,80 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadSiteInfo();
   await loadAgents();
   hideLoading();
+
+  // Connect to WebSocket for real-time status updates
+  connectStatusSocket();
+
+  // Also poll every 30 seconds as backup
+  refreshInterval = setInterval(loadAgents, 30000);
 });
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+  if (statusSocket) statusSocket.close();
+  if (refreshInterval) clearInterval(refreshInterval);
+});
+
+// ==================== WEBSOCKET FOR STATUS ====================
+function connectStatusSocket() {
+  try {
+    const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${location.host}/ws?siteId=${siteId}&role=admin&token=${token}`;
+
+    statusSocket = new WebSocket(wsUrl);
+
+    statusSocket.onopen = () => {
+      console.log('Status WebSocket connected');
+      // Request current agent statuses
+      statusSocket.send(JSON.stringify({ type: 'get_agent_status' }));
+    };
+
+    statusSocket.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+
+        // Handle agent status updates
+        if (data.type === 'agent_status_update' || data.type === 'agent_online' || data.type === 'agent_offline') {
+          updateAgentStatus(data.agentId || data.userId, data.status || (data.type === 'agent_online' ? 'online' : 'offline'));
+        }
+
+        // Handle full status list
+        if (data.type === 'agent_status_list') {
+          data.agents?.forEach(a => updateAgentStatus(a.userId, a.status));
+        }
+
+        // Support agent joined/left
+        if (data.type === 'support_connected') {
+          loadAgents(); // Refresh full list
+        }
+        if (data.type === 'support_disconnected') {
+          loadAgents(); // Refresh full list
+        }
+      } catch (err) {
+        console.warn('WebSocket message parse error:', err);
+      }
+    };
+
+    statusSocket.onclose = () => {
+      console.log('Status WebSocket closed, reconnecting in 5s...');
+      setTimeout(connectStatusSocket, 5000);
+    };
+
+    statusSocket.onerror = (err) => {
+      console.warn('Status WebSocket error:', err);
+    };
+  } catch (err) {
+    console.warn('Failed to connect status WebSocket:', err);
+  }
+}
+
+function updateAgentStatus(userId, status) {
+  const agent = agents.find(a => a.userId === userId);
+  if (agent && agent.status !== status) {
+    agent.status = status;
+    renderAgents();
+  }
+}
 
 // ==================== AGENTS ====================
 async function loadAgents() {

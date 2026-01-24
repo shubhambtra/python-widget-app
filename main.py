@@ -82,6 +82,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 SUPPORT = "support"
 CUSTOMER = "customer"
+ADMIN = "admin"
 
 # token -> { username, site_id, user_id }
 ACTIVE_TOKENS = {}
@@ -1133,6 +1134,43 @@ async def validate_api_key(site_id: str, api_key: str) -> bool:
     return False
 
 
+async def update_agent_status(token: str, status: str):
+    """Update agent online/offline status via .NET API"""
+    if not token:
+        return False
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.put(
+                f"{API_BASE_URL}/auth/me/status",
+                json={"status": status},
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0
+            )
+            if response.status_code == 200:
+                print(f"Agent status updated to: {status}")
+                return True
+            else:
+                print(f"Failed to update agent status: {response.status_code}")
+        except Exception as e:
+            print(f"Error updating agent status: {e}")
+    return False
+
+
+async def broadcast_to_admins(site: dict, message: dict):
+    """Broadcast a message to all connected admins for a site"""
+    admins_to_remove = []
+    for admin_id, admin_ws in site.get("admins", {}).items():
+        try:
+            await admin_ws.send_json(message)
+        except Exception as e:
+            print(f"Failed to send to admin {admin_id}: {e}")
+            admins_to_remove.append(admin_id)
+    # Remove disconnected admins
+    for admin_id in admins_to_remove:
+        site["admins"].pop(admin_id, None)
+
+
 # ------------------ WEBSOCKET ------------------
 
 @app.websocket("/ws")
@@ -1171,19 +1209,42 @@ async def websocket_endpoint(ws: WebSocket):
             "support": None,
             "support_name": None,
             "support_user_id": None,
+            "support_token": None,
             "customers": {},
             "names": {},
+            "admins": {},  # admin user_id -> WebSocket
             "analysis_enabled": False,  # Default OFF
             "auto_reply_enabled": False  # Default OFF
         }
 
     site = connections[site_id]
 
+    # -------- AUTH ADMIN --------
+    if role == ADMIN:
+        auth = validate_jwt_token(token)
+        if not auth:
+            auth = ACTIVE_TOKENS.get(token)
+        if not auth:
+            await ws.close()
+            return
+
     # -------- REGISTER ROLE --------
     if role == SUPPORT:
         site["support"] = ws
         site["support_name"] = auth["username"]
         site["support_user_id"] = auth.get("user_id")
+        site["support_token"] = token  # Store token for status updates
+
+        # Update agent status to online
+        await update_agent_status(token, "online")
+
+        # Broadcast to admins that agent is online
+        await broadcast_to_admins(site, {
+            "type": "agent_online",
+            "userId": auth.get("user_id"),
+            "username": auth["username"],
+            "status": "online"
+        })
 
         # notify existing customers
         for vid, cws in site["customers"].items():
@@ -1204,6 +1265,19 @@ async def websocket_endpoint(ws: WebSocket):
 
     elif role == CUSTOMER:
         site["customers"][visitor_id] = ws
+
+    elif role == ADMIN:
+        admin_id = auth.get("user_id", token)
+        site["admins"][admin_id] = ws
+
+        # Send current support agent status to admin
+        if site["support"]:
+            await ws.send_json({
+                "type": "agent_online",
+                "userId": site["support_user_id"],
+                "username": site["support_name"],
+                "status": "online"
+            })
 
     else:
         await ws.close()
@@ -1457,14 +1531,35 @@ async def websocket_endpoint(ws: WebSocket):
                 })
 
         elif role == SUPPORT:
+            # Update agent status to offline before clearing data
+            support_token = site.get("support_token")
+            support_user_id = site.get("support_user_id")
+            support_name = site.get("support_name")
+
+            if support_token:
+                await update_agent_status(support_token, "offline")
+
+            # Broadcast to admins that agent is offline
+            await broadcast_to_admins(site, {
+                "type": "agent_offline",
+                "userId": support_user_id,
+                "username": support_name,
+                "status": "offline"
+            })
+
             site["support"] = None
             site["support_name"] = None
             site["support_user_id"] = None
+            site["support_token"] = None
 
             for cws in site["customers"].values():
                 await cws.send_json({
                     "type": "support_left"
                 })
+
+        elif role == ADMIN:
+            admin_id = auth.get("user_id", token) if auth else token
+            site["admins"].pop(admin_id, None)
 
 if __name__ == "__main__":
     import uvicorn
