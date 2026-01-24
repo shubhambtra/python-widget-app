@@ -13,7 +13,7 @@ const Branding = (function() {
 
     // Default fallback values
     const defaults = {
-        siteName: 'ChatApp',
+        siteName: 'Assistica AI',
         siteLogo: null,
         favicon: null,
         copyrightText: null,
