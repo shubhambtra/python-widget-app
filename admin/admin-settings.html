@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Settings - ChatApp Admin</title>
+<title>Settings - Assistica AI Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin-dashboard.css">
 </head>
@@ -16,7 +16,7 @@
 <aside class="sidebar">
   <a href="/" class="sidebar-logo">
     <div class="logo-icon" data-brand="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg></div>
-    <span><span data-brand="name">ChatApp</span> Admin</span>
+    <span><span data-brand="name">Assistica AI</span> Admin</span>
   </a>
 
   <nav class="sidebar-nav" id="sidebarNav">
@@ -71,7 +71,7 @@ const themes = [
 ];
 
 let siteSettingsData = {
-  siteName: 'ChatApp', siteLogo: null, favicon: null, copyrightText: '', seoTitle: '', seoDescription: '',
+  siteName: 'Assistica AI', siteLogo: null, favicon: null, copyrightText: '', seoTitle: '', seoDescription: '',
   seoKeywords: '', ogImage: null, facebookUrl: '', twitterUrl: '', linkedInUrl: '', instagramUrl: '',
   supportEmail: '', supportPhone: '', supportAddress: ''
 };
@@ -107,7 +107,7 @@ async function loadSiteSettings() {
       const result = await response.json();
       if (result.data) {
         siteSettingsData = {
-          siteName: result.data.siteName || 'ChatApp', siteLogo: result.data.siteLogo || null,
+          siteName: result.data.siteName || 'Assistica AI', siteLogo: result.data.siteLogo || null,
           favicon: result.data.favicon || null, copyrightText: result.data.copyrightText || '',
           seoTitle: result.data.seoTitle || '', seoDescription: result.data.seoDescription || '',
           seoKeywords: result.data.seoKeywords || '', ogImage: result.data.ogImage || null,
@@ -314,7 +314,7 @@ function renderSettingsView() {
       <div id="settings-tab-about" class="settings-tab-content">
         <div class="settings-section"><h3><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>About</h3>
           <div style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
-            <p><strong><span data-brand="name">ChatApp</span> Admin Dashboard</strong></p>
+            <p><strong><span data-brand="name">Assistica AI</span> Admin Dashboard</strong></p>
             <p style="margin-top: 8px;">Version 1.0.0</p>
             <p style="margin-top: 4px;">Manage your chat platform with ease.</p>
           </div>

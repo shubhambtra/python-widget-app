@@ -866,7 +866,7 @@ restoreChat();
 
 // ==================== WEBSOCKET ====================
 function connectWebSocket() {
-  // Use iframe's own origin (ChatApp server), not the parent website's domain
+  // Use iframe's own origin (Assistica AI server), not the parent website's domain
   const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
   const wsHost = location.host;
   socket = new WebSocket(`${wsProtocol}//${wsHost}/ws?siteId=${siteId}&role=customer&visitorId=${visitorId}&apiKey=${encodeURIComponent(apiKey)}`);
