@@ -120,6 +120,16 @@ def guide_page_html():
     return FileResponse(BASE_DIR / "guide.html")
 
 
+@app.get("/tutorials")
+def tutorials_page():
+    return FileResponse(BASE_DIR / "tutorials.html")
+
+
+@app.get("/tutorials.html")
+def tutorials_page_html():
+    return FileResponse(BASE_DIR / "tutorials.html")
+
+
 @app.get("/register.html")
 def register_page_html():
     return FileResponse(BASE_DIR / "register.html")
@@ -331,6 +341,16 @@ def admin_visitors_page():
 @app.get("/admin-visitors.html")
 def admin_visitors_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-visitors.html")
+
+
+@app.get("/admin-tutorials")
+def admin_tutorials_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-tutorials.html")
+
+
+@app.get("/admin-tutorials.html")
+def admin_tutorials_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-tutorials.html")
 
 
 @app.get("/profile.html")
