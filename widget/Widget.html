@@ -745,6 +745,7 @@ let unreadCount = 0;
 let userName = sessionStorage.getItem("chatWidgetUserName") || "";
 let userEmail = sessionStorage.getItem("chatWidgetUserEmail") || "";
 let chatStarted = sessionStorage.getItem("chatWidgetStarted") === "true";
+let brandName = sessionStorage.getItem("chatWidgetBrandName") || "Us";
 let pendingFile = null;
 
 // ==================== DOM ELEMENTS ====================
@@ -779,12 +780,14 @@ chatWidget.addEventListener("click", () => {
 function collapse() {
   isCollapsed = true;
   chatWidget.classList.add("collapsed");
+  headerTitle.textContent = `Ask ${brandName}`;
   parent.postMessage({ type: "CHAT_COLLAPSE" }, "*");
 }
 
 function expand() {
   isCollapsed = false;
   chatWidget.classList.remove("collapsed");
+  headerTitle.textContent = "Chat Support";
   unreadCount = 0;
   updateBadge();
   parent.postMessage({ type: "CHAT_EXPAND" }, "*");
@@ -1240,6 +1243,29 @@ window.addEventListener("message", (e) => {
     expand();
   }
 });
+
+// Fetch brand name from API
+async function fetchBrandName() {
+  try {
+    const response = await fetch(`${WS_URL.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '')}/api/SiteSettings`);
+    if (response.ok) {
+      const result = await response.json();
+      if (result.data?.siteName) {
+        brandName = result.data.siteName;
+        sessionStorage.setItem("chatWidgetBrandName", brandName);
+        // Update header if collapsed
+        if (isCollapsed) {
+          headerTitle.textContent = `Ask ${brandName}`;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to fetch brand name:", e);
+  }
+}
+
+// Initialize brand name on load
+fetchBrandName();
 </script>
 
 </body>
