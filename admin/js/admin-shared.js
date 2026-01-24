@@ -10,6 +10,11 @@ const params = new URLSearchParams(location.search);
 const authToken = params.get('token');
 const currentUser = params.get('user');
 
+// Get token function (for compatibility)
+function getToken() {
+  return authToken;
+}
+
 // Set user info if elements exist
 if (document.getElementById('userName')) {
   document.getElementById('userName').textContent = currentUser || 'Admin';
