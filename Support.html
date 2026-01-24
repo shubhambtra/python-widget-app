@@ -134,8 +134,21 @@
       <div class="chat-header-avatar" id="chatHeaderAvatar">J</div>
       <div class="chat-header-info">
         <h3 id="chatHeaderName">John Doe</h3>
-        <p id="chatHeaderEmail" class="chat-header-email"></p>
         <p id="chatHeaderStatus">Online</p>
+      </div>
+      <div class="chat-header-actions">
+        <div class="visitor-email-badge" id="visitorEmailBadge" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <span id="visitorEmailText"></span>
+        </div>
+        <button class="btn-send-email" id="btnSendEmail" style="display: none;" title="Send Email">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          Send Email
+        </button>
       </div>
     </div>
 
@@ -289,6 +302,44 @@
           </span>
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Email Compose Modal -->
+<div id="emailModal" class="email-modal-overlay" style="display: none;" onclick="if(event.target === this) closeEmailModal()">
+  <div class="email-modal">
+    <div class="email-modal-header">
+      <h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        Send Email
+      </h3>
+      <button class="email-modal-close" onclick="closeEmailModal()">&times;</button>
+    </div>
+    <div class="email-modal-body">
+      <div class="email-form-group">
+        <label>To</label>
+        <input type="email" id="emailTo" readonly />
+      </div>
+      <div class="email-form-group">
+        <label>Subject</label>
+        <input type="text" id="emailSubject" placeholder="Enter subject..." />
+      </div>
+      <div class="email-form-group">
+        <label>Message</label>
+        <textarea id="emailBody" rows="8" placeholder="Write your message..."></textarea>
+      </div>
+    </div>
+    <div class="email-modal-footer">
+      <button class="btn-cancel" onclick="closeEmailModal()">Cancel</button>
+      <button class="btn-send" id="btnSendEmailSubmit" onclick="sendEmail()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+        Send Email
+      </button>
     </div>
   </div>
 </div>
@@ -728,7 +779,6 @@ function renderUsers() {
           </div>
           <div class="user-info">
             <div class="user-name">${escapeHtml(user.name)}</div>
-            ${user.email ? `<div class="user-email">${escapeHtml(user.email)}</div>` : ''}
             <div class="user-preview ${user.typing ? 'typing' : ''}">${escapeHtml(preview)}</div>
           </div>
           <div class="user-meta">
@@ -759,14 +809,19 @@ function selectUser(vid) {
   chatHeaderAvatar.textContent = getInitials(users[vid].name);
   chatHeaderName.textContent = users[vid].name;
 
-  // Update email (clickable to open mail client)
-  const emailEl = document.getElementById("chatHeaderEmail");
-  if (emailEl) {
-    const email = users[vid].email || "";
-    emailEl.textContent = email;
-    emailEl.style.display = email ? "block" : "none";
-    emailEl.onclick = email ? () => window.open(`mailto:${email}`) : null;
-    emailEl.title = email ? "Click to send email" : "";
+  // Update email badge and Send Email button
+  const email = users[vid].email || "";
+  const emailBadge = document.getElementById("visitorEmailBadge");
+  const emailText = document.getElementById("visitorEmailText");
+  const btnSendEmail = document.getElementById("btnSendEmail");
+
+  if (email) {
+    emailBadge.style.display = "flex";
+    emailText.textContent = email;
+    btnSendEmail.style.display = "flex";
+  } else {
+    emailBadge.style.display = "none";
+    btnSendEmail.style.display = "none";
   }
 
   // Update online status
@@ -1944,6 +1999,90 @@ function showUpgradeModal(feature, reason) {
 function closeUpgradeModal() {
   document.getElementById('upgradeModal').classList.remove('show');
 }
+
+// ==================== EMAIL MODAL ====================
+function openEmailModal() {
+  if (!currentVisitor || !users[currentVisitor]) return;
+
+  const email = users[currentVisitor].email;
+  if (!email) {
+    showNotification('No email address available for this visitor', 'error');
+    return;
+  }
+
+  document.getElementById('emailTo').value = email;
+  document.getElementById('emailSubject').value = `Follow-up from ${document.title || 'Support'}`;
+  document.getElementById('emailBody').value = `Hi ${users[currentVisitor].name},\n\nThank you for contacting us.\n\n`;
+
+  const modal = document.getElementById('emailModal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('show'), 10);
+
+  document.getElementById('emailSubject').focus();
+}
+
+function closeEmailModal() {
+  const modal = document.getElementById('emailModal');
+  modal.classList.remove('show');
+  setTimeout(() => modal.style.display = 'none', 300);
+}
+
+async function sendEmail() {
+  const to = document.getElementById('emailTo').value;
+  const subject = document.getElementById('emailSubject').value.trim();
+  const body = document.getElementById('emailBody').value.trim();
+
+  if (!subject) {
+    showNotification('Please enter a subject', 'error');
+    document.getElementById('emailSubject').focus();
+    return;
+  }
+
+  if (!body) {
+    showNotification('Please enter a message', 'error');
+    document.getElementById('emailBody').focus();
+    return;
+  }
+
+  const btn = document.getElementById('btnSendEmailSubmit');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> Sending...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch(`${API_BASE}/sites/${siteId}/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        to: to,
+        subject: subject,
+        body: body,
+        visitorId: currentVisitor
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      showNotification('Email sent successfully!', 'success');
+      closeEmailModal();
+    } else {
+      showNotification(result.message || 'Failed to send email', 'error');
+    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+    showNotification('Failed to send email. Please try again.', 'error');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+// Attach Send Email button click handler
+document.getElementById('btnSendEmail')?.addEventListener('click', openEmailModal);
 
 function showNotification(message, type = 'info') {
   // Create notification element
