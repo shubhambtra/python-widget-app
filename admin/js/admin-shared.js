@@ -150,7 +150,16 @@ async function apiFetch(url, options = {}) {
     delete mergedOptions.headers['Content-Type'];
   }
 
-  return fetch(url, mergedOptions);
+  const response = await fetch(url, mergedOptions);
+
+  // Handle token expiration - redirect to login
+  if (response.status === 401 || response.status === 403) {
+    showToast('Session expired. Redirecting to login...', 'error');
+    setTimeout(() => location.href = '/login', 1500);
+    throw new Error('Session expired');
+  }
+
+  return response;
 }
 
 // ==================== NAVIGATION ACTIVE STATE ====================

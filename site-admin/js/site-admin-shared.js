@@ -57,6 +57,12 @@ function logout() {
   location.href = '/login';
 }
 
+// Handle token expiration - redirect to login
+function handleTokenExpired() {
+  showToast('Session expired. Redirecting to login...', 'error');
+  setTimeout(() => location.href = '/login', 1500);
+}
+
 // ==================== API HELPERS ====================
 async function apiGet(endpoint) {
   console.log('API GET:', endpoint);
@@ -65,6 +71,10 @@ async function apiGet(endpoint) {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     console.log('API GET response:', res.status, res.statusText);
+    if (res.status === 401 || res.status === 403) {
+      handleTokenExpired();
+      throw new Error('Session expired');
+    }
     if (!res.ok) {
       const text = await res.text();
       console.error('API error response:', text);
@@ -94,6 +104,10 @@ async function apiPost(endpoint, body) {
       },
       body: JSON.stringify(body)
     });
+    if (res.status === 401 || res.status === 403) {
+      handleTokenExpired();
+      throw new Error('Session expired');
+    }
     if (!res.ok) {
       const text = await res.text();
       console.error('API POST error:', text);
@@ -119,6 +133,10 @@ async function apiPut(endpoint, body) {
       },
       body: JSON.stringify(body)
     });
+    if (res.status === 401 || res.status === 403) {
+      handleTokenExpired();
+      throw new Error('Session expired');
+    }
     if (!res.ok) {
       const text = await res.text();
       console.error('API PUT error:', text);
@@ -140,6 +158,10 @@ async function apiDelete(endpoint) {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    if (res.status === 401 || res.status === 403) {
+      handleTokenExpired();
+      throw new Error('Session expired');
+    }
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return true;
   } catch (err) {
