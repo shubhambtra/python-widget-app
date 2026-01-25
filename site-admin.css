@@ -190,16 +190,17 @@ body {
 }
 
 .logout-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  width: 100%;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 8px;
-  color: #94a3b8;
-  font-size: 13px;
+  color: #f87171;
+  font-size: 14px;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
@@ -207,8 +208,7 @@ body {
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  background: rgba(239, 68, 68, 0.2);
 }
 
 .logout-btn svg {
@@ -218,7 +218,8 @@ body {
 }
 
 .logout-btn.icon-only {
-  padding: 8px;
+  width: auto;
+  padding: 10px;
 }
 
 .sidebar-actions {
