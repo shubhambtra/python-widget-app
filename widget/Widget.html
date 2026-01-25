@@ -187,11 +187,13 @@ body {
 .read-receipt {
   display: inline-flex;
   align-items: center;
+  margin-left: 4px;
 }
 
 .read-receipt svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .read-receipt.sent svg {
@@ -1192,8 +1194,9 @@ function updateReadReceipts(status) {
     if (status === 'read' || status === 'delivered') {
       // Double checkmark
       receipt.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12l5 5L17 6M7 12l5 5L23 6"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 7l-8.5 8.5-4-4"></path>
+          <path d="M22 7l-8.5 8.5-1-1"></path>
         </svg>
       `;
     }
@@ -1384,24 +1387,26 @@ function addMessage(from, text, fileData = null, status = 'sent') {
     receipt.id = `receipt-${Date.now()}`;
 
     if (status === 'read') {
-      // Double checkmark (read)
+      // Double checkmark (read) - green
       receipt.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12l5 5L17 6M7 12l5 5L23 6"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 7l-8.5 8.5-4-4"></path>
+          <path d="M22 7l-8.5 8.5-1-1"></path>
         </svg>
       `;
     } else if (status === 'delivered') {
-      // Double checkmark (delivered)
+      // Double checkmark (delivered) - gray
       receipt.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12l5 5L17 6M7 12l5 5L23 6"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 7l-8.5 8.5-4-4"></path>
+          <path d="M22 7l-8.5 8.5-1-1"></path>
         </svg>
       `;
     } else {
-      // Single checkmark (sent)
+      // Single checkmark (sent) - light gray
       receipt.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12l5 5L20 7"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
         </svg>
       `;
     }
