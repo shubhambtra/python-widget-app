@@ -72,18 +72,37 @@ body {
   opacity: 0.9;
 }
 
-.header-text p.online {
+.header-text p.online,
+.header-text p.away,
+.header-text p.busy {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.header-text p.online::before {
+.header-text p.online::before,
+.header-text p.away::before,
+.header-text p.busy::before {
   content: '';
   width: 8px;
   height: 8px;
-  background: #22c55e;
   border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.header-text p.online::before {
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.header-text p.away::before {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.header-text p.busy::before {
+  background: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
 
 .btn-collapse {
@@ -907,11 +926,33 @@ function connectWebSocket() {
     if (data.type === "support_typing_stop") {
       hideTypingIndicator();
     }
+
+    // Handle agent status updates
+    if (data.type === "agent_status_broadcast") {
+      updateAgentStatus(data.status, data.agentName);
+    }
   };
 
   socket.onclose = () => {
     console.log("WebSocket closed");
   };
+}
+
+// ==================== AGENT STATUS ====================
+function updateAgentStatus(status, agentName) {
+  const statusMessages = {
+    online: "We're here to help!",
+    away: "We'll respond shortly",
+    busy: "High volume - expect delays"
+  };
+
+  headerStatus.textContent = statusMessages[status] || statusMessages.online;
+  headerStatus.className = status || 'online';
+
+  // Update title if agent name provided
+  if (agentName) {
+    headerTitle.textContent = agentName;
+  }
 }
 
 // ==================== MESSAGES ====================
