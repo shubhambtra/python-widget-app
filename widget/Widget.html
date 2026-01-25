@@ -174,10 +174,36 @@ body {
   color: #94a3b8;
   margin-top: 4px;
   padding: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .message-wrapper.me .message-time {
-  text-align: right;
+  justify-content: flex-end;
+}
+
+/* Read Receipt Icons */
+.read-receipt {
+  display: inline-flex;
+  align-items: center;
+}
+
+.read-receipt svg {
+  width: 14px;
+  height: 14px;
+}
+
+.read-receipt.sent svg {
+  color: #94a3b8;
+}
+
+.read-receipt.delivered svg {
+  color: #64748b;
+}
+
+.read-receipt.read svg {
+  color: #22c55e;
 }
 
 /* Typing indicator */
@@ -308,6 +334,8 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s;
+  text-decoration: none;
+  color: inherit;
 }
 
 .file-attachment:hover {
@@ -320,6 +348,23 @@ body {
 
 .message-wrapper.me .file-attachment:hover {
   background: rgba(255,255,255,0.25);
+}
+
+.file-download-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.message-wrapper.me .file-download-icon {
+  background: rgba(255,255,255,0.15);
+  color: white;
 }
 
 .file-icon {
@@ -835,52 +880,6 @@ body {
   color: #94a3b8;
 }
 
-/* ==================== QUICK REPLIES ==================== */
-.quick-replies {
-  padding: 12px 16px;
-  background: #fff;
-  border-top: 1px solid #e2e8f0;
-}
-
-.quick-replies-label {
-  font-size: 11px;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-
-.quick-replies-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.quick-reply-btn {
-  padding: 8px 14px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  font-size: 13px;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.quick-reply-btn:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
-  color: #1e293b;
-}
-
-.quick-reply-btn:active {
-  transform: scale(0.98);
-}
-
-.quick-replies.hidden {
-  display: none;
-}
 </style>
 </head>
 
@@ -927,17 +926,6 @@ body {
 
   <!-- MESSAGES AREA -->
   <div class="messages-area hidden" id="messagesArea"></div>
-
-  <!-- QUICK REPLIES -->
-  <div class="quick-replies hidden" id="quickReplies">
-    <div class="quick-replies-label">Quick replies:</div>
-    <div class="quick-replies-container" id="quickRepliesContainer">
-      <button class="quick-reply-btn" onclick="sendQuickReply('Hi, I need help')">Hi, I need help</button>
-      <button class="quick-reply-btn" onclick="sendQuickReply('I have a question about pricing')">Pricing question</button>
-      <button class="quick-reply-btn" onclick="sendQuickReply('I need technical support')">Technical support</button>
-      <button class="quick-reply-btn" onclick="sendQuickReply('I want to speak to a human')">Speak to human</button>
-    </div>
-  </div>
 
   <!-- INPUT AREA -->
   <div class="input-area hidden" id="inputArea" style="position: relative;">
@@ -1101,7 +1089,6 @@ function startChat() {
   welcomeScreen.classList.add("hidden");
   messagesArea.classList.remove("hidden");
   inputArea.classList.remove("hidden");
-  document.getElementById('quickReplies').classList.remove("hidden");
 
   // Connect WebSocket
   connectWebSocket();
@@ -1114,12 +1101,6 @@ function restoreChat() {
     welcomeScreen.classList.add("hidden");
     messagesArea.classList.remove("hidden");
     inputArea.classList.remove("hidden");
-
-    // Show quick replies only if no messages yet
-    const hasMessages = sessionStorage.getItem("chatWidgetHasMessages") === "true";
-    if (!hasMessages) {
-      document.getElementById('quickReplies').classList.remove("hidden");
-    }
 
     // Connect WebSocket
     connectWebSocket();
@@ -1187,11 +1168,36 @@ function connectWebSocket() {
     if (data.type === "conversation_closed") {
       showConversationClosed(data.message);
     }
+
+    // Handle read receipt updates
+    if (data.type === "message_read") {
+      updateReadReceipts('read');
+    }
+
+    if (data.type === "message_delivered") {
+      updateReadReceipts('delivered');
+    }
   };
 
   socket.onclose = () => {
     console.log("WebSocket closed");
   };
+}
+
+// Update read receipts on messages
+function updateReadReceipts(status) {
+  const receipts = document.querySelectorAll('.read-receipt.sent, .read-receipt.delivered');
+  receipts.forEach(receipt => {
+    receipt.className = `read-receipt ${status}`;
+    if (status === 'read' || status === 'delivered') {
+      // Double checkmark
+      receipt.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12l5 5L17 6M7 12l5 5L23 6"/>
+        </svg>
+      `;
+    }
+  });
 }
 
 // ==================== AGENT STATUS ====================
@@ -1310,7 +1316,7 @@ function showConversationClosed(message) {
 }
 
 // ==================== MESSAGES ====================
-function addMessage(from, text, fileData = null) {
+function addMessage(from, text, fileData = null, status = 'sent') {
   hideTypingIndicator();
 
   const wrapper = document.createElement("div");
@@ -1342,6 +1348,11 @@ function addMessage(from, text, fileData = null) {
       attachment.href = fileData.url;
       attachment.download = fileData.original_name;
       attachment.innerHTML = `
+        <div class="file-download-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </div>
         <div class="file-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -1360,13 +1371,51 @@ function addMessage(from, text, fileData = null) {
 
   const time = document.createElement("div");
   time.className = "message-time";
-  time.textContent = formatTime(new Date());
+
+  // Add time text
+  const timeText = document.createElement("span");
+  timeText.textContent = formatTime(new Date());
+  time.appendChild(timeText);
+
+  // Add read receipt icon for customer's messages
+  if (from === "me") {
+    const receipt = document.createElement("span");
+    receipt.className = `read-receipt ${status}`;
+    receipt.id = `receipt-${Date.now()}`;
+
+    if (status === 'read') {
+      // Double checkmark (read)
+      receipt.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12l5 5L17 6M7 12l5 5L23 6"/>
+        </svg>
+      `;
+    } else if (status === 'delivered') {
+      // Double checkmark (delivered)
+      receipt.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12l5 5L17 6M7 12l5 5L23 6"/>
+        </svg>
+      `;
+    } else {
+      // Single checkmark (sent)
+      receipt.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12l5 5L20 7"/>
+        </svg>
+      `;
+    }
+    time.appendChild(receipt);
+  }
 
   wrapper.appendChild(bubble);
   wrapper.appendChild(time);
   messagesArea.appendChild(wrapper);
 
   messagesArea.scrollTop = messagesArea.scrollHeight;
+
+  // Return the receipt element id for updating later
+  return from === "me" ? `receipt-${Date.now()}` : null;
 }
 
 function showTypingIndicator() {
@@ -1447,25 +1496,6 @@ async function send() {
   messageInput.value = "";
   messageInput.style.height = "auto";
 
-  // Hide quick replies after first message
-  hideQuickReplies();
-}
-
-// ==================== QUICK REPLIES ====================
-function sendQuickReply(message) {
-  if (!socket || socket.readyState !== WebSocket.OPEN) return;
-
-  addMessage("me", message);
-  socket.send(JSON.stringify({ message: message }));
-  hideQuickReplies();
-}
-
-function hideQuickReplies() {
-  const quickReplies = document.getElementById('quickReplies');
-  if (quickReplies) {
-    quickReplies.classList.add("hidden");
-    sessionStorage.setItem("chatWidgetHasMessages", "true");
-  }
 }
 
 // ==================== FILE HANDLING ====================
