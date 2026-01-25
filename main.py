@@ -1230,6 +1230,7 @@ async def websocket_endpoint(ws: WebSocket):
             "support_name": None,
             "support_user_id": None,
             "support_token": None,
+            "agent_status": "online",  # Default to online
             "customers": {},
             "names": {},
             "admins": {},  # admin user_id -> WebSocket
@@ -1276,11 +1277,16 @@ async def websocket_endpoint(ws: WebSocket):
                 "conversationId": visitor_data.get("conversation_id")
             })
 
-        # notify customers support joined
+        # notify customers support joined with status
         for cws in site["customers"].values():
             await cws.send_json({
                 "type": "support_joined",
                 "name": site["support_name"]
+            })
+            await cws.send_json({
+                "type": "agent_status_broadcast",
+                "status": site.get("agent_status", "online"),
+                "agentName": site["support_name"]
             })
 
     elif role == CUSTOMER:
@@ -1314,6 +1320,12 @@ async def websocket_endpoint(ws: WebSocket):
                     await ws.send_json({
                         "type": "support_joined",
                         "name": site["support_name"]
+                    })
+                    # Also send current agent status
+                    await ws.send_json({
+                        "type": "agent_status_broadcast",
+                        "status": site.get("agent_status", "online"),
+                        "agentName": site["support_name"]
                     })
 
             # ----- INIT USER -----
@@ -1383,6 +1395,23 @@ async def websocket_endpoint(ws: WebSocket):
             elif data.get("type") == "toggle_auto_reply" and role == SUPPORT:
                 site["auto_reply_enabled"] = data.get("enabled", False)
                 print(f"Auto Reply toggled: {site['auto_reply_enabled']}")
+
+            # ----- AGENT STATUS CHANGE -----
+            elif data.get("type") == "agent_status_change" and role == SUPPORT:
+                status = data.get("status", "online")
+                site["agent_status"] = status
+                print(f"Agent status changed to: {status}")
+
+                # Broadcast to all connected customers
+                for vid, cws in site["customers"].items():
+                    try:
+                        await cws.send_json({
+                            "type": "agent_status_broadcast",
+                            "status": status,
+                            "agentName": site.get("support_name", "Support")
+                        })
+                    except Exception as e:
+                        print(f"Failed to send status to customer {vid}: {e}")
 
             # ----- CUSTOMER MESSAGE -----
             elif role == CUSTOMER and ("message" in data or "file" in data):
