@@ -834,6 +834,53 @@ body {
   font-size: 13px;
   color: #94a3b8;
 }
+
+/* ==================== QUICK REPLIES ==================== */
+.quick-replies {
+  padding: 12px 16px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+}
+
+.quick-replies-label {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.quick-replies-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-reply-btn {
+  padding: 8px 14px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.quick-reply-btn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.quick-reply-btn:active {
+  transform: scale(0.98);
+}
+
+.quick-replies.hidden {
+  display: none;
+}
 </style>
 </head>
 
@@ -880,6 +927,17 @@ body {
 
   <!-- MESSAGES AREA -->
   <div class="messages-area hidden" id="messagesArea"></div>
+
+  <!-- QUICK REPLIES -->
+  <div class="quick-replies hidden" id="quickReplies">
+    <div class="quick-replies-label">Quick replies:</div>
+    <div class="quick-replies-container" id="quickRepliesContainer">
+      <button class="quick-reply-btn" onclick="sendQuickReply('Hi, I need help')">Hi, I need help</button>
+      <button class="quick-reply-btn" onclick="sendQuickReply('I have a question about pricing')">Pricing question</button>
+      <button class="quick-reply-btn" onclick="sendQuickReply('I need technical support')">Technical support</button>
+      <button class="quick-reply-btn" onclick="sendQuickReply('I want to speak to a human')">Speak to human</button>
+    </div>
+  </div>
 
   <!-- INPUT AREA -->
   <div class="input-area hidden" id="inputArea" style="position: relative;">
@@ -1043,6 +1101,7 @@ function startChat() {
   welcomeScreen.classList.add("hidden");
   messagesArea.classList.remove("hidden");
   inputArea.classList.remove("hidden");
+  document.getElementById('quickReplies').classList.remove("hidden");
 
   // Connect WebSocket
   connectWebSocket();
@@ -1055,6 +1114,12 @@ function restoreChat() {
     welcomeScreen.classList.add("hidden");
     messagesArea.classList.remove("hidden");
     inputArea.classList.remove("hidden");
+
+    // Show quick replies only if no messages yet
+    const hasMessages = sessionStorage.getItem("chatWidgetHasMessages") === "true";
+    if (!hasMessages) {
+      document.getElementById('quickReplies').classList.remove("hidden");
+    }
 
     // Connect WebSocket
     connectWebSocket();
@@ -1381,6 +1446,26 @@ async function send() {
 
   messageInput.value = "";
   messageInput.style.height = "auto";
+
+  // Hide quick replies after first message
+  hideQuickReplies();
+}
+
+// ==================== QUICK REPLIES ====================
+function sendQuickReply(message) {
+  if (!socket || socket.readyState !== WebSocket.OPEN) return;
+
+  addMessage("me", message);
+  socket.send(JSON.stringify({ message: message }));
+  hideQuickReplies();
+}
+
+function hideQuickReplies() {
+  const quickReplies = document.getElementById('quickReplies');
+  if (quickReplies) {
+    quickReplies.classList.add("hidden");
+    sessionStorage.setItem("chatWidgetHasMessages", "true");
+  }
 }
 
 // ==================== FILE HANDLING ====================

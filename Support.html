@@ -142,7 +142,37 @@
   <div class="sidebar-header">
     <h2>Conversations</h2>
     <span class="conversation-count" id="conversationCount">0</span>
+    <button class="btn-bulk-select" id="btnBulkSelect" onclick="toggleBulkSelectMode()" title="Select Multiple">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+    </button>
   </div>
+
+  <!-- Bulk Actions Bar -->
+  <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
+    <div class="bulk-select-all">
+      <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" />
+      <label for="selectAllCheckbox">Select All</label>
+    </div>
+    <span class="bulk-selected-count" id="bulkSelectedCount">0 selected</span>
+    <div class="bulk-action-buttons">
+      <button class="bulk-btn bulk-btn-close" onclick="bulkCloseConversations()" title="Close Selected">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Close
+      </button>
+      <button class="bulk-btn bulk-btn-delete" onclick="bulkDeleteConversations()" title="Delete Selected">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        Delete
+      </button>
+    </div>
+    <button class="bulk-cancel-btn" onclick="cancelBulkSelect()">Cancel</button>
+  </div>
+
   <div class="users-list" id="usersList">
     <div class="no-users">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -201,6 +231,37 @@
           <span class="csat-stars" id="csatStars"></span>
           <span class="csat-value" id="csatValue"></span>
         </div>
+        <button class="btn-search-messages" id="btnSearchMessages" onclick="toggleMessageSearch()" title="Search Messages">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Message Search Bar -->
+    <div class="message-search-bar" id="messageSearchBar" style="display: none;">
+      <div class="message-search-input-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="text" id="messageSearchInput" placeholder="Search in conversation..." oninput="searchMessages(this.value)" />
+        <span class="search-results-count" id="searchResultsCount"></span>
+        <button class="search-nav-btn" onclick="navigateSearchResult(-1)" title="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+        <button class="search-nav-btn" onclick="navigateSearchResult(1)" title="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <button class="search-close-btn" onclick="closeMessageSearch()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -519,6 +580,14 @@ let aiAnalysisAvailable = false;
 let aiAutoReplyAvailable = false;
 let aiAnalysisLimitExhausted = false;
 let aiAutoReplyLimitExhausted = false;
+
+// Bulk select state
+let bulkSelectMode = false;
+const selectedConversations = new Set();
+
+// Message search state
+let messageSearchResults = [];
+let currentSearchIndex = -1;
 
 // ==================== WEBSOCKET ====================
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
@@ -950,8 +1019,15 @@ function renderUsers() {
 
       const timeStr = formatTime(user.lastActivity);
 
+      const isSelected = selectedConversations.has(vid);
+
       return `
-        <div class="user-item ${vid === currentVisitor ? 'active' : ''}" onclick="selectUser('${vid}')">
+        <div class="user-item ${vid === currentVisitor ? 'active' : ''} ${isSelected ? 'selected' : ''}" onclick="${bulkSelectMode ? `toggleConversationSelection('${vid}')` : `selectUser('${vid}')`}">
+          ${bulkSelectMode ? `
+            <div class="bulk-checkbox" onclick="event.stopPropagation();">
+              <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleConversationSelection('${vid}')" />
+            </div>
+          ` : ''}
           <div class="user-avatar">
             ${initials}
             ${user.isOnline ? '<span class="status-dot"></span>' : '<span class="status-dot" style="background:#94a3b8;"></span>'}
@@ -964,11 +1040,13 @@ function renderUsers() {
             <span class="user-time">${timeStr}</span>
             ${user.unread > 0 ? `<span class="unread-badge">${user.unread}</span>` : ''}
           </div>
-          <button class="btn-delete-conv" onclick="event.stopPropagation(); deleteConversation('${vid}')" title="Delete conversation">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
+          ${!bulkSelectMode ? `
+            <button class="btn-delete-conv" onclick="event.stopPropagation(); deleteConversation('${vid}')" title="Delete conversation">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          ` : ''}
         </div>
       `;
     }).join('');
@@ -1849,6 +1927,245 @@ function closeSettingsModal() {
     document.documentElement.setAttribute('data-theme', savedTheme);
   }
 })();
+
+// ==================== BULK SELECT FUNCTIONS ====================
+function toggleBulkSelectMode() {
+  bulkSelectMode = !bulkSelectMode;
+  selectedConversations.clear();
+
+  const bulkActionsBar = document.getElementById('bulkActionsBar');
+  const btnBulkSelect = document.getElementById('btnBulkSelect');
+
+  if (bulkSelectMode) {
+    bulkActionsBar.style.display = 'flex';
+    btnBulkSelect.classList.add('active');
+  } else {
+    bulkActionsBar.style.display = 'none';
+    btnBulkSelect.classList.remove('active');
+  }
+
+  updateBulkSelectedCount();
+  renderUsers();
+}
+
+function toggleConversationSelection(vid) {
+  if (selectedConversations.has(vid)) {
+    selectedConversations.delete(vid);
+  } else {
+    selectedConversations.add(vid);
+  }
+  updateBulkSelectedCount();
+  renderUsers();
+}
+
+function toggleSelectAll(checked) {
+  selectedConversations.clear();
+  if (checked) {
+    Object.keys(users).forEach(vid => selectedConversations.add(vid));
+  }
+  updateBulkSelectedCount();
+  renderUsers();
+}
+
+function updateBulkSelectedCount() {
+  const count = selectedConversations.size;
+  document.getElementById('bulkSelectedCount').textContent = `${count} selected`;
+  document.getElementById('selectAllCheckbox').checked = count > 0 && count === Object.keys(users).length;
+}
+
+function cancelBulkSelect() {
+  bulkSelectMode = false;
+  selectedConversations.clear();
+  document.getElementById('bulkActionsBar').style.display = 'none';
+  document.getElementById('btnBulkSelect').classList.remove('active');
+  renderUsers();
+}
+
+async function bulkCloseConversations() {
+  if (selectedConversations.size === 0) {
+    showToast('No conversations selected', 'error');
+    return;
+  }
+
+  const result = await Swal.fire({
+    title: 'Close Conversations?',
+    text: `Close ${selectedConversations.size} selected conversation(s)?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#22c55e',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, close them',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
+
+  let closed = 0;
+  for (const vid of selectedConversations) {
+    try {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'close_conversation',
+          conversationId: users[vid]?.conversationId,
+          visitorId: vid,
+          sendCsat: false,
+          note: 'Bulk closed',
+          status: 'resolved'
+        }));
+
+        if (users[vid]) {
+          users[vid].isClosed = true;
+          users[vid].closedAt = new Date();
+          users[vid].closedStatus = 'resolved';
+        }
+        closed++;
+      }
+    } catch (err) {
+      console.error('Failed to close conversation:', vid, err);
+    }
+  }
+
+  showToast(`Closed ${closed} conversation(s)`, 'success');
+  cancelBulkSelect();
+}
+
+async function bulkDeleteConversations() {
+  if (selectedConversations.size === 0) {
+    showToast('No conversations selected', 'error');
+    return;
+  }
+
+  const result = await Swal.fire({
+    title: 'Delete Conversations?',
+    text: `Permanently delete ${selectedConversations.size} conversation(s)? This cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete them',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
+
+  let deleted = 0;
+  for (const vid of selectedConversations) {
+    try {
+      const user = users[vid];
+      if (user && user.conversationId) {
+        const response = await fetch(`${API_BASE}/sites/${siteId}/conversations/${user.conversationId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          delete users[vid];
+          deleted++;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to delete conversation:', vid, err);
+    }
+  }
+
+  if (selectedConversations.has(currentVisitor)) {
+    currentVisitor = null;
+    showNoChat();
+  }
+
+  showToast(`Deleted ${deleted} conversation(s)`, 'success');
+  cancelBulkSelect();
+}
+
+// ==================== MESSAGE SEARCH FUNCTIONS ====================
+function toggleMessageSearch() {
+  const searchBar = document.getElementById('messageSearchBar');
+  const isVisible = searchBar.style.display !== 'none';
+
+  if (isVisible) {
+    closeMessageSearch();
+  } else {
+    searchBar.style.display = 'flex';
+    document.getElementById('messageSearchInput').focus();
+  }
+}
+
+function closeMessageSearch() {
+  document.getElementById('messageSearchBar').style.display = 'none';
+  document.getElementById('messageSearchInput').value = '';
+  document.getElementById('searchResultsCount').textContent = '';
+  clearSearchHighlights();
+  messageSearchResults = [];
+  currentSearchIndex = -1;
+}
+
+function searchMessages(query) {
+  clearSearchHighlights();
+  messageSearchResults = [];
+  currentSearchIndex = -1;
+
+  if (!query || query.length < 2 || !currentVisitor || !users[currentVisitor]) {
+    document.getElementById('searchResultsCount').textContent = '';
+    return;
+  }
+
+  const user = users[currentVisitor];
+  const lowerQuery = query.toLowerCase();
+
+  // Find all matching messages
+  user.messages.forEach((msg, index) => {
+    if (msg.text && msg.text.toLowerCase().includes(lowerQuery)) {
+      messageSearchResults.push(index);
+    }
+  });
+
+  const count = messageSearchResults.length;
+  document.getElementById('searchResultsCount').textContent = count > 0 ? `${count} found` : 'No results';
+
+  if (count > 0) {
+    currentSearchIndex = 0;
+    highlightSearchResult();
+  }
+}
+
+function navigateSearchResult(direction) {
+  if (messageSearchResults.length === 0) return;
+
+  currentSearchIndex += direction;
+
+  if (currentSearchIndex < 0) {
+    currentSearchIndex = messageSearchResults.length - 1;
+  } else if (currentSearchIndex >= messageSearchResults.length) {
+    currentSearchIndex = 0;
+  }
+
+  highlightSearchResult();
+}
+
+function highlightSearchResult() {
+  clearSearchHighlights();
+
+  if (currentSearchIndex < 0 || currentSearchIndex >= messageSearchResults.length) return;
+
+  const messageIndex = messageSearchResults[currentSearchIndex];
+  const messageElements = messagesContainer.querySelectorAll('.message-row');
+
+  if (messageElements[messageIndex]) {
+    const element = messageElements[messageIndex];
+    element.classList.add('search-highlight');
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Update counter
+  document.getElementById('searchResultsCount').textContent =
+    `${currentSearchIndex + 1}/${messageSearchResults.length}`;
+}
+
+function clearSearchHighlights() {
+  messagesContainer.querySelectorAll('.search-highlight').forEach(el => {
+    el.classList.remove('search-highlight');
+  });
+}
 
 // Toast notification helper
 function showToast(message, type = "info") {
