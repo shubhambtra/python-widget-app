@@ -31,14 +31,10 @@
             right: 0;
             z-index: 1000;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-content {
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 100%;
         }
 
         .logo {
@@ -62,37 +58,59 @@
             font-weight: bold;
         }
 
-        .nav-links {
+        .nav-menu {
             display: flex;
-            gap: 2rem;
             align-items: center;
+            gap: 2rem;
         }
 
-        .nav-links a {
+        .nav-link {
             color: #94a3b8;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
         }
 
-        .nav-links a:hover {
+        .nav-link:hover,
+        .nav-link.active {
             color: #fff;
         }
 
-        .btn-nav {
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .register-btn {
             background: linear-gradient(135deg, #0ea5e9, #2563eb);
             color: #fff;
             padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
+            border-radius: 12px;
             font-weight: 600;
+            text-decoration: none;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .btn-nav:hover {
+        .register-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
-            color: #fff;
         }
 
         /* Hero Section */
@@ -471,7 +489,7 @@
                 font-size: 2rem;
             }
 
-            .nav-links {
+            .nav-menu {
                 display: none;
             }
 
@@ -504,18 +522,21 @@
 <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="nav-content">
-            <a href="/" class="logo">
-                <div class="logo-icon" data-brand="icon">C</div>
-                <span data-brand="name">Assistica AI</span>
-            </a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/#features">Features</a>
-                <a href="/#pricing">Pricing</a>
-                <a href="/guide.html">Guide</a>
-                <a href="/register" class="btn-nav">Get Started</a>
-            </div>
+        <a href="/" class="logo">
+            <div class="logo-icon" data-brand="icon">C</div>
+            <span data-brand="name">Assistica AI</span>
+        </a>
+        <div class="nav-menu">
+            <a href="/#features" class="nav-link">Features</a>
+            <a href="/#pricing" class="nav-link">Pricing</a>
+            <a href="/tutorials" class="nav-link">Tutorials</a>
+            <a href="/#about" class="nav-link">About Us</a>
+            <a href="/#contact" class="nav-link">Contact</a>
+            <a href="/guide" class="nav-link active">Guide</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="register-btn">Get Started</a>
         </div>
     </nav>
 
