@@ -2604,6 +2604,278 @@ body {
   cursor: not-allowed;
 }
 
+/* ==================== CLOSE CONVERSATION BUTTON ==================== */
+.btn-close-conv {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close-conv:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.btn-close-conv svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==================== CSAT BADGE ==================== */
+.csat-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.csat-badge.csat-high {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.csat-badge.csat-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.csat-badge.csat-low {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.csat-stars {
+  letter-spacing: 1px;
+}
+
+.csat-value {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* ==================== CLOSED CONVERSATION BADGE ==================== */
+.closed-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* ==================== DISABLED INPUT AREA ==================== */
+.chat-input-area.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  position: relative;
+}
+
+.chat-input-area.disabled::after {
+  content: 'This conversation is closed';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  font-size: 14px;
+  border-radius: 12px;
+}
+
+/* ==================== CLOSE CONVERSATION MODAL ==================== */
+.close-conv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.close-conv-modal {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.close-conv-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.close-conv-modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.close-conv-modal-header h3 svg {
+  color: #22c55e;
+}
+
+.close-conv-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  font-size: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-conv-modal-close:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.close-conv-modal-body {
+  padding: 24px;
+}
+
+.close-conv-info {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.csat-option {
+  background: var(--bg-tertiary);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.csat-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.csat-checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-color);
+}
+
+.csat-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  margin-left: 28px;
+}
+
+.close-conv-note {
+  margin-bottom: 16px;
+}
+
+.close-conv-note label,
+.close-conv-status label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.close-conv-note textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.close-conv-note textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.close-conv-status select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.close-conv-status select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.close-conv-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.btn-close-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
 /* ==================== READ RECEIPTS ==================== */
 .read-receipt {
   display: inline-flex;

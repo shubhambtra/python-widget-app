@@ -905,6 +905,39 @@ async def delete_conversation(site_id: str, conversation_id: str, authorization:
             raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/sites/{site_id}/agents")
+async def get_site_agents(site_id: str, authorization: str = Header(None)):
+    """Get agents for a specific site (proxy to .NET API)"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+
+    token = authorization.replace("Bearer ", "")
+
+    # Validate token
+    token_data = validate_jwt_token(token)
+    if not token_data:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.get(
+                f"{API_BASE_URL}/sites/{site_id}/agents",
+                headers={"Authorization": authorization}
+            )
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                # Return empty list if endpoint doesn't exist or fails
+                return {"success": True, "data": []}
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            print(f"Error fetching site agents: {e}")
+            return {"success": True, "data": []}
+
+
 # ------------------ AI USAGE TRACKING ------------------
 
 async def check_and_record_ai_usage(site_id: str, feature_type: str) -> dict:
@@ -1412,6 +1445,62 @@ async def websocket_endpoint(ws: WebSocket):
                         })
                     except Exception as e:
                         print(f"Failed to send status to customer {vid}: {e}")
+
+            # ----- CLOSE CONVERSATION -----
+            elif data.get("type") == "close_conversation" and role == SUPPORT:
+                target_visitor = data.get("visitorId")
+                send_csat = data.get("sendCsat", True)
+                close_status = data.get("status", "resolved")
+                close_note = data.get("note", "")
+
+                print(f"Closing conversation for visitor: {target_visitor}, status: {close_status}")
+
+                # Send CSAT request to customer if enabled and customer is connected
+                if send_csat and target_visitor in site["customers"]:
+                    try:
+                        await site["customers"][target_visitor].send_json({
+                            "type": "csat_request",
+                            "agentName": site.get("support_name", "Support")
+                        })
+                    except Exception as e:
+                        print(f"Failed to send CSAT request: {e}")
+
+                # Notify customer that conversation is closed
+                if target_visitor in site["customers"]:
+                    try:
+                        await site["customers"][target_visitor].send_json({
+                            "type": "conversation_closed",
+                            "status": close_status,
+                            "message": "This conversation has been closed. Thank you for chatting with us!"
+                        })
+                    except Exception as e:
+                        print(f"Failed to send close notification: {e}")
+
+                # Confirm to support
+                await ws.send_json({
+                    "type": "conversation_closed",
+                    "visitorId": target_visitor,
+                    "status": close_status
+                })
+
+            # ----- CSAT RESPONSE FROM CUSTOMER -----
+            elif data.get("type") == "csat_response" and role == CUSTOMER:
+                rating = data.get("rating", 0)
+                feedback = data.get("feedback", "")
+
+                print(f"CSAT received from {visitor_id}: {rating}/5")
+
+                # Notify support of the rating
+                if site["support"]:
+                    try:
+                        await site["support"].send_json({
+                            "type": "csat_received",
+                            "visitorId": visitor_id,
+                            "rating": rating,
+                            "feedback": feedback
+                        })
+                    except Exception as e:
+                        print(f"Failed to send CSAT to support: {e}")
 
             # ----- CUSTOMER MESSAGE -----
             elif role == CUSTOMER and ("message" in data or "file" in data):

@@ -191,6 +191,16 @@
           </svg>
           Transfer
         </button>
+        <button class="btn-close-conv" id="btnCloseConv" onclick="openCloseConversationModal()" title="Close Conversation">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Close
+        </button>
+        <div class="csat-badge" id="csatBadge" style="display: none;" title="Customer Satisfaction Rating">
+          <span class="csat-stars" id="csatStars"></span>
+          <span class="csat-value" id="csatValue"></span>
+        </div>
       </div>
     </div>
 
@@ -420,6 +430,57 @@
   </div>
 </div>
 
+<!-- Close Conversation Modal -->
+<div id="closeConvModal" class="close-conv-modal-overlay" style="display: none;" onclick="if(event.target === this) closeCloseConversationModal()">
+  <div class="close-conv-modal">
+    <div class="close-conv-modal-header">
+      <h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Close Conversation
+      </h3>
+      <button class="close-conv-modal-close" onclick="closeCloseConversationModal()">&times;</button>
+    </div>
+    <div class="close-conv-modal-body">
+      <p class="close-conv-info">Are you sure you want to close this conversation?</p>
+
+      <div class="csat-option">
+        <label class="csat-checkbox">
+          <input type="checkbox" id="sendCsatCheckbox" checked>
+          <span class="checkmark"></span>
+          Request customer satisfaction rating
+        </label>
+        <p class="csat-hint">Customer will be asked to rate their experience (1-5 stars)</p>
+      </div>
+
+      <div class="close-conv-note">
+        <label>Closing note (optional)</label>
+        <textarea id="closeConvNote" placeholder="Add a note about the resolution..."></textarea>
+      </div>
+
+      <div class="close-conv-status">
+        <label>Resolution status</label>
+        <select id="closeConvStatus">
+          <option value="resolved">Resolved</option>
+          <option value="unresolved">Unresolved</option>
+          <option value="spam">Spam</option>
+          <option value="no-response">No Response</option>
+        </select>
+      </div>
+    </div>
+    <div class="close-conv-modal-footer">
+      <button class="btn-cancel" onclick="closeCloseConversationModal()">Cancel</button>
+      <button class="btn-close-confirm" id="btnCloseConfirm" onclick="confirmCloseConversation()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Close Conversation
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="/config.js"></script>
 <script src="/branding.js"></script>
 <script>
@@ -643,6 +704,28 @@ ws.onmessage = (e) => {
       if (currentVisitor === vid) {
         renderMessages();
       }
+    }
+  }
+
+  // CSAT rating received from customer
+  if (data.type === "csat_received") {
+    const vid = data.visitorId;
+    const rating = data.rating;
+    displayCsatRating(vid, rating);
+  }
+
+  // Conversation closed confirmation
+  if (data.type === "conversation_closed") {
+    const vid = data.visitorId;
+    if (users[vid]) {
+      users[vid].isClosed = true;
+      users[vid].closedAt = new Date();
+      users[vid].closedStatus = data.status;
+
+      if (currentVisitor === vid) {
+        updateChatHeaderForClosedConversation();
+      }
+      renderUsers();
     }
   }
 };
@@ -922,9 +1005,35 @@ function selectUser(vid) {
 
   // Update online status
   const statusEl = document.getElementById("chatHeaderStatus");
-  if (statusEl) {
-    statusEl.textContent = users[vid].isOnline ? "Online" : "Offline";
-    statusEl.style.color = users[vid].isOnline ? "#22c55e" : "#94a3b8";
+  const user = users[vid];
+
+  if (user.isClosed) {
+    statusEl.innerHTML = `<span class="closed-badge">${user.closedStatus || 'Closed'}</span>`;
+    chatInputArea.classList.add('disabled');
+    document.getElementById('btnCloseConv').style.display = 'none';
+  } else {
+    statusEl.textContent = user.isOnline ? "Online" : "Offline";
+    statusEl.style.color = user.isOnline ? "#22c55e" : "#94a3b8";
+    chatInputArea.classList.remove('disabled');
+    document.getElementById('btnCloseConv').style.display = 'flex';
+  }
+
+  // Show CSAT rating if available
+  const csatBadge = document.getElementById('csatBadge');
+  const csatStars = document.getElementById('csatStars');
+  const csatValue = document.getElementById('csatValue');
+
+  if (user.csatRating) {
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += i <= user.csatRating ? '★' : '☆';
+    }
+    csatStars.textContent = starsHtml;
+    csatValue.textContent = `${user.csatRating}/5`;
+    csatBadge.style.display = 'flex';
+    csatBadge.className = `csat-badge csat-${user.csatRating <= 2 ? 'low' : user.csatRating <= 3 ? 'medium' : 'high'}`;
+  } else {
+    csatBadge.style.display = 'none';
   }
 
   renderUsers();
@@ -2493,6 +2602,111 @@ async function confirmTransfer() {
     console.error('Transfer failed:', err);
     Swal.fire('Error', 'Failed to transfer conversation', 'error');
   }
+}
+
+// ==================== CLOSE CONVERSATION ====================
+function openCloseConversationModal() {
+  if (!currentVisitor) return;
+
+  const modal = document.getElementById('closeConvModal');
+  document.getElementById('sendCsatCheckbox').checked = true;
+  document.getElementById('closeConvNote').value = '';
+  document.getElementById('closeConvStatus').value = 'resolved';
+  modal.style.display = 'flex';
+}
+
+function closeCloseConversationModal() {
+  document.getElementById('closeConvModal').style.display = 'none';
+}
+
+async function confirmCloseConversation() {
+  if (!currentVisitor) return;
+
+  const user = users[currentVisitor];
+  const sendCsat = document.getElementById('sendCsatCheckbox').checked;
+  const note = document.getElementById('closeConvNote').value.trim();
+  const status = document.getElementById('closeConvStatus').value;
+
+  try {
+    // Send close conversation request via WebSocket
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: 'close_conversation',
+        conversationId: user.conversationId,
+        visitorId: currentVisitor,
+        sendCsat: sendCsat,
+        note: note,
+        status: status
+      }));
+    }
+
+    // Mark conversation as closed locally
+    user.isClosed = true;
+    user.closedAt = new Date();
+    user.closedStatus = status;
+
+    showToast('Conversation closed successfully', 'success');
+    closeCloseConversationModal();
+
+    // Update UI to show closed status
+    updateChatHeaderForClosedConversation();
+    renderUsers();
+
+  } catch (err) {
+    console.error('Close conversation failed:', err);
+    Swal.fire('Error', 'Failed to close conversation', 'error');
+  }
+}
+
+function updateChatHeaderForClosedConversation() {
+  if (!currentVisitor || !users[currentVisitor]) return;
+
+  const user = users[currentVisitor];
+  if (user.isClosed) {
+    const statusEl = document.getElementById('chatHeaderStatus');
+    if (statusEl) {
+      statusEl.innerHTML = `<span class="closed-badge">Closed</span>`;
+    }
+
+    // Disable input area
+    const inputArea = document.getElementById('chatInputArea');
+    if (inputArea) {
+      inputArea.classList.add('disabled');
+    }
+
+    // Hide close button, show reopen option
+    const closeBtn = document.getElementById('btnCloseConv');
+    if (closeBtn) {
+      closeBtn.style.display = 'none';
+    }
+  }
+}
+
+function displayCsatRating(visitorId, rating) {
+  if (!users[visitorId]) return;
+
+  users[visitorId].csatRating = rating;
+
+  // If this is the current conversation, update the CSAT badge
+  if (currentVisitor === visitorId) {
+    const csatBadge = document.getElementById('csatBadge');
+    const csatStars = document.getElementById('csatStars');
+    const csatValue = document.getElementById('csatValue');
+
+    if (csatBadge && csatStars && csatValue) {
+      // Generate stars
+      let starsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        starsHtml += i <= rating ? '★' : '☆';
+      }
+      csatStars.textContent = starsHtml;
+      csatValue.textContent = `${rating}/5`;
+      csatBadge.style.display = 'flex';
+      csatBadge.className = `csat-badge csat-${rating <= 2 ? 'low' : rating <= 3 ? 'medium' : 'high'}`;
+    }
+  }
+
+  showToast(`Customer rated the conversation: ${rating}/5 stars`, rating >= 4 ? 'success' : 'info');
 }
 
 // ==================== TAB TITLE WITH UNREAD COUNT ====================

@@ -653,6 +653,187 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* ==================== CSAT POPUP ==================== */
+.csat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.csat-popup {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.csat-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.csat-header p {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.csat-stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.csat-star {
+  font-size: 32px;
+  color: #e2e8f0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 4px;
+}
+
+.csat-star:hover {
+  transform: scale(1.2);
+}
+
+.csat-star.selected {
+  color: #f59e0b;
+}
+
+.csat-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.csat-feedback {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  margin-bottom: 16px;
+}
+
+.csat-feedback:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.csat-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.csat-skip {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.csat-skip:hover {
+  background: #f8fafc;
+}
+
+.csat-submit {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.csat-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.csat-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==================== SYSTEM MESSAGE ==================== */
+.message-wrapper.system {
+  justify-content: center;
+}
+
+.system-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f1f5f9;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.system-message svg {
+  color: #22c55e;
+  flex-shrink: 0;
+}
+
+/* ==================== DISABLED INPUT ==================== */
+.input-area.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.input-area.disabled::after {
+  content: 'Conversation closed';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 250, 252, 0.9);
+  font-size: 13px;
+  color: #94a3b8;
+}
 </style>
 </head>
 
@@ -931,6 +1112,16 @@ function connectWebSocket() {
     if (data.type === "agent_status_broadcast") {
       updateAgentStatus(data.status, data.agentName);
     }
+
+    // Handle CSAT request
+    if (data.type === "csat_request") {
+      showCsatPopup(data.agentName);
+    }
+
+    // Handle conversation closed
+    if (data.type === "conversation_closed") {
+      showConversationClosed(data.message);
+    }
   };
 
   socket.onclose = () => {
@@ -952,6 +1143,104 @@ function updateAgentStatus(status, agentName) {
   // Update title if agent name provided
   if (agentName) {
     headerTitle.textContent = agentName;
+  }
+}
+
+// ==================== CSAT (Customer Satisfaction) ====================
+let selectedCsatRating = 0;
+
+function showCsatPopup(agentName) {
+  // Create CSAT popup overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'csatOverlay';
+  overlay.className = 'csat-overlay';
+  overlay.innerHTML = `
+    <div class="csat-popup">
+      <div class="csat-header">
+        <h3>Rate your experience</h3>
+        <p>How was your chat with ${agentName || 'our support team'}?</p>
+      </div>
+      <div class="csat-stars" id="csatStarsContainer">
+        <button class="csat-star" data-rating="1" onclick="selectCsatRating(1)">★</button>
+        <button class="csat-star" data-rating="2" onclick="selectCsatRating(2)">★</button>
+        <button class="csat-star" data-rating="3" onclick="selectCsatRating(3)">★</button>
+        <button class="csat-star" data-rating="4" onclick="selectCsatRating(4)">★</button>
+        <button class="csat-star" data-rating="5" onclick="selectCsatRating(5)">★</button>
+      </div>
+      <div class="csat-labels">
+        <span>Poor</span>
+        <span>Excellent</span>
+      </div>
+      <textarea id="csatFeedback" class="csat-feedback" placeholder="Additional feedback (optional)..." rows="2"></textarea>
+      <div class="csat-actions">
+        <button class="csat-skip" onclick="closeCsatPopup()">Skip</button>
+        <button class="csat-submit" id="csatSubmitBtn" onclick="submitCsatRating()" disabled>Submit</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  selectedCsatRating = 0;
+}
+
+function selectCsatRating(rating) {
+  selectedCsatRating = rating;
+  const stars = document.querySelectorAll('.csat-star');
+  stars.forEach((star, index) => {
+    if (index < rating) {
+      star.classList.add('selected');
+    } else {
+      star.classList.remove('selected');
+    }
+  });
+  document.getElementById('csatSubmitBtn').disabled = false;
+}
+
+function submitCsatRating() {
+  const feedback = document.getElementById('csatFeedback').value.trim();
+
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({
+      type: 'csat_response',
+      rating: selectedCsatRating,
+      feedback: feedback
+    }));
+  }
+
+  closeCsatPopup();
+  showThankYouMessage();
+}
+
+function closeCsatPopup() {
+  const overlay = document.getElementById('csatOverlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+function showThankYouMessage() {
+  addMessage('support', 'Thank you for your feedback! We appreciate you taking the time to rate your experience.');
+}
+
+function showConversationClosed(message) {
+  // Add a system message indicating the conversation is closed
+  const wrapper = document.createElement("div");
+  wrapper.className = "message-wrapper system";
+  wrapper.innerHTML = `
+    <div class="system-message">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>${message || 'This conversation has been closed.'}</span>
+    </div>
+  `;
+  messagesContainer.appendChild(wrapper);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  // Disable input
+  const inputArea = document.querySelector('.input-area');
+  if (inputArea) {
+    inputArea.classList.add('disabled');
   }
 }
 
