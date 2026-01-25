@@ -6,6 +6,7 @@
 <title>Conversations - Assistica AI Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin-dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -366,8 +367,18 @@ async function deleteConversation(conversationId, siteId) {
   const conversation = allConversations.find(c => c.id === conversationId);
   const visitorName = conversation?.visitorName || 'this visitor';
 
-  const confirmDelete = confirm(`Are you sure you want to delete the conversation with ${visitorName}? This action cannot be undone.`);
-  if (!confirmDelete) return;
+  const result = await Swal.fire({
+    title: 'Delete Conversation?',
+    text: `Are you sure you want to delete the conversation with ${visitorName}? This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const response = await apiFetch(`${API_BASE}/sites/${siteId}/conversations/${conversationId}`, {

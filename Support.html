@@ -6,6 +6,7 @@
 <title>Assistica AI - Support</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="Support.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -866,8 +867,18 @@ async function deleteConversation(vid) {
   const user = users[vid];
   if (!user) return;
 
-  const confirmDelete = confirm(`Are you sure you want to delete the conversation with ${user.name}? This action cannot be undone.`);
-  if (!confirmDelete) return;
+  const result = await Swal.fire({
+    title: 'Delete Conversation?',
+    text: `Are you sure you want to delete the conversation with ${user.name}? This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const conversationId = user.conversationId;
@@ -900,11 +911,11 @@ async function deleteConversation(vid) {
       console.log('Conversation deleted successfully');
     } else {
       const error = await response.json();
-      alert('Failed to delete conversation: ' + (error.detail || 'Unknown error'));
+      Swal.fire('Error', 'Failed to delete conversation: ' + (error.detail || 'Unknown error'), 'error');
     }
   } catch (error) {
     console.error('Error deleting conversation:', error);
-    alert('Failed to delete conversation');
+    Swal.fire('Error', 'Failed to delete conversation', 'error');
   }
 }
 

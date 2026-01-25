@@ -6,6 +6,7 @@
 <title>Plans - Assistica AI Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin-dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -643,9 +644,18 @@ async function savePlan() {
 }
 
 async function deletePlan(planId, planName) {
-  if (!confirm(`Are you sure you want to delete the plan "${planName}"? This action cannot be undone.`)) {
-    return;
-  }
+  const result = await Swal.fire({
+    title: 'Delete Plan?',
+    text: `Are you sure you want to delete the plan "${planName}"? This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const response = await apiFetch(`${API_BASE}/admin/plans/${planId}`, {

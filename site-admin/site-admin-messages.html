@@ -6,6 +6,7 @@
 <title>Welcome Messages - Assistica AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site-admin.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -257,7 +258,19 @@ async function addWelcomeMessage(e) {
 }
 
 async function deleteWelcomeMessage(id) {
-  if (!confirm('Delete this welcome message?')) return;
+  const result = await Swal.fire({
+    title: 'Delete Message?',
+    text: 'Are you sure you want to delete this welcome message?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
+
   try {
     await apiDelete(`/sites/${siteId}/welcome-messages/${id}`);
     showToast('Message deleted', 'success');
