@@ -211,3 +211,105 @@ function showErrorState(containerId, message) {
     `;
   }
 }
+
+// ==================== CHANGE PASSWORD ====================
+// Inject change password modal if not present
+function initChangePasswordModal() {
+  if (document.getElementById('changePasswordModal')) return;
+
+  const modalHtml = `
+    <div class="modal-overlay" id="changePasswordModal">
+      <div class="modal" style="max-width: 480px;">
+        <div class="modal-header">
+          <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right: 8px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Change Password
+          </h2>
+          <button class="close-btn" onclick="closeModal('changePasswordModal')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="changePasswordForm" onsubmit="handleChangePassword(event)">
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-primary);">Current Password</label>
+              <input type="password" id="currentPassword" required placeholder="Enter current password"
+                style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-primary); font-size: 14px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-primary);">New Password</label>
+              <input type="password" id="newPassword" required placeholder="Enter new password" minlength="8"
+                style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-primary); font-size: 14px;">
+              <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">Minimum 8 characters</small>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-primary);">Confirm New Password</label>
+              <input type="password" id="confirmPassword" required placeholder="Confirm new password"
+                style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-primary); font-size: 14px;">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+          <button class="btn btn-primary" onclick="document.getElementById('changePasswordForm').requestSubmit()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function handleChangePassword(e) {
+  e.preventDefault();
+
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if (newPassword.length < 8) {
+    showToast('New password must be at least 8 characters');
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    showToast('New passwords do not match');
+    return;
+  }
+
+  if (currentPassword === newPassword) {
+    showToast('New password must be different from current password');
+    return;
+  }
+
+  try {
+    const res = await apiFetch(`${API_BASE}/auth/change-password`, {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+
+    if (res.ok) {
+      showToast('Password changed successfully', 'success');
+      closeModal('changePasswordModal');
+      document.getElementById('changePasswordForm').reset();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      showToast(data.message || data.detail || 'Failed to change password');
+    }
+  } catch (err) {
+    if (err.message !== 'Session expired') {
+      showToast(err.message || 'Failed to change password');
+    }
+  }
+}
+
+// Initialize change password modal on DOM ready
+document.addEventListener('DOMContentLoaded', initChangePasswordModal);
