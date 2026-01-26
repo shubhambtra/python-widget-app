@@ -3871,9 +3871,16 @@ function updateNotificationBadge() {
 
 function initSupervisorFeatures() {
   // Check if user has supervisor role
+  console.log('initSupervisorFeatures - currentAgentRole:', currentAgentRole);
   if (currentAgentRole && ['admin', 'site_admin', 'supervisor', 'super_admin'].includes(currentAgentRole)) {
     isSupervisor = true;
-    document.getElementById('supervisorBtn').style.display = 'flex';
+    const btn = document.getElementById('supervisorBtn');
+    if (btn) {
+      btn.style.display = 'flex';
+      console.log('Supervisor button enabled');
+    } else {
+      console.error('supervisorBtn element not found');
+    }
   }
 }
 
@@ -3980,8 +3987,12 @@ selectUser = function(vid) {
 
 // ==================== INIT COLLABORATION FEATURES ====================
 
-// Initialize on load
-initSupervisorFeatures();
+// Initialize on load - ensure DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSupervisorFeatures);
+} else {
+  initSupervisorFeatures();
+}
 
 // Export functions
 window.openAgentChat = openAgentChat;
