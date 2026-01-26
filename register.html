@@ -1357,6 +1357,31 @@
             const submitText = document.getElementById('submitText');
             const submitSpinner = document.getElementById('submitSpinner');
 
+            // Check if this is a paid plan
+            const isFree = !selectedPlanData || selectedPlanData.monthlyPrice === 0;
+
+            if (isFree) {
+                // For FREE plans: Create account and site immediately, then redirect
+                const success = await createAccountAndSite();
+                if (success) {
+                    showAlert('Account created successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                    }, 1000);
+                }
+            } else {
+                // For PAID plans: Show payment modal first, create account only when user clicks Pay
+                submitBtn.disabled = false;
+                openPaymentModal();
+            }
+        }
+
+        // Create account and site (called after payment success for paid plans, immediately for free plans)
+        async function createAccountAndSite() {
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+
             submitBtn.disabled = true;
             submitText.textContent = 'Creating account...';
             submitSpinner.style.display = 'block';
@@ -1387,7 +1412,7 @@
                 accessToken = registerResult.data.accessToken;
                 submitText.textContent = 'Creating site...';
 
-                // Step 2: Create site (always starts with free, upgrade after payment)
+                // Step 2: Create site
                 const sitePayload = {
                     ...siteData
                 };
@@ -1418,20 +1443,14 @@
                 submitText.textContent = 'Create My Site';
                 submitSpinner.style.display = 'none';
 
-                // Redirect or show payment based on plan
-                const isFree = !selectedPlanData || selectedPlanData.monthlyPrice === 0;
-                if (isFree) {
-                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
-                } else {
-                    // Show payment modal for paid plans
-                    openPaymentModal();
-                }
+                return true;
 
             } catch (error) {
                 showAlert(error.message || 'An error occurred. Please try again.', 'error');
                 submitBtn.disabled = false;
                 submitText.textContent = 'Create My Site';
                 submitSpinner.style.display = 'none';
+                return false;
             }
         }
 
@@ -1465,14 +1484,26 @@
         async function payWithRazorpay() {
             const btn = document.getElementById('razorpayBtn');
             btn.disabled = true;
-            btn.textContent = 'Processing...';
+            btn.textContent = 'Creating account...';
 
             try {
                 if (!selectedPlanData) throw new Error('No plan selected');
                 const cycle = document.getElementById('billingCycle').value;
                 const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
 
-                // Create Razorpay order on backend
+                // Step 1: Create account and site FIRST (only when user clicks Pay)
+                if (!createdSiteId) {
+                    const accountCreated = await createAccountAndSite();
+                    if (!accountCreated) {
+                        btn.disabled = false;
+                        btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+                        return;
+                    }
+                }
+
+                btn.textContent = 'Creating payment order...';
+
+                // Step 2: Create Razorpay order
                 const orderResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/razorpay/create-order`, {
                     method: 'POST',
                     headers: {
@@ -1492,7 +1523,9 @@
                     throw new Error(orderData.message || 'Failed to create order');
                 }
 
-                // Open Razorpay checkout
+                btn.textContent = 'Opening payment...';
+
+                // Step 3: Open Razorpay checkout
                 const options = {
                     key: orderData.data.keyId,
                     amount: orderData.data.amount * 100,
@@ -1502,6 +1535,9 @@
                     order_id: orderData.data.orderId,
                     handler: async function(response) {
                         try {
+                            btn.textContent = 'Verifying payment...';
+
+                            // Verify payment and upgrade subscription
                             const verifyResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/razorpay/verify`, {
                                 method: 'POST',
                                 headers: {
@@ -1526,10 +1562,14 @@
                                     window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                                 }, 1500);
                             } else {
-                                showAlert(verifyData.message || 'Payment verification failed', 'error');
+                                showAlert(verifyData.message || 'Payment verification failed. Please contact support.', 'error');
+                                btn.disabled = false;
+                                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
                             }
                         } catch (err) {
                             showAlert('Payment verification failed. Please contact support.', 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
                         }
                     },
                     prefill: {
@@ -1541,6 +1581,9 @@
                     },
                     modal: {
                         ondismiss: function() {
+                            // User closed payment modal without paying - account already created
+                            // Show message that they can login and upgrade later
+                            showAlert('Payment cancelled. Your account has been created with free plan. You can upgrade anytime from settings.', 'error');
                             btn.disabled = false;
                             btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
                         }
@@ -1549,7 +1592,7 @@
 
                 const razorpay = new Razorpay(options);
                 razorpay.on('payment.failed', function(response) {
-                    showAlert('Payment failed: ' + response.error.description, 'error');
+                    showAlert('Payment failed: ' + response.error.description + '. Your account has been created with free plan.', 'error');
                     btn.disabled = false;
                     btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
                 });
@@ -1567,14 +1610,26 @@
         async function payWithPayPal() {
             const btn = document.getElementById('paypalBtn');
             btn.disabled = true;
-            btn.textContent = 'Processing...';
+            btn.textContent = 'Creating account...';
 
             try {
                 if (!selectedPlanData) throw new Error('No plan selected');
                 const cycle = document.getElementById('billingCycle').value;
                 const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
 
-                // Create PayPal order on backend
+                // Step 1: Create account and site FIRST (only when user clicks Pay)
+                if (!createdSiteId) {
+                    const accountCreated = await createAccountAndSite();
+                    if (!accountCreated) {
+                        btn.disabled = false;
+                        btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/></svg> Pay with PayPal`;
+                        return;
+                    }
+                }
+
+                btn.textContent = 'Creating payment order...';
+
+                // Step 2: Create PayPal order on backend
                 const orderResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/paypal/create-order`, {
                     method: 'POST',
                     headers: {
