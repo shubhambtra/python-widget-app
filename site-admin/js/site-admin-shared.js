@@ -379,22 +379,8 @@ async function loadSiteInfo() {
 
 // ==================== LIVE MONITOR ====================
 function openLiveMonitor() {
-  // Get current user info from storage or URL params
-  const userStr = sessionStorage.getItem('agentUser') || localStorage.getItem('agentUser');
-  let userId = params.get('userId');
-  let username = userName || 'Admin';
-
-  if (userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      userId = userId || user.id;
-      username = user.username || username;
-    } catch (e) {
-      console.warn('Could not parse user from storage');
-    }
-  }
-
   // Build Support URL with admin role for supervisor view
-  const supportUrl = `/Support.html?site_id=${siteId}&user_id=${userId || 'admin'}&username=${encodeURIComponent(username)}&role=admin&token=${token}`;
+  // Uses siteId and token from current session (already available in this file)
+  const supportUrl = `/Support.html?siteId=${siteId}&token=${token}&role=admin`;
   window.open(supportUrl, '_blank');
 }
