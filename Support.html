@@ -3118,54 +3118,54 @@ async function loadPlatformFeatures() {
 }
 
 function applyFeatureFlags() {
-  // Supervisor Mode
+  // Supervisor Mode - only hide if disabled, don't override role-based visibility
   const supervisorBtn = document.getElementById('supervisorBtn');
   if (supervisorBtn && !platformFeatures.supervisorMode) {
     supervisorBtn.style.display = 'none';
+  } else if (supervisorBtn && isSupervisor && platformFeatures.supervisorMode) {
+    supervisorBtn.style.display = 'flex';
   }
 
-  // AI Analysis toggle
-  const analysisToggle = document.getElementById('analysisToggle');
-  const analysisToggleContainer = analysisToggle?.closest('.toggle-container');
-  if (analysisToggleContainer && !platformFeatures.aiAnalysis) {
-    analysisToggleContainer.style.display = 'none';
+  // AI Analysis toggle - actual ID is 'toggleAnalysis', container is 'analysisToggleContainer'
+  const analysisToggleContainer = document.getElementById('analysisToggleContainer');
+  if (analysisToggleContainer) {
+    analysisToggleContainer.style.display = platformFeatures.aiAnalysis ? '' : 'none';
   }
 
-  // AI Auto Reply toggle
-  const autoReplyToggle = document.getElementById('autoReplyToggle');
-  const autoReplyToggleContainer = autoReplyToggle?.closest('.toggle-container');
-  if (autoReplyToggleContainer && !platformFeatures.aiAutoReply) {
-    autoReplyToggleContainer.style.display = 'none';
+  // AI Auto Reply toggle - actual ID is 'toggleAutoReply', container is 'autoReplyToggleContainer'
+  const autoReplyToggleContainer = document.getElementById('autoReplyToggleContainer');
+  if (autoReplyToggleContainer) {
+    autoReplyToggleContainer.style.display = platformFeatures.aiAutoReply ? '' : 'none';
   }
 
-  // File sharing
-  const fileAttachBtn = document.getElementById('attachFileBtn');
-  if (fileAttachBtn && !platformFeatures.fileSharing) {
-    fileAttachBtn.style.display = 'none';
+  // File sharing - actual ID is 'btnAttach'
+  const fileAttachBtn = document.getElementById('btnAttach');
+  if (fileAttachBtn) {
+    fileAttachBtn.style.display = platformFeatures.fileSharing ? '' : 'none';
   }
 
-  // Visitor info panel
-  const visitorPanel = document.getElementById('visitorInfoPanel');
-  if (visitorPanel && !platformFeatures.visitorInfo) {
-    visitorPanel.style.display = 'none';
+  // Canned responses / Quick replies - actual ID is 'btnQuickReplies'
+  const quickRepliesBtn = document.getElementById('btnQuickReplies');
+  if (quickRepliesBtn) {
+    quickRepliesBtn.style.display = platformFeatures.cannedResponses ? '' : 'none';
   }
 
-  // Canned responses
-  const cannedResponsesBtn = document.getElementById('cannedResponsesBtn');
-  if (cannedResponsesBtn && !platformFeatures.cannedResponses) {
-    cannedResponsesBtn.style.display = 'none';
+  // Conversation transfer - actual ID is 'btnTransfer'
+  const transferBtn = document.getElementById('btnTransfer');
+  if (transferBtn) {
+    transferBtn.style.display = platformFeatures.conversationTransfer ? '' : 'none';
   }
 
-  // Conversation transfer
-  const transferBtn = document.getElementById('transferBtn');
-  if (transferBtn && !platformFeatures.conversationTransfer) {
-    transferBtn.style.display = 'none';
-  }
-
-  // Team chat
+  // Team chat button
   const teamChatBtn = document.querySelector('[onclick="toggleAgentsPanel()"]');
-  if (teamChatBtn && !platformFeatures.teamChat) {
-    teamChatBtn.style.display = 'none';
+  if (teamChatBtn) {
+    teamChatBtn.style.display = platformFeatures.teamChat ? '' : 'none';
+  }
+
+  // Close conversation button (CSAT is part of closing)
+  const closeConvBtn = document.getElementById('btnCloseConv');
+  if (closeConvBtn) {
+    closeConvBtn.style.display = platformFeatures.csatRatings ? '' : 'none';
   }
 
   console.log('Platform features applied:', platformFeatures);
@@ -3982,14 +3982,15 @@ function updateNotificationBadge() {
 // ==================== SUPERVISOR VIEW ====================
 
 function initSupervisorFeatures() {
-  // Check if user has supervisor role
+  // Check if user has supervisor role AND platform feature is enabled
   console.log('initSupervisorFeatures - currentAgentRole:', currentAgentRole);
   if (currentAgentRole && ['admin', 'site_admin', 'supervisor', 'super_admin'].includes(currentAgentRole)) {
     isSupervisor = true;
     const btn = document.getElementById('supervisorBtn');
     if (btn) {
-      btn.style.display = 'flex';
-      console.log('Supervisor button enabled');
+      // Only show if platform feature is also enabled
+      btn.style.display = platformFeatures.supervisorMode ? 'flex' : 'none';
+      console.log('Supervisor button enabled:', platformFeatures.supervisorMode);
     } else {
       console.error('supervisorBtn element not found');
     }
