@@ -715,7 +715,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-value" id="statTotalConvs">0</div>
-          <div class="stat-label">Total Conversations</div>
+          <div class="stat-label">Unassigned</div>
         </div>
       </div>
 
@@ -3916,8 +3916,8 @@ function renderSupervisorView() {
   // Update stats
   document.getElementById('statOnlineAgents').textContent = supervisorData.stats?.onlineAgents || 0;
   document.getElementById('statTotalAgents').textContent = supervisorData.stats?.totalAgents || 0;
-  document.getElementById('statActiveConvs').textContent = supervisorData.stats?.activeConversations || 0;
-  document.getElementById('statTotalConvs').textContent = supervisorData.stats?.totalConversations || 0;
+  document.getElementById('statActiveConvs').textContent = supervisorData.stats?.totalActiveConversations || 0;
+  document.getElementById('statTotalConvs').textContent = supervisorData.stats?.unassignedConversations || 0;
 
   // Render agents
   const agentsList = document.getElementById('supervisorAgentsList');
@@ -3949,15 +3949,17 @@ function renderSupervisorView() {
     convsList.innerHTML = '<div class="no-supervisor-data">No conversations found</div>';
   } else {
     convsList.innerHTML = conversations.map(conv => {
-      const initials = conv.name ? conv.name.substring(0, 2).toUpperCase() : 'V';
+      const visitorName = conv.visitorName || 'Visitor';
+      const initials = visitorName.substring(0, 2).toUpperCase();
+      const isActive = conv.status === 'active';
       return `
-        <div class="supervisor-conv-card ${conv.isOnline ? 'active' : ''}" onclick="viewConversationAsSupervisor('${conv.visitorId}')">
+        <div class="supervisor-conv-card ${isActive ? 'active' : ''}" onclick="viewConversationAsSupervisor('${conv.visitorId}')">
           <div class="supervisor-conv-avatar">${initials}</div>
           <div class="supervisor-conv-info">
-            <span class="supervisor-conv-name">${escapeHtml(conv.name || 'Visitor')}</span>
-            <span class="supervisor-conv-status">${conv.isOnline ? 'Active' : 'Inactive'}</span>
+            <span class="supervisor-conv-name">${escapeHtml(visitorName)}</span>
+            <span class="supervisor-conv-status">${conv.status || 'Unknown'} - ${conv.messageCount || 0} msgs</span>
           </div>
-          <span class="supervisor-conv-badge">${conv.isOnline ? 'LIVE' : ''}</span>
+          ${conv.assignedAgentName ? `<span class="supervisor-conv-badge">${escapeHtml(conv.assignedAgentName)}</span>` : '<span class="supervisor-conv-badge unassigned">Unassigned</span>'}
         </div>
       `;
     }).join('');
