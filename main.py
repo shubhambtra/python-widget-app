@@ -938,6 +938,175 @@ async def get_site_agents(site_id: str, authorization: str = Header(None)):
             return {"success": True, "data": []}
 
 
+# ------------------ CONVERSATION COMMENTS API ------------------
+
+@app.get("/api/conversations/{conversation_id}/comments")
+async def get_conversation_comments(conversation_id: str, authorization: str = Header(None)):
+    """Get comments for a specific conversation (proxy to .NET API)"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+
+    token = authorization.replace("Bearer ", "")
+    token_data = validate_jwt_token(token)
+    if not token_data:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.get(
+                f"{API_BASE_URL}/conversations/{conversation_id}/comments",
+                headers={"Authorization": authorization}
+            )
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                # Return empty list if endpoint doesn't exist
+                return {"success": True, "data": []}
+
+        except Exception as e:
+            print(f"Error fetching conversation comments: {e}")
+            return {"success": True, "data": []}
+
+
+@app.post("/api/conversations/{conversation_id}/comments")
+async def add_conversation_comment(conversation_id: str, data: dict, authorization: str = Header(None)):
+    """Add a comment to a conversation (proxy to .NET API)"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+
+    token = authorization.replace("Bearer ", "")
+    token_data = validate_jwt_token(token)
+    if not token_data:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.post(
+                f"{API_BASE_URL}/conversations/{conversation_id}/comments",
+                json=data,
+                headers={"Authorization": authorization}
+            )
+
+            if response.status_code == 200 or response.status_code == 201:
+                return response.json()
+            else:
+                error_text = response.text
+                raise HTTPException(status_code=response.status_code, detail=f"Failed to add comment: {error_text}")
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            print(f"Error adding conversation comment: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+
+# ------------------ SUPERVISOR API ------------------
+
+@app.get("/api/sites/{site_id}/supervisor/overview")
+async def get_supervisor_overview(site_id: str, authorization: str = Header(None)):
+    """Get supervisor overview for a site - returns all agents and active conversations"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+
+    token = authorization.replace("Bearer ", "")
+    token_data = validate_jwt_token(token)
+    if not token_data:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    # Check if user has supervisor permissions
+    user_role = token_data.get("role", "")
+    if user_role not in ["admin", "site_admin", "supervisor", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Supervisor access required")
+
+    # Get real-time data from connections
+    site = connections.get(site_id, {})
+
+    # Get online agents from WebSocket connections
+    online_agents = []
+    for agent_id, agent_data in site.get("agents", {}).items():
+        online_agents.append({
+            "id": agent_id,
+            "username": agent_data.get("username"),
+            "status": agent_data.get("status", "online"),
+            "isOnline": True
+        })
+
+    # Get active conversations
+    active_conversations = []
+    for visitor_id, customer_ws in site.get("customers", {}).items():
+        visitor_data = VISITOR_DATA.get(visitor_id, {})
+        active_conversations.append({
+            "visitorId": visitor_id,
+            "name": site.get("names", {}).get(visitor_id, visitor_id),
+            "conversationId": visitor_data.get("conversation_id"),
+            "isOnline": True
+        })
+
+    # Also fetch historical data from API
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            # Get all agents for the site
+            agents_response = await client.get(
+                f"{API_BASE_URL}/sites/{site_id}/agents",
+                headers={"Authorization": authorization}
+            )
+            all_agents = []
+            if agents_response.status_code == 200:
+                result = agents_response.json()
+                all_agents = result.get("data", [])
+
+            # Merge with online status
+            online_ids = {a["id"] for a in online_agents}
+            for agent in all_agents:
+                if agent.get("userId") not in online_ids and agent.get("id") not in online_ids:
+                    online_agents.append({
+                        "id": agent.get("userId") or agent.get("id"),
+                        "username": agent.get("name") or agent.get("email"),
+                        "status": "offline",
+                        "isOnline": False
+                    })
+
+            # Get conversations
+            conv_response = await client.get(
+                f"{API_BASE_URL}/sites/{site_id}/conversations",
+                headers={"Authorization": authorization}
+            )
+            if conv_response.status_code == 200:
+                conv_result = conv_response.json()
+                conversations = conv_result.get("data", {}).get("items", [])
+
+                # Merge with active status
+                active_ids = {c["visitorId"] for c in active_conversations}
+                for conv in conversations:
+                    if conv.get("visitorId") not in active_ids:
+                        active_conversations.append({
+                            "visitorId": conv.get("visitorId"),
+                            "name": conv.get("visitorName", "Visitor"),
+                            "conversationId": conv.get("id"),
+                            "isOnline": False,
+                            "lastMessageAt": conv.get("lastMessageAt"),
+                            "assignedAgentId": conv.get("assignedAgentId")
+                        })
+
+        except Exception as e:
+            print(f"Error fetching supervisor data from API: {e}")
+
+    return {
+        "success": True,
+        "data": {
+            "agents": online_agents,
+            "conversations": active_conversations,
+            "stats": {
+                "totalAgents": len(online_agents),
+                "onlineAgents": len([a for a in online_agents if a.get("isOnline")]),
+                "totalConversations": len(active_conversations),
+                "activeConversations": len([c for c in active_conversations if c.get("isOnline")])
+            }
+        }
+    }
+
+
 # ------------------ AI USAGE TRACKING ------------------
 
 async def check_and_record_ai_usage(site_id: str, feature_type: str) -> dict:
@@ -1152,14 +1321,13 @@ async def send_welcome_message(site_id: str, visitor_id: str, conversation_id: s
                 message_type="text"
             )
 
-        # Notify support dashboard - show as auto-message, not a separate user
-        if site.get("support"):
-            await site["support"].send_json({
-                "type": "welcome_sent",
-                "visitorId": visitor_id,
-                "message": welcome_msg.get("message"),
-                "isWelcome": True
-            })
+        # Notify all agents - show as auto-message, not a separate user
+        await broadcast_to_agents(site, {
+            "type": "welcome_sent",
+            "visitorId": visitor_id,
+            "message": welcome_msg.get("message"),
+            "isWelcome": True
+        })
 
     except Exception as e:
         print(f"Error sending welcome message: {e}")
@@ -1224,6 +1392,47 @@ async def broadcast_to_admins(site: dict, message: dict):
         site["admins"].pop(admin_id, None)
 
 
+async def broadcast_to_agents(site: dict, message: dict, exclude_agent: str = None):
+    """Broadcast a message to all connected agents for a site"""
+    agents_to_remove = []
+    for agent_id, agent_data in site.get("agents", {}).items():
+        if agent_id == exclude_agent:
+            continue
+        try:
+            await agent_data["ws"].send_json(message)
+        except Exception as e:
+            print(f"Failed to send to agent {agent_id}: {e}")
+            agents_to_remove.append(agent_id)
+    # Remove disconnected agents
+    for agent_id in agents_to_remove:
+        site["agents"].pop(agent_id, None)
+
+
+async def send_to_agent(site: dict, agent_id: str, message: dict) -> bool:
+    """Send a message to a specific agent"""
+    agent_data = site.get("agents", {}).get(agent_id)
+    if agent_data:
+        try:
+            await agent_data["ws"].send_json(message)
+            return True
+        except Exception as e:
+            print(f"Failed to send to agent {agent_id}: {e}")
+    return False
+
+
+def get_first_available_agent(site: dict) -> tuple:
+    """Get the first online agent for a site, returns (agent_id, agent_data) or (None, None)"""
+    for agent_id, agent_data in site.get("agents", {}).items():
+        if agent_data.get("status") == "online":
+            return agent_id, agent_data
+    # Return first agent if none are online
+    agents = site.get("agents", {})
+    if agents:
+        agent_id = next(iter(agents))
+        return agent_id, agents[agent_id]
+    return None, None
+
+
 # ------------------ WEBSOCKET ------------------
 
 @app.websocket("/ws")
@@ -1259,16 +1468,14 @@ async def websocket_endpoint(ws: WebSocket):
     # -------- INIT SITE --------
     if site_id not in connections:
         connections[site_id] = {
-            "support": None,
-            "support_name": None,
-            "support_user_id": None,
-            "support_token": None,
-            "agent_status": "online",  # Default to online
+            "agents": {},  # agent_user_id -> {"ws": WebSocket, "username": str, "status": str, "token": str}
+            "supervisors": {},  # supervisor_user_id -> WebSocket
             "customers": {},
             "names": {},
             "admins": {},  # admin user_id -> WebSocket
             "analysis_enabled": False,  # Default OFF
-            "auto_reply_enabled": False  # Default OFF
+            "auto_reply_enabled": False,  # Default OFF
+            "agent_chats": {}  # Stores agent-to-agent chat messages
         }
 
     site = connections[site_id]
@@ -1284,23 +1491,54 @@ async def websocket_endpoint(ws: WebSocket):
 
     # -------- REGISTER ROLE --------
     if role == SUPPORT:
-        site["support"] = ws
-        site["support_name"] = auth["username"]
-        site["support_user_id"] = auth.get("user_id")
-        site["support_token"] = token  # Store token for status updates
+        agent_user_id = auth.get("user_id")
+        agent_username = auth["username"]
+        agent_role = auth.get("role", "agent")
 
-        # Update agent status to online
+        # Register agent in multi-agent structure
+        site["agents"][agent_user_id] = {
+            "ws": ws,
+            "username": agent_username,
+            "status": "online",
+            "token": token,
+            "role": agent_role
+        }
+
+        # Also register as supervisor if role allows
+        if agent_role in ["admin", "site_admin", "supervisor"]:
+            site["supervisors"][agent_user_id] = ws
+
+        # Update agent status to online via API
         await update_agent_status(token, "online")
 
         # Broadcast to admins that agent is online
         await broadcast_to_admins(site, {
             "type": "agent_online",
-            "userId": auth.get("user_id"),
-            "username": auth["username"],
+            "userId": agent_user_id,
+            "username": agent_username,
             "status": "online"
         })
 
-        # notify existing customers
+        # Broadcast to other agents that this agent joined
+        await broadcast_to_agents(site, {
+            "type": "agent_joined",
+            "agentId": agent_user_id,
+            "username": agent_username,
+            "status": "online"
+        }, exclude_agent=agent_user_id)
+
+        # Send list of online agents to the newly connected agent
+        online_agents = {
+            aid: {"username": adata["username"], "status": adata["status"]}
+            for aid, adata in site["agents"].items()
+            if aid != agent_user_id
+        }
+        await ws.send_json({
+            "type": "online_agents_list",
+            "agents": online_agents
+        })
+
+        # Notify existing customers that support is available
         for vid, cws in site["customers"].items():
             visitor_data = VISITOR_DATA.get(vid, {})
             await ws.send_json({
@@ -1310,16 +1548,16 @@ async def websocket_endpoint(ws: WebSocket):
                 "conversationId": visitor_data.get("conversation_id")
             })
 
-        # notify customers support joined with status
+        # Notify customers support joined with status
         for cws in site["customers"].values():
             await cws.send_json({
                 "type": "support_joined",
-                "name": site["support_name"]
+                "name": agent_username
             })
             await cws.send_json({
                 "type": "agent_status_broadcast",
-                "status": site.get("agent_status", "online"),
-                "agentName": site["support_name"]
+                "status": "online",
+                "agentName": agent_username
             })
 
     elif role == CUSTOMER:
@@ -1329,13 +1567,13 @@ async def websocket_endpoint(ws: WebSocket):
         admin_id = auth.get("user_id", token)
         site["admins"][admin_id] = ws
 
-        # Send current support agent status to admin
-        if site["support"]:
+        # Send current agents status to admin
+        for agent_id, agent_data in site.get("agents", {}).items():
             await ws.send_json({
                 "type": "agent_online",
-                "userId": site["support_user_id"],
-                "username": site["support_name"],
-                "status": "online"
+                "userId": agent_id,
+                "username": agent_data.get("username"),
+                "status": agent_data.get("status", "online")
             })
 
     else:
@@ -1349,16 +1587,18 @@ async def websocket_endpoint(ws: WebSocket):
 
             # ----- STATE REQUEST -----
             if data.get("type") == "get_state" and role == CUSTOMER:
-                if site["support_name"]:
+                # Notify customer about available agents
+                first_agent_id, first_agent = get_first_available_agent(site)
+                if first_agent:
                     await ws.send_json({
                         "type": "support_joined",
-                        "name": site["support_name"]
+                        "name": first_agent.get("username", "Support")
                     })
                     # Also send current agent status
                     await ws.send_json({
                         "type": "agent_status_broadcast",
-                        "status": site.get("agent_status", "online"),
-                        "agentName": site["support_name"]
+                        "status": first_agent.get("status", "online"),
+                        "agentName": first_agent.get("username", "Support")
                     })
 
             # ----- INIT USER -----
@@ -1377,33 +1617,31 @@ async def websocket_endpoint(ws: WebSocket):
                         "conversation_id": conversation_id
                     }
 
-                if site["support"]:
-                    await site["support"].send_json({
-                        "type": "user_joined",
-                        "visitorId": visitor_id,
-                        "name": name,
-                        "email": email,
-                        "conversationId": conversation_id
-                    })
+                # Notify all agents about user joined
+                await broadcast_to_agents(site, {
+                    "type": "user_joined",
+                    "visitorId": visitor_id,
+                    "name": name,
+                    "email": email,
+                    "conversationId": conversation_id
+                })
 
                 # Send welcome message to customer
                 await send_welcome_message(site_id, visitor_id, conversation_id, ws, site)
 
             # ----- TYPING INDICATORS -----
             elif data.get("type") == "typing_start" and role == CUSTOMER:
-                if site["support"]:
-                    await site["support"].send_json({
-                        "type": "typing_start",
-                        "visitorId": visitor_id,
-                        "name": site["names"].get(visitor_id, visitor_id)
-                    })
+                await broadcast_to_agents(site, {
+                    "type": "typing_start",
+                    "visitorId": visitor_id,
+                    "name": site["names"].get(visitor_id, visitor_id)
+                })
 
             elif data.get("type") == "typing_stop" and role == CUSTOMER:
-                if site["support"]:
-                    await site["support"].send_json({
-                        "type": "typing_stop",
-                        "visitorId": visitor_id
-                    })
+                await broadcast_to_agents(site, {
+                    "type": "typing_stop",
+                    "visitorId": visitor_id
+                })
 
             elif data.get("type") == "support_typing" and role == SUPPORT:
                 to = data.get("to")
@@ -1429,11 +1667,185 @@ async def websocket_endpoint(ws: WebSocket):
                 site["auto_reply_enabled"] = data.get("enabled", False)
                 print(f"Auto Reply toggled: {site['auto_reply_enabled']}")
 
+            # ----- GET ONLINE AGENTS -----
+            elif data.get("type") == "get_online_agents" and role == SUPPORT:
+                agent_user_id = auth.get("user_id")
+                online_agents = {
+                    aid: {"username": adata["username"], "status": adata["status"]}
+                    for aid, adata in site["agents"].items()
+                    if aid != agent_user_id
+                }
+                await ws.send_json({
+                    "type": "online_agents_list",
+                    "agents": online_agents
+                })
+
+            # ----- AGENT-TO-AGENT MESSAGE -----
+            elif data.get("type") == "agent_message" and role == SUPPORT:
+                from_agent_id = auth.get("user_id")
+                from_agent_name = auth.get("username")
+                to_agent_id = data.get("toAgentId")
+                message = data.get("message", "")
+                timestamp = data.get("timestamp")
+
+                if to_agent_id and message:
+                    # Store message in agent chats
+                    chat_key = tuple(sorted([from_agent_id, to_agent_id]))
+                    if "agent_chats" not in site:
+                        site["agent_chats"] = {}
+                    if chat_key not in site["agent_chats"]:
+                        site["agent_chats"][chat_key] = []
+
+                    msg_obj = {
+                        "from": from_agent_id,
+                        "fromName": from_agent_name,
+                        "to": to_agent_id,
+                        "message": message,
+                        "timestamp": timestamp
+                    }
+                    site["agent_chats"][chat_key].append(msg_obj)
+
+                    # Send to target agent
+                    sent = await send_to_agent(site, to_agent_id, {
+                        "type": "agent_message",
+                        "fromAgentId": from_agent_id,
+                        "fromAgentName": from_agent_name,
+                        "message": message,
+                        "timestamp": timestamp
+                    })
+
+                    # Confirm to sender
+                    await ws.send_json({
+                        "type": "agent_message_sent",
+                        "toAgentId": to_agent_id,
+                        "message": message,
+                        "timestamp": timestamp,
+                        "delivered": sent
+                    })
+
+            # ----- AGENT TYPING TO AGENT -----
+            elif data.get("type") == "agent_typing_start" and role == SUPPORT:
+                from_agent_id = auth.get("user_id")
+                from_agent_name = auth.get("username")
+                to_agent_id = data.get("toAgentId")
+
+                if to_agent_id:
+                    await send_to_agent(site, to_agent_id, {
+                        "type": "agent_typing_start",
+                        "fromAgentId": from_agent_id,
+                        "fromAgentName": from_agent_name
+                    })
+
+            elif data.get("type") == "agent_typing_stop" and role == SUPPORT:
+                from_agent_id = auth.get("user_id")
+                to_agent_id = data.get("toAgentId")
+
+                if to_agent_id:
+                    await send_to_agent(site, to_agent_id, {
+                        "type": "agent_typing_stop",
+                        "fromAgentId": from_agent_id
+                    })
+
+            # ----- GET AGENT CHAT HISTORY -----
+            elif data.get("type") == "get_agent_chat_history" and role == SUPPORT:
+                from_agent_id = auth.get("user_id")
+                with_agent_id = data.get("withAgentId")
+
+                if with_agent_id:
+                    chat_key = tuple(sorted([from_agent_id, with_agent_id]))
+                    messages = site.get("agent_chats", {}).get(chat_key, [])
+                    await ws.send_json({
+                        "type": "agent_chat_history",
+                        "withAgentId": with_agent_id,
+                        "messages": messages
+                    })
+
+            # ----- BROADCAST NEW COMMENT -----
+            elif data.get("type") == "new_comment" and role == SUPPORT:
+                # When an agent adds a comment, broadcast to all agents
+                conversation_id = data.get("conversationId")
+                comment = data.get("comment", {})
+                author_id = auth.get("user_id")
+                author_name = auth.get("username")
+
+                # Broadcast to all agents (they can filter by conversationId)
+                await broadcast_to_agents(site, {
+                    "type": "new_comment",
+                    "conversationId": conversation_id,
+                    "comment": {
+                        **comment,
+                        "authorId": author_id,
+                        "authorName": author_name
+                    }
+                }, exclude_agent=author_id)
+
+                # Handle mentions in the comment
+                mentions = data.get("mentions", [])
+                if mentions:
+                    for mentioned_id in mentions:
+                        if mentioned_id in site.get("agents", {}):
+                            await send_to_agent(site, mentioned_id, {
+                                "type": "mention_notification",
+                                "conversationId": conversation_id,
+                                "fromAgent": author_name,
+                                "fromAgentId": author_id,
+                                "preview": comment.get("content", "")[:100],
+                                "commentId": comment.get("id")
+                            })
+
+            # ----- REQUEST SUPERVISOR DATA -----
+            elif data.get("type") == "get_supervisor_data" and role == SUPPORT:
+                agent_user_id = auth.get("user_id")
+                agent_role = auth.get("role", "")
+
+                # Check if user has supervisor permissions
+                if agent_role in ["admin", "site_admin", "supervisor", "super_admin"]:
+                    # Get online agents
+                    online_agents = [
+                        {"id": aid, "username": adata["username"], "status": adata["status"]}
+                        for aid, adata in site.get("agents", {}).items()
+                    ]
+
+                    # Get active conversations
+                    active_conversations = [
+                        {
+                            "visitorId": vid,
+                            "name": site.get("names", {}).get(vid, vid),
+                            "conversationId": VISITOR_DATA.get(vid, {}).get("conversation_id")
+                        }
+                        for vid in site.get("customers", {}).keys()
+                    ]
+
+                    await ws.send_json({
+                        "type": "supervisor_data",
+                        "agents": online_agents,
+                        "conversations": active_conversations
+                    })
+                else:
+                    await ws.send_json({
+                        "type": "error",
+                        "message": "Supervisor access required"
+                    })
+
             # ----- AGENT STATUS CHANGE -----
             elif data.get("type") == "agent_status_change" and role == SUPPORT:
                 status = data.get("status", "online")
-                site["agent_status"] = status
-                print(f"Agent status changed to: {status}")
+                agent_user_id = auth.get("user_id")
+                agent_username = auth.get("username", "Support")
+
+                # Update agent status in multi-agent structure
+                if agent_user_id in site["agents"]:
+                    site["agents"][agent_user_id]["status"] = status
+
+                print(f"Agent {agent_username} status changed to: {status}")
+
+                # Broadcast to other agents
+                await broadcast_to_agents(site, {
+                    "type": "agent_status_changed",
+                    "agentId": agent_user_id,
+                    "username": agent_username,
+                    "status": status
+                }, exclude_agent=agent_user_id)
 
                 # Broadcast to all connected customers
                 for vid, cws in site["customers"].items():
@@ -1441,7 +1853,7 @@ async def websocket_endpoint(ws: WebSocket):
                         await cws.send_json({
                             "type": "agent_status_broadcast",
                             "status": status,
-                            "agentName": site.get("support_name", "Support")
+                            "agentName": agent_username
                         })
                     except Exception as e:
                         print(f"Failed to send status to customer {vid}: {e}")
@@ -1458,9 +1870,10 @@ async def websocket_endpoint(ws: WebSocket):
                 # Send CSAT request to customer if enabled and customer is connected
                 if send_csat and target_visitor in site["customers"]:
                     try:
+                        agent_username = auth.get("username", "Support")
                         await site["customers"][target_visitor].send_json({
                             "type": "csat_request",
-                            "agentName": site.get("support_name", "Support")
+                            "agentName": agent_username
                         })
                     except Exception as e:
                         print(f"Failed to send CSAT request: {e}")
@@ -1490,17 +1903,13 @@ async def websocket_endpoint(ws: WebSocket):
 
                 print(f"CSAT received from {visitor_id}: {rating}/5")
 
-                # Notify support of the rating
-                if site["support"]:
-                    try:
-                        await site["support"].send_json({
-                            "type": "csat_received",
-                            "visitorId": visitor_id,
-                            "rating": rating,
-                            "feedback": feedback
-                        })
-                    except Exception as e:
-                        print(f"Failed to send CSAT to support: {e}")
+                # Notify all agents of the rating
+                await broadcast_to_agents(site, {
+                    "type": "csat_received",
+                    "visitorId": visitor_id,
+                    "rating": rating,
+                    "feedback": feedback
+                })
 
             # ----- CUSTOMER MESSAGE -----
             elif role == CUSTOMER and ("message" in data or "file" in data):
@@ -1523,120 +1932,125 @@ async def websocket_endpoint(ws: WebSocket):
                         file_data.get("id") if file_data else None
                     )
 
-                if site["support"]:
-                    msg_payload = {
-                        "type": "message",
-                        "from": visitor_id,
-                        "name": site["names"].get(visitor_id, visitor_id),
-                        "message": msg
-                    }
+                # Send message to all agents
+                msg_payload = {
+                    "type": "message",
+                    "from": visitor_id,
+                    "name": site["names"].get(visitor_id, visitor_id),
+                    "message": msg
+                }
 
-                    if file_data:
-                        msg_payload["file"] = file_data
+                if file_data:
+                    msg_payload["file"] = file_data
 
-                    await site["support"].send_json(msg_payload)
+                await broadcast_to_agents(site, msg_payload)
 
-                    # Run AI analysis if analysis or auto-reply is enabled
-                    should_analyze = site.get("analysis_enabled", False) or site.get("auto_reply_enabled", False)
-                    if msg and not file_data and should_analyze:
-                        analysis = None
-                        analysis_usage = None
+                # Run AI analysis if analysis or auto-reply is enabled
+                should_analyze = site.get("analysis_enabled", False) or site.get("auto_reply_enabled", False)
+                if msg and not file_data and should_analyze and site.get("agents"):
+                    analysis = None
+                    analysis_usage = None
 
-                        # Check and record AI analysis usage if analysis is enabled
-                        if site.get("analysis_enabled", False):
-                            analysis_usage = await check_and_record_ai_usage(site_id, "analysis")
-                            if analysis_usage.get("allowed"):
-                                analysis = await analyze_customer_message(msg, conversation_id, internal_visitor_id)
-                                # Send analysis to support dashboard
-                                await site["support"].send_json({
-                                    "type": "analysis",
-                                    "from": visitor_id,
-                                    "analysis": analysis
-                                })
-                                # Send usage update to support dashboard
-                                await site["support"].send_json({
-                                    "type": "ai_usage_update",
-                                    "feature": "analysis",
-                                    "used": analysis_usage.get("used"),
-                                    "limit": analysis_usage.get("limit")
-                                })
-                            else:
-                                # Limit reached - notify support
-                                await site["support"].send_json({
-                                    "type": "ai_limit_reached",
-                                    "feature": "analysis",
-                                    "message": analysis_usage.get("message"),
-                                    "used": analysis_usage.get("used"),
-                                    "limit": analysis_usage.get("limit")
-                                })
-                        elif site.get("auto_reply_enabled", False):
-                            # Use RAG-enhanced analysis for auto-reply to leverage knowledge base
-                            analysis = await analyze_customer_message_with_rag(msg, site_id, conversation_id, internal_visitor_id)
+                    # Check and record AI analysis usage if analysis is enabled
+                    if site.get("analysis_enabled", False):
+                        analysis_usage = await check_and_record_ai_usage(site_id, "analysis")
+                        if analysis_usage.get("allowed"):
+                            analysis = await analyze_customer_message(msg, conversation_id, internal_visitor_id)
+                            # Send analysis to all agents
+                            await broadcast_to_agents(site, {
+                                "type": "analysis",
+                                "from": visitor_id,
+                                "analysis": analysis
+                            })
+                            # Send usage update to all agents
+                            await broadcast_to_agents(site, {
+                                "type": "ai_usage_update",
+                                "feature": "analysis",
+                                "used": analysis_usage.get("used"),
+                                "limit": analysis_usage.get("limit")
+                            })
+                        else:
+                            # Limit reached - notify all agents
+                            await broadcast_to_agents(site, {
+                                "type": "ai_limit_reached",
+                                "feature": "analysis",
+                                "message": analysis_usage.get("message"),
+                                "used": analysis_usage.get("used"),
+                                "limit": analysis_usage.get("limit")
+                            })
+                    elif site.get("auto_reply_enabled", False):
+                        # Use RAG-enhanced analysis for auto-reply to leverage knowledge base
+                        analysis = await analyze_customer_message_with_rag(msg, site_id, conversation_id, internal_visitor_id)
 
-                        # Auto-reply if enabled
-                        if site.get("auto_reply_enabled", False) and analysis and analysis.get("suggested_reply"):
-                            # Check and record AI auto-reply usage
-                            auto_reply_usage = await check_and_record_ai_usage(site_id, "auto_reply")
-                            if auto_reply_usage.get("allowed"):
-                                auto_msg = analysis["suggested_reply"]
+                    # Auto-reply if enabled
+                    if site.get("auto_reply_enabled", False) and analysis and analysis.get("suggested_reply"):
+                        # Check and record AI auto-reply usage
+                        auto_reply_usage = await check_and_record_ai_usage(site_id, "auto_reply")
+                        if auto_reply_usage.get("allowed"):
+                            auto_msg = analysis["suggested_reply"]
 
-                                # Save auto-reply to API
-                                if conversation_id and site.get("support_user_id"):
-                                    await save_message_to_api(
-                                        conversation_id,
-                                        "agent",
-                                        site["support_user_id"],
-                                        auto_msg,
-                                        "text",
-                                        None
-                                    )
+                            # Get first available agent for saving the message
+                            first_agent_id, first_agent = get_first_available_agent(site)
 
-                                # Send to customer
-                                await ws.send_json({
-                                    "type": "message",
-                                    "from": "support",
-                                    "name": site.get("support_name", "Support"),
-                                    "message": auto_msg
-                                })
+                            # Save auto-reply to API
+                            if conversation_id and first_agent_id:
+                                await save_message_to_api(
+                                    conversation_id,
+                                    "agent",
+                                    first_agent_id,
+                                    auto_msg,
+                                    "text",
+                                    None
+                                )
 
-                                # Notify support dashboard of auto-reply with usage
-                                await site["support"].send_json({
-                                    "type": "auto_reply_sent",
-                                    "to": visitor_id,
-                                    "message": auto_msg
-                                })
-                                await site["support"].send_json({
-                                    "type": "ai_usage_update",
-                                    "feature": "auto_reply",
-                                    "used": auto_reply_usage.get("used"),
-                                    "limit": auto_reply_usage.get("limit")
-                                })
-                            else:
-                                # Limit reached - notify support
-                                await site["support"].send_json({
-                                    "type": "ai_limit_reached",
-                                    "feature": "auto_reply",
-                                    "message": auto_reply_usage.get("message"),
-                                    "used": auto_reply_usage.get("used"),
-                                    "limit": auto_reply_usage.get("limit")
-                                })
+                            # Send to customer
+                            await ws.send_json({
+                                "type": "message",
+                                "from": "support",
+                                "name": first_agent.get("username", "Support") if first_agent else "Support",
+                                "message": auto_msg
+                            })
 
-            # ----- SUPPORT MESSAGE -----
-            elif role == SUPPORT:
+                            # Notify all agents of auto-reply with usage
+                            await broadcast_to_agents(site, {
+                                "type": "auto_reply_sent",
+                                "to": visitor_id,
+                                "message": auto_msg
+                            })
+                            await broadcast_to_agents(site, {
+                                "type": "ai_usage_update",
+                                "feature": "auto_reply",
+                                "used": auto_reply_usage.get("used"),
+                                "limit": auto_reply_usage.get("limit")
+                            })
+                        else:
+                            # Limit reached - notify all agents
+                            await broadcast_to_agents(site, {
+                                "type": "ai_limit_reached",
+                                "feature": "auto_reply",
+                                "message": auto_reply_usage.get("message"),
+                                "used": auto_reply_usage.get("used"),
+                                "limit": auto_reply_usage.get("limit")
+                            })
+
+            # ----- SUPPORT MESSAGE TO CUSTOMER -----
+            elif role == SUPPORT and data.get("to") and not data.get("type"):
                 to = data.get("to")
                 msg = data.get("message", "")
                 file_data = data.get("file")
+                agent_user_id = auth.get("user_id")
+                agent_username = auth.get("username", "Support")
 
                 # Get conversation ID for target visitor
                 visitor_data = VISITOR_DATA.get(to, {})
                 conversation_id = visitor_data.get("conversation_id")
 
                 # Save message to API
-                if conversation_id and site.get("support_user_id"):
+                if conversation_id and agent_user_id:
                     await save_message_to_api(
                         conversation_id,
                         "agent",
-                        site["support_user_id"],
+                        agent_user_id,
                         msg,
                         "file" if file_data else "text",
                         file_data.get("id") if file_data else None
@@ -1646,7 +2060,7 @@ async def websocket_endpoint(ws: WebSocket):
                     msg_payload = {
                         "type": "message",
                         "from": "support",
-                        "name": site.get("support_name", "Support"),
+                        "name": agent_username,
                         "message": msg
                     }
 
@@ -1662,38 +2076,47 @@ async def websocket_endpoint(ws: WebSocket):
             site["names"].pop(visitor_id, None)
             VISITOR_DATA.pop(visitor_id, None)
 
-            if site["support"]:
-                await site["support"].send_json({
-                    "type": "user_left",
-                    "visitorId": visitor_id
-                })
+            # Notify all agents that user left
+            await broadcast_to_agents(site, {
+                "type": "user_left",
+                "visitorId": visitor_id
+            })
 
         elif role == SUPPORT:
-            # Update agent status to offline before clearing data
-            support_token = site.get("support_token")
-            support_user_id = site.get("support_user_id")
-            support_name = site.get("support_name")
+            agent_user_id = auth.get("user_id")
+            agent_data = site["agents"].get(agent_user_id, {})
+            agent_token = agent_data.get("token")
+            agent_username = agent_data.get("username")
 
-            if support_token:
-                await update_agent_status(support_token, "offline")
+            # Update agent status to offline via API
+            if agent_token:
+                await update_agent_status(agent_token, "offline")
 
             # Broadcast to admins that agent is offline
             await broadcast_to_admins(site, {
                 "type": "agent_offline",
-                "userId": support_user_id,
-                "username": support_name,
+                "userId": agent_user_id,
+                "username": agent_username,
                 "status": "offline"
             })
 
-            site["support"] = None
-            site["support_name"] = None
-            site["support_user_id"] = None
-            site["support_token"] = None
+            # Broadcast to other agents that this agent left
+            await broadcast_to_agents(site, {
+                "type": "agent_left",
+                "agentId": agent_user_id,
+                "username": agent_username
+            }, exclude_agent=agent_user_id)
 
-            for cws in site["customers"].values():
-                await cws.send_json({
-                    "type": "support_left"
-                })
+            # Remove from agents dict
+            site["agents"].pop(agent_user_id, None)
+            site["supervisors"].pop(agent_user_id, None)
+
+            # Notify customers only if no agents remain
+            if not site["agents"]:
+                for cws in site["customers"].values():
+                    await cws.send_json({
+                        "type": "support_left"
+                    })
 
         elif role == ADMIN:
             admin_id = auth.get("user_id", token) if auth else token
