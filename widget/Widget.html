@@ -402,6 +402,38 @@ body {
   opacity: 0.7;
 }
 
+/* Image download overlay */
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-download-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+  text-decoration: none;
+}
+
+.image-container:hover .image-download-btn {
+  opacity: 1;
+}
+
+.image-download-btn:hover {
+  background: rgba(37, 99, 235, 0.9);
+}
+
 /* File preview before sending */
 .file-preview {
   display: flex;
@@ -1339,12 +1371,30 @@ function addMessage(from, text, fileData = null, status = 'sent') {
     fileDiv.className = "message-file";
 
     if (fileData.is_image) {
+      const container = document.createElement("div");
+      container.className = "image-container";
+
       const img = document.createElement("img");
       img.className = "message-image";
       img.src = fileData.url;
       img.alt = fileData.original_name;
       img.onclick = () => openImageModal(fileData.url);
-      fileDiv.appendChild(img);
+      container.appendChild(img);
+
+      const downloadBtn = document.createElement("a");
+      downloadBtn.className = "image-download-btn";
+      downloadBtn.href = fileData.url;
+      downloadBtn.download = fileData.original_name;
+      downloadBtn.title = "Download";
+      downloadBtn.onclick = (e) => e.stopPropagation();
+      downloadBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+      `;
+      container.appendChild(downloadBtn);
+
+      fileDiv.appendChild(container);
     } else {
       const attachment = document.createElement("a");
       attachment.className = "file-attachment";

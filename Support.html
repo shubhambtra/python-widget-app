@@ -788,6 +788,21 @@ let aiAutoReplyAvailable = false;
 let aiAnalysisLimitExhausted = false;
 let aiAutoReplyLimitExhausted = false;
 
+// Platform feature flags (from admin settings)
+let platformFeatures = {
+  supervisorMode: true,
+  aiAnalysis: true,
+  aiAutoReply: true,
+  fileSharing: true,
+  csatRatings: true,
+  visitorInfo: true,
+  cannedResponses: true,
+  conversationTransfer: true,
+  teamChat: true,
+  typingIndicators: true,
+  readReceipts: true
+};
+
 // Bulk select state
 let bulkSelectMode = false;
 const selectedConversations = new Set();
@@ -806,6 +821,7 @@ ws.onopen = () => {
   console.log("Triggering loadHistoricalConversations...");
   loadHistoricalConversations();
   loadSiteAgents(); // Load agents for transfer feature
+  loadPlatformFeatures(); // Load platform feature flags
 };
 
 ws.onmessage = (e) => {
@@ -1418,7 +1434,14 @@ function renderMessages() {
       if (m.file.is_image) {
         fileHtml = `
           <div class="message-file">
-            <img class="message-image" src="${m.file.url}" alt="${escapeHtml(m.file.original_name)}" onclick="openImageModal('${m.file.url}')" />
+            <div class="image-container">
+              <img class="message-image" src="${m.file.url}" alt="${escapeHtml(m.file.original_name)}" onclick="openImageModal('${m.file.url}')" />
+              <a class="image-download-btn" href="${m.file.url}" download="${escapeHtml(m.file.original_name)}" title="Download" onclick="event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </a>
+            </div>
           </div>
         `;
       } else {
@@ -1433,6 +1456,11 @@ function renderMessages() {
               <div class="file-info">
                 <div class="file-name">${escapeHtml(m.file.original_name)}</div>
                 <div class="file-size">${formatFileSize(m.file.size)}</div>
+              </div>
+              <div class="file-download-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
               </div>
             </a>
           </div>
@@ -3056,6 +3084,91 @@ async function loadSiteAgents() {
   } catch (err) {
     console.error('Failed to load agents:', err);
   }
+}
+
+// ==================== PLATFORM FEATURE FLAGS ====================
+async function loadPlatformFeatures() {
+  try {
+    const response = await fetch(`${API_BASE}/SiteSettings`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.data) {
+        platformFeatures = {
+          supervisorMode: result.data.featureSupervisorMode ?? true,
+          aiAnalysis: result.data.featureAiAnalysis ?? true,
+          aiAutoReply: result.data.featureAiAutoReply ?? true,
+          fileSharing: result.data.featureFileSharing ?? true,
+          csatRatings: result.data.featureCsatRatings ?? true,
+          visitorInfo: result.data.featureVisitorInfo ?? true,
+          cannedResponses: result.data.featureCannedResponses ?? true,
+          conversationTransfer: result.data.featureConversationTransfer ?? true,
+          teamChat: result.data.featureTeamChat ?? true,
+          typingIndicators: result.data.featureTypingIndicators ?? true,
+          readReceipts: result.data.featureReadReceipts ?? true
+        };
+        applyFeatureFlags();
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load platform features:', err);
+  }
+}
+
+function applyFeatureFlags() {
+  // Supervisor Mode
+  const supervisorBtn = document.getElementById('supervisorBtn');
+  if (supervisorBtn && !platformFeatures.supervisorMode) {
+    supervisorBtn.style.display = 'none';
+  }
+
+  // AI Analysis toggle
+  const analysisToggle = document.getElementById('analysisToggle');
+  const analysisToggleContainer = analysisToggle?.closest('.toggle-container');
+  if (analysisToggleContainer && !platformFeatures.aiAnalysis) {
+    analysisToggleContainer.style.display = 'none';
+  }
+
+  // AI Auto Reply toggle
+  const autoReplyToggle = document.getElementById('autoReplyToggle');
+  const autoReplyToggleContainer = autoReplyToggle?.closest('.toggle-container');
+  if (autoReplyToggleContainer && !platformFeatures.aiAutoReply) {
+    autoReplyToggleContainer.style.display = 'none';
+  }
+
+  // File sharing
+  const fileAttachBtn = document.getElementById('attachFileBtn');
+  if (fileAttachBtn && !platformFeatures.fileSharing) {
+    fileAttachBtn.style.display = 'none';
+  }
+
+  // Visitor info panel
+  const visitorPanel = document.getElementById('visitorInfoPanel');
+  if (visitorPanel && !platformFeatures.visitorInfo) {
+    visitorPanel.style.display = 'none';
+  }
+
+  // Canned responses
+  const cannedResponsesBtn = document.getElementById('cannedResponsesBtn');
+  if (cannedResponsesBtn && !platformFeatures.cannedResponses) {
+    cannedResponsesBtn.style.display = 'none';
+  }
+
+  // Conversation transfer
+  const transferBtn = document.getElementById('transferBtn');
+  if (transferBtn && !platformFeatures.conversationTransfer) {
+    transferBtn.style.display = 'none';
+  }
+
+  // Team chat
+  const teamChatBtn = document.querySelector('[onclick="toggleAgentsPanel()"]');
+  if (teamChatBtn && !platformFeatures.teamChat) {
+    teamChatBtn.style.display = 'none';
+  }
+
+  console.log('Platform features applied:', platformFeatures);
 }
 
 function openTransferModal() {

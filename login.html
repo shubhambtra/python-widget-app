@@ -659,7 +659,29 @@ async function login(e) {
       }
     }
 
-    // If .NET login didn't work or identifier is username, try support login
+    // If .NET login didn't work, try with username via .NET API first
+    if (!loginSuccess) {
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ Username: identifier, Password: password })
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success) {
+            loginSuccess = true;
+            authToken = result.data.accessToken;
+            userData = result.data.user;
+          }
+        }
+      } catch (err) {
+        console.log('.NET API username login failed, trying support login...');
+      }
+    }
+
+    // If still not logged in, try support login endpoint
     if (!loginSuccess) {
       try {
         const res = await fetch("/support/login", {
@@ -670,9 +692,28 @@ async function login(e) {
 
         if (res.ok) {
           const data = await res.json();
-          // Support login successful - redirect to support dashboard
           const { token, siteId, email, role } = data;
-          location.href = `/support?siteId=${encodeURIComponent(siteId)}&token=${encodeURIComponent(token)}&user=${encodeURIComponent(identifier)}&email=${encodeURIComponent(email || '')}`;
+
+          // Check role and redirect accordingly
+          if (role === 'site_admin') {
+            // Site admin - redirect to site admin dashboard
+            const params = new URLSearchParams({
+              siteId: siteId,
+              token: token,
+              siteName: ''
+            });
+            location.href = `/site-admin-overview.html?${params.toString()}`;
+          } else if (role === 'super_admin') {
+            // Platform admin - redirect to admin dashboard
+            const params = new URLSearchParams({
+              token: token,
+              user: identifier
+            });
+            location.href = `/admin-dashboard.html?${params.toString()}`;
+          } else {
+            // Support agent or other roles - redirect to support dashboard
+            location.href = `/support?siteId=${encodeURIComponent(siteId)}&token=${encodeURIComponent(token)}&user=${encodeURIComponent(identifier)}&email=${encodeURIComponent(email || '')}`;
+          }
           return;
         } else {
           const errData = await res.json().catch(() => ({}));

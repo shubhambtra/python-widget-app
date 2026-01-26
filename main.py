@@ -353,6 +353,16 @@ def admin_tutorials_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-tutorials.html")
 
 
+@app.get("/admin-features")
+def admin_features_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-features.html")
+
+
+@app.get("/admin-features.html")
+def admin_features_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-features.html")
+
+
 @app.get("/profile.html")
 def profile_page():
     return FileResponse(BASE_DIR / "profile.html")
