@@ -1412,9 +1412,10 @@
                 accessToken = registerResult.data.accessToken;
                 submitText.textContent = 'Creating site...';
 
-                // Step 2: Create site
+                // Step 2: Create site (include payment reference if available)
                 const sitePayload = {
-                    ...siteData
+                    ...siteData,
+                    paymentReference: currentPaymentReference || undefined
                 };
 
                 const siteResponse = await fetch('/api/sites', {
@@ -1480,6 +1481,9 @@
             document.getElementById('paymentPeriod').textContent = period;
         }
 
+        // Payment reference for linking registration payments to sites
+        let currentPaymentReference = null;
+
         // ==================== RAZORPAY PAYMENT ====================
         async function payWithRazorpay() {
             const btn = document.getElementById('razorpayBtn');
@@ -1510,6 +1514,9 @@
                 if (!orderResponse.ok || !orderData.success) {
                     throw new Error(orderData.message || 'Failed to create order');
                 }
+
+                // Store payment reference for linking to site after account creation
+                currentPaymentReference = orderData.data.paymentReference;
 
                 btn.textContent = 'Opening payment...';
 
