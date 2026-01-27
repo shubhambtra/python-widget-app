@@ -453,6 +453,14 @@ def test_widget_page():
 def test_widget_page_html():
     return FileResponse(BASE_DIR / "test-widget.html")
 
+@app.get("/test-payment")
+def test_payment_page():
+    return FileResponse(BASE_DIR / "test-payment.html")
+
+@app.get("/test-payment.html")
+def test_payment_page_html():
+    return FileResponse(BASE_DIR / "test-payment.html")
+
 
 # ------------------ REGISTRATION ------------------
 
