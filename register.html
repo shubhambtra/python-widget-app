@@ -1089,7 +1089,7 @@
                 if (plan.aiAutoReplyEnabled) features.push('AI Auto-Reply');
 
                 return `
-                    <div class="plan-card ${isPopular ? 'popular' : ''}" data-plan-id="${plan.id}">
+                    <div class="plan-card ${isPopular ? 'popular' : ''}" data-plan-id="${plan.id}" onclick="selectPlan('${plan.id}')">
                         ${isPopular ? '<div class="popular-badge">Most Popular</div>' : ''}
                         <div class="plan-header">
                             <h3 class="plan-name">${plan.name}</h3>
@@ -1102,7 +1102,7 @@
                         <ul class="plan-features">
                             ${features.map(f => `<li><span class="check">&#10003;</span> ${f}</li>`).join('')}
                         </ul>
-                        <button type="button" class="btn btn-plan" onclick="selectPlan('${plan.id}')">
+                        <button type="button" class="btn btn-plan">
                             Select Plan
                         </button>
                     </div>
@@ -1582,8 +1582,25 @@
                         color: '#2563eb'
                     },
                     modal: {
-                        ondismiss: function() {
+                        ondismiss: async function() {
                             // User closed payment modal - no account created
+                            // Log the cancellation
+                            try {
+                                await fetch(`${API_BASE}/api/payments/log-event`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        action: 'payment_cancelled',
+                                        gateway: 'razorpay',
+                                        status: 'cancelled',
+                                        orderId: orderData.data.orderId,
+                                        amount: amount,
+                                        currency: selectedPlanData.currency || 'INR',
+                                        errorMessage: 'User dismissed payment modal'
+                                    })
+                                });
+                            } catch (e) { console.error('Failed to log payment event:', e); }
+
                             showAlert('Payment cancelled. No account was created.', 'error');
                             btn.disabled = false;
                             btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
@@ -1592,8 +1609,27 @@
                 };
 
                 const razorpay = new Razorpay(options);
-                razorpay.on('payment.failed', function(response) {
+                razorpay.on('payment.failed', async function(response) {
                     // Payment failed - no account created
+                    // Log the failure
+                    try {
+                        await fetch(`${API_BASE}/api/payments/log-event`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'payment_failed',
+                                gateway: 'razorpay',
+                                status: 'failed',
+                                orderId: orderData.data.orderId,
+                                amount: amount,
+                                currency: selectedPlanData.currency || 'INR',
+                                errorMessage: response.error.description,
+                                errorCode: response.error.code,
+                                metadata: JSON.stringify({ reason: response.error.reason, source: response.error.source })
+                            })
+                        });
+                    } catch (e) { console.error('Failed to log payment event:', e); }
+
                     showAlert('Payment failed: ' + response.error.description, 'error');
                     btn.disabled = false;
                     btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
@@ -1735,6 +1771,22 @@
                         }
                     }
                 } else if (payment === 'cancelled') {
+                    // Log the cancellation
+                    const cancelledOrderId = sessionStorage.getItem('paypalOrderId');
+                    try {
+                        await fetch(`${API_BASE}/api/payments/log-event`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'payment_cancelled',
+                                gateway: 'paypal',
+                                status: 'cancelled',
+                                orderId: cancelledOrderId,
+                                errorMessage: 'User cancelled PayPal payment'
+                            })
+                        });
+                    } catch (e) { console.error('Failed to log payment event:', e); }
+
                     showAlert('PayPal payment was cancelled. No account was created.', 'error');
                     // Clear session storage
                     sessionStorage.removeItem('paypalOrderId');
