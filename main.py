@@ -363,6 +363,16 @@ def admin_features_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-features.html")
 
 
+@app.get("/admin-payment-logs")
+def admin_payment_logs_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-payment-logs.html")
+
+
+@app.get("/admin-payment-logs.html")
+def admin_payment_logs_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-payment-logs.html")
+
+
 @app.get("/profile.html")
 def profile_page():
     return FileResponse(BASE_DIR / "profile.html")
