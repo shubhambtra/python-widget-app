@@ -1360,18 +1360,17 @@
             // Check if this is a paid plan
             const isFree = !selectedPlanData || selectedPlanData.monthlyPrice === 0;
 
-            // Always create account first
-            const success = await createAccountAndSite();
-            if (!success) return;
-
             if (isFree) {
-                // For FREE plans: Account created, redirect immediately
-                showAlert('Account created successfully! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
-                }, 1000);
+                // For FREE plans: Create account immediately, then redirect
+                const success = await createAccountAndSite();
+                if (success) {
+                    showAlert('Account created successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                    }, 1000);
+                }
             } else {
-                // For PAID plans: Account created with free plan, now show payment to upgrade
+                // For PAID plans: Show payment modal first, create account only after successful payment
                 submitBtn.disabled = false;
                 openPaymentModal();
             }
@@ -1482,6 +1481,9 @@
             document.getElementById('paymentPeriod').textContent = period;
         }
 
+        // Payment reference for linking registration payments to sites
+        let currentPaymentReference = null;
+
         // ==================== RAZORPAY PAYMENT ====================
         async function payWithRazorpay() {
             const btn = document.getElementById('razorpayBtn');
@@ -1490,23 +1492,22 @@
 
             try {
                 if (!selectedPlanData) throw new Error('No plan selected');
-                if (!createdSiteId || !accessToken) throw new Error('Account not created yet');
 
                 const cycle = document.getElementById('billingCycle').value;
                 const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
 
-                // Create Razorpay order using authenticated endpoint (account already exists)
-                const orderResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/razorpay/create-order`, {
+                // Create Razorpay order FIRST (before account creation) using anonymous endpoint
+                const orderResponse = await fetch(`${API_BASE}/api/payments/razorpay/create-registration-order`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         amount: amount,
                         currency: selectedPlanData.currency || 'INR',
                         planId: selectedPlanData.id,
-                        billingCycle: cycle
+                        billingCycle: cycle,
+                        email: userData.email
                     })
                 });
 
@@ -1514,6 +1515,9 @@
                 if (!orderResponse.ok || !orderData.success) {
                     throw new Error(orderData.message || 'Failed to create order');
                 }
+
+                // Store payment reference for linking to site after account creation
+                currentPaymentReference = orderData.data.paymentReference;
 
                 btn.textContent = 'Opening payment...';
 
@@ -1527,6 +1531,17 @@
                     order_id: orderData.data.orderId,
                     handler: async function(response) {
                         try {
+                            // Payment successful - NOW create account and site
+                            btn.textContent = 'Creating account...';
+
+                            const accountCreated = await createAccountAndSite();
+                            if (!accountCreated) {
+                                showAlert('Payment successful but account creation failed. Please contact support with payment ID: ' + response.razorpay_payment_id, 'error');
+                                btn.disabled = false;
+                                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+                                return;
+                            }
+
                             btn.textContent = 'Verifying payment...';
 
                             // Verify payment and upgrade subscription
@@ -1548,24 +1563,23 @@
 
                             const verifyData = await verifyResponse.json();
                             if (verifyResponse.ok && verifyData.success) {
-                                showAlert('Payment successful! Your plan has been upgraded. Redirecting...', 'success');
+                                showAlert('Payment successful! Redirecting...', 'success');
                                 closePaymentModal();
                                 setTimeout(() => {
                                     window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                                 }, 1500);
                             } else {
-                                showAlert('Payment received! Verification pending. Redirecting...', 'success');
+                                // Account created, payment received but verification failed - still redirect
+                                showAlert('Account created! Payment verification pending. Redirecting...', 'success');
                                 closePaymentModal();
                                 setTimeout(() => {
                                     window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                                 }, 2000);
                             }
                         } catch (err) {
-                            showAlert('Payment received but there was an issue. Redirecting...', 'error');
-                            closePaymentModal();
-                            setTimeout(() => {
-                                window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
-                            }, 2000);
+                            showAlert('Payment received but there was an issue. Please contact support.', 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
                         }
                     },
                     prefill: {
@@ -1577,7 +1591,7 @@
                     },
                     modal: {
                         ondismiss: async function() {
-                            // User closed payment modal - account exists with free plan
+                            // User closed payment modal - NO account created
                             // Log the cancellation
                             try {
                                 await fetch(`${API_BASE}/api/payments/log-event`, {
@@ -1587,7 +1601,6 @@
                                         action: 'payment_cancelled',
                                         gateway: 'razorpay',
                                         status: 'cancelled',
-                                        siteId: createdSiteId,
                                         orderId: orderData.data.orderId,
                                         amount: amount,
                                         currency: selectedPlanData.currency || 'INR',
@@ -1596,18 +1609,17 @@
                                 });
                             } catch (e) { console.error('Failed to log payment event:', e); }
 
-                            showAlert('Payment skipped. Your account is created with free plan. You can upgrade anytime from settings.', 'info');
-                            closePaymentModal();
-                            setTimeout(() => {
-                                window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
-                            }, 2000);
+                            showAlert('Payment cancelled. No account was created.', 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+                            // Do NOT redirect - no account was created
                         }
                     }
                 };
 
                 const razorpay = new Razorpay(options);
                 razorpay.on('payment.failed', async function(response) {
-                    // Payment failed - account exists with free plan
+                    // Payment failed - NO account was created (payment-first flow)
                     // Log the failure
                     try {
                         await fetch(`${API_BASE}/api/payments/log-event`, {
@@ -1617,7 +1629,6 @@
                                 action: 'payment_failed',
                                 gateway: 'razorpay',
                                 status: 'failed',
-                                siteId: createdSiteId,
                                 orderId: orderData.data.orderId,
                                 amount: amount,
                                 currency: selectedPlanData.currency || 'INR',
@@ -1628,11 +1639,11 @@
                         });
                     } catch (e) { console.error('Failed to log payment event:', e); }
 
-                    showAlert('Payment failed. Your account is created with free plan. You can upgrade anytime from settings.', 'error');
+                    showAlert('Payment failed: ' + response.error.description + '. No account was created. Please try again.', 'error');
                     closePaymentModal();
-                    setTimeout(() => {
-                        window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
-                    }, 3000);
+                    btn.disabled = false;
+                    btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
+                    // Do NOT redirect - no account was created
                 });
                 razorpay.open();
 
@@ -1652,23 +1663,22 @@
 
             try {
                 if (!selectedPlanData) throw new Error('No plan selected');
-                if (!createdSiteId || !accessToken) throw new Error('Account not created yet');
 
                 const cycle = document.getElementById('billingCycle').value;
                 const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
 
-                // Create PayPal order using authenticated endpoint (account already exists)
-                const orderResponse = await fetch(`${API_BASE}/api/sites/${createdSiteId}/payments/paypal/create-order`, {
+                // Create PayPal order FIRST using anonymous endpoint (no account yet)
+                const orderResponse = await fetch(`${API_BASE}/api/payments/paypal/create-registration-order`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         amount: amount,
                         currency: selectedPlanData.currency || 'USD',
                         planId: selectedPlanData.id,
-                        billingCycle: cycle
+                        billingCycle: cycle,
+                        email: userData.email
                     })
                 });
 
@@ -1677,13 +1687,14 @@
                     throw new Error(orderData.message || 'Failed to create PayPal order');
                 }
 
-                // Store data for return callback
+                // Store data for return callback (including user/site data for account creation)
                 sessionStorage.setItem('paypalOrderId', orderData.data.orderId);
                 sessionStorage.setItem('paypalPlanId', selectedPlanData.id);
                 sessionStorage.setItem('paypalBillingCycle', cycle);
-                sessionStorage.setItem('paypalSiteId', createdSiteId);
-                sessionStorage.setItem('paypalAccessToken', accessToken);
-                sessionStorage.setItem('paypalSiteName', createdSiteName);
+                sessionStorage.setItem('paypalPaymentReference', orderData.data.paymentReference);
+                // Store user data for account creation after payment
+                sessionStorage.setItem('paypalUserData', JSON.stringify(userData));
+                sessionStorage.setItem('paypalSiteData', JSON.stringify(siteData));
 
                 // Redirect to PayPal
                 if (orderData.data.approvalUrl) {
@@ -1714,20 +1725,67 @@
                     const orderId = sessionStorage.getItem('paypalOrderId');
                     const planId = sessionStorage.getItem('paypalPlanId');
                     const billingCycle = sessionStorage.getItem('paypalBillingCycle');
-                    const siteId = sessionStorage.getItem('paypalSiteId');
-                    const token = sessionStorage.getItem('paypalAccessToken');
-                    const siteName = sessionStorage.getItem('paypalSiteName');
+                    const paymentReference = sessionStorage.getItem('paypalPaymentReference');
+                    const storedUserData = sessionStorage.getItem('paypalUserData');
+                    const storedSiteData = sessionStorage.getItem('paypalSiteData');
 
-                    if (orderId && siteId && token) {
-                        showAlert('PayPal payment approved! Completing upgrade...', 'success');
+                    if (orderId && storedUserData && storedSiteData) {
+                        showAlert('PayPal payment approved! Creating your account...', 'success');
 
                         try {
-                            // Capture PayPal payment
-                            const captureResponse = await fetch(`${API_BASE}/api/sites/${siteId}/payments/paypal/capture`, {
+                            const paypalUserData = JSON.parse(storedUserData);
+                            const paypalSiteData = JSON.parse(storedSiteData);
+
+                            // Step 1: Register user
+                            const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    Email: paypalUserData.email,
+                                    Password: paypalUserData.password,
+                                    Username: paypalUserData.username,
+                                    FirstName: paypalUserData.firstName || undefined,
+                                    LastName: paypalUserData.lastName || undefined
+                                })
+                            });
+
+                            const registerResult = await registerResponse.json();
+                            if (!registerResponse.ok || !registerResult.success) {
+                                throw new Error(registerResult.message || 'Registration failed');
+                            }
+
+                            const paypalAccessToken = registerResult.data.accessToken;
+
+                            // Step 2: Create site with payment reference
+                            const sitePayload = {
+                                ...paypalSiteData,
+                                paymentReference: paymentReference
+                            };
+
+                            const siteResponse = await fetch(`${API_BASE}/api/sites`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`
+                                    'Authorization': `Bearer ${paypalAccessToken}`
+                                },
+                                body: JSON.stringify(sitePayload)
+                            });
+
+                            const siteResult = await siteResponse.json();
+                            if (!siteResponse.ok || !siteResult.success) {
+                                throw new Error(siteResult.message || 'Site creation failed');
+                            }
+
+                            const paypalSiteId = siteResult.data.id;
+                            const paypalSiteName = siteResult.data.name;
+
+                            // Step 3: Capture PayPal payment
+                            showAlert('Completing payment...', 'success');
+                            const captureResponse = await fetch(`${API_BASE}/api/sites/${paypalSiteId}/payments/paypal/capture`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${paypalAccessToken}`
                                 },
                                 body: JSON.stringify({
                                     orderId: orderId,
@@ -1742,36 +1800,34 @@
                             sessionStorage.removeItem('paypalOrderId');
                             sessionStorage.removeItem('paypalPlanId');
                             sessionStorage.removeItem('paypalBillingCycle');
-                            sessionStorage.removeItem('paypalSiteId');
-                            sessionStorage.removeItem('paypalAccessToken');
-                            sessionStorage.removeItem('paypalSiteName');
+                            sessionStorage.removeItem('paypalPaymentReference');
+                            sessionStorage.removeItem('paypalUserData');
+                            sessionStorage.removeItem('paypalSiteData');
 
                             if (captureData.success) {
                                 showAlert('Payment successful! Plan upgraded. Redirecting...', 'success');
-                                setTimeout(() => {
-                                    window.location.href = `/site-admin.html?siteId=${siteId}&token=${encodeURIComponent(token)}&siteName=${encodeURIComponent(siteName || '')}`;
-                                }, 1500);
                             } else {
-                                // Capture had issues - still redirect with free plan
-                                showAlert('Payment processing. Redirecting...', 'success');
-                                setTimeout(() => {
-                                    window.location.href = `/site-admin.html?siteId=${siteId}&token=${encodeURIComponent(token)}&siteName=${encodeURIComponent(siteName || '')}`;
-                                }, 2000);
+                                showAlert('Account created. Payment verification pending. Redirecting...', 'success');
                             }
+                            setTimeout(() => {
+                                window.location.href = `/site-admin.html?siteId=${paypalSiteId}&token=${encodeURIComponent(paypalAccessToken)}&siteName=${encodeURIComponent(paypalSiteName || '')}`;
+                            }, 1500);
+
                         } catch (err) {
                             console.error('PayPal completion error:', err);
-                            showAlert('Error processing payment. Your account is created with free plan.', 'error');
-                            setTimeout(() => {
-                                window.location.href = `/site-admin.html?siteId=${siteId}&token=${encodeURIComponent(token)}&siteName=${encodeURIComponent(siteName || '')}`;
-                            }, 2000);
+                            showAlert('Error: ' + err.message + '. Please contact support.', 'error');
+                            // Clear session storage
+                            sessionStorage.removeItem('paypalOrderId');
+                            sessionStorage.removeItem('paypalPlanId');
+                            sessionStorage.removeItem('paypalBillingCycle');
+                            sessionStorage.removeItem('paypalPaymentReference');
+                            sessionStorage.removeItem('paypalUserData');
+                            sessionStorage.removeItem('paypalSiteData');
                         }
                     }
                 } else if (payment === 'cancelled') {
                     // Log the cancellation
                     const cancelledOrderId = sessionStorage.getItem('paypalOrderId');
-                    const siteId = sessionStorage.getItem('paypalSiteId');
-                    const token = sessionStorage.getItem('paypalAccessToken');
-                    const siteName = sessionStorage.getItem('paypalSiteName');
 
                     try {
                         await fetch(`${API_BASE}/api/payments/log-event`, {
@@ -1781,7 +1837,6 @@
                                 action: 'payment_cancelled',
                                 gateway: 'paypal',
                                 status: 'cancelled',
-                                siteId: siteId,
                                 orderId: cancelledOrderId,
                                 errorMessage: 'User cancelled PayPal payment'
                             })
@@ -1792,18 +1847,12 @@
                     sessionStorage.removeItem('paypalOrderId');
                     sessionStorage.removeItem('paypalPlanId');
                     sessionStorage.removeItem('paypalBillingCycle');
-                    sessionStorage.removeItem('paypalSiteId');
-                    sessionStorage.removeItem('paypalAccessToken');
-                    sessionStorage.removeItem('paypalSiteName');
+                    sessionStorage.removeItem('paypalPaymentReference');
+                    sessionStorage.removeItem('paypalUserData');
+                    sessionStorage.removeItem('paypalSiteData');
 
-                    if (siteId && token) {
-                        showAlert('PayPal payment cancelled. Your account is created with free plan. Redirecting...', 'info');
-                        setTimeout(() => {
-                            window.location.href = `/site-admin.html?siteId=${siteId}&token=${encodeURIComponent(token)}&siteName=${encodeURIComponent(siteName || '')}`;
-                        }, 2000);
-                    } else {
-                        showAlert('PayPal payment was cancelled.', 'error');
-                    }
+                    // No account was created
+                    showAlert('PayPal payment was cancelled. No account was created.', 'error');
                 }
             }
         })();
