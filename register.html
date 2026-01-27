@@ -365,6 +365,50 @@
             display: block;
         }
 
+        .form-success {
+            color: #22c55e;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-success.visible {
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            padding-right: 40px;
+        }
+
+        .input-status {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            display: none;
+        }
+
+        .input-status.checking {
+            display: block;
+            color: #64748b;
+            animation: spin 1s linear infinite;
+        }
+
+        .input-status.available {
+            display: block;
+            color: #22c55e;
+        }
+
+        .input-status.taken {
+            display: block;
+            color: #ef4444;
+        }
+
         .btn-container {
             display: flex;
             gap: 1rem;
@@ -835,14 +879,22 @@
                 <form id="step1-form">
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="you@company.com" required>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" placeholder="you@company.com" required>
+                            <span class="input-status" id="email-status"></span>
+                        </div>
                         <div class="form-error" id="email-error"></div>
+                        <div class="form-success" id="email-success"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" placeholder="johndoe" required>
+                        <div class="input-wrapper">
+                            <input type="text" id="username" name="username" placeholder="johndoe" required>
+                            <span class="input-status" id="username-status"></span>
+                        </div>
                         <div class="form-error" id="username-error"></div>
+                        <div class="form-success" id="username-success"></div>
                     </div>
 
                     <div class="form-row">
@@ -1161,6 +1213,125 @@
             checkPasswordStrength(e.target.value);
         });
 
+        // ==================== REAL-TIME AVAILABILITY CHECK ====================
+        let emailCheckTimeout = null;
+        let usernameCheckTimeout = null;
+        let emailAvailable = false;
+        let usernameAvailable = false;
+
+        // Check email availability
+        async function checkEmailAvailability(email) {
+            const statusEl = document.getElementById('email-status');
+            const errorEl = document.getElementById('email-error');
+            const successEl = document.getElementById('email-success');
+
+            // Clear previous states
+            errorEl.classList.remove('visible');
+            successEl.classList.remove('visible');
+            statusEl.className = 'input-status';
+
+            // Basic validation
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                emailAvailable = false;
+                return;
+            }
+
+            // Show checking state
+            statusEl.className = 'input-status checking';
+            statusEl.innerHTML = '&#8635;'; // Refresh icon
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/check-email?email=${encodeURIComponent(email)}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    if (result.data.available) {
+                        emailAvailable = true;
+                        statusEl.className = 'input-status available';
+                        statusEl.innerHTML = '&#10003;'; // Checkmark
+                        successEl.textContent = 'Email is available';
+                        successEl.classList.add('visible');
+                    } else {
+                        emailAvailable = false;
+                        statusEl.className = 'input-status taken';
+                        statusEl.innerHTML = '&#10007;'; // X mark
+                        errorEl.textContent = result.data.message || 'Email is already registered';
+                        errorEl.classList.add('visible');
+                    }
+                }
+            } catch (err) {
+                console.error('Email check error:', err);
+                statusEl.className = 'input-status';
+            }
+        }
+
+        // Check username availability
+        async function checkUsernameAvailability(username) {
+            const statusEl = document.getElementById('username-status');
+            const errorEl = document.getElementById('username-error');
+            const successEl = document.getElementById('username-success');
+
+            // Clear previous states
+            errorEl.classList.remove('visible');
+            successEl.classList.remove('visible');
+            statusEl.className = 'input-status';
+
+            // Basic validation
+            if (!username || username.length < 3) {
+                usernameAvailable = false;
+                return;
+            }
+
+            // Show checking state
+            statusEl.className = 'input-status checking';
+            statusEl.innerHTML = '&#8635;'; // Refresh icon
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(username)}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    if (result.data.available) {
+                        usernameAvailable = true;
+                        statusEl.className = 'input-status available';
+                        statusEl.innerHTML = '&#10003;'; // Checkmark
+                        successEl.textContent = 'Username is available';
+                        successEl.classList.add('visible');
+                    } else {
+                        usernameAvailable = false;
+                        statusEl.className = 'input-status taken';
+                        statusEl.innerHTML = '&#10007;'; // X mark
+                        errorEl.textContent = result.data.message || 'Username is already taken';
+                        errorEl.classList.add('visible');
+                    }
+                }
+            } catch (err) {
+                console.error('Username check error:', err);
+                statusEl.className = 'input-status';
+            }
+        }
+
+        // Add event listeners with debounce
+        document.getElementById('email').addEventListener('input', (e) => {
+            clearTimeout(emailCheckTimeout);
+            const email = e.target.value.trim();
+
+            // Debounce: wait 500ms after user stops typing
+            emailCheckTimeout = setTimeout(() => {
+                checkEmailAvailability(email);
+            }, 500);
+        });
+
+        document.getElementById('username').addEventListener('input', (e) => {
+            clearTimeout(usernameCheckTimeout);
+            const username = e.target.value.trim();
+
+            // Debounce: wait 500ms after user stops typing
+            usernameCheckTimeout = setTimeout(() => {
+                checkUsernameAvailability(username);
+            }, 500);
+        });
+
         // Show alert
         function showAlert(message, type) {
             const alert = document.getElementById('alert');
@@ -1253,11 +1424,25 @@
             if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
                 showFieldError('email', 'Please enter a valid email address');
                 valid = false;
+            } else if (!emailAvailable) {
+                // Check if email was validated and is not available
+                const statusEl = document.getElementById('email-status');
+                if (statusEl.classList.contains('taken')) {
+                    showFieldError('email', 'This email is already registered');
+                    valid = false;
+                }
             }
 
             if (!username || username.length < 3) {
                 showFieldError('username', 'Username must be at least 3 characters');
                 valid = false;
+            } else if (!usernameAvailable) {
+                // Check if username was validated and is not available
+                const statusEl = document.getElementById('username-status');
+                if (statusEl.classList.contains('taken')) {
+                    showFieldError('username', 'This username is already taken');
+                    valid = false;
+                }
             }
 
             if (!password || password.length < 8) {
