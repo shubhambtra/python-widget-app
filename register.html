@@ -1389,7 +1389,7 @@
 
             try {
                 // Step 1: Register user
-                const registerResponse = await fetch('/api/auth/register', {
+                const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1419,7 +1419,7 @@
                     paymentReference: currentPaymentReference || undefined
                 };
 
-                const siteResponse = await fetch('/api/sites', {
+                const siteResponse = await fetch(`${API_BASE}/api/sites`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
