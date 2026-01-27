@@ -327,6 +327,43 @@
       </div>
     </div>
   </div>
+
+  <!-- Payment Logs Card -->
+  <div class="table-card" id="paymentLogsCard">
+    <div class="table-header">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right: 8px; vertical-align: middle;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        Payment Logs
+      </h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <select id="paymentGatewayFilter" onchange="loadPaymentLogs()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);">
+          <option value="">All Gateways</option>
+          <option value="razorpay">Razorpay</option>
+          <option value="paypal">PayPal</option>
+        </select>
+        <select id="paymentStatusFilter" onchange="loadPaymentLogs()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);">
+          <option value="">All Status</option>
+          <option value="success">Success</option>
+          <option value="failed">Failed</option>
+          <option value="error">Error</option>
+          <option value="initiated">Initiated</option>
+        </select>
+        <button class="btn btn-secondary" onclick="loadPaymentLogs()" style="padding: 8px 12px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="paymentLogsContainer">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading payment logs...</p>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script src="/config.js"></script>
@@ -840,9 +877,179 @@ async function handleChangePassword(e) {
   }
 }
 
+// ==================== PAYMENT LOGS ====================
+async function loadPaymentLogs() {
+  const container = document.getElementById('paymentLogsContainer');
+  const gatewayFilter = document.getElementById('paymentGatewayFilter').value;
+  const statusFilter = document.getElementById('paymentStatusFilter').value;
+
+  container.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading payment logs...</p>
+    </div>
+  `;
+
+  try {
+    let url = `${API_BASE}/admin/payments/logs?pageSize=50`;
+    if (gatewayFilter) url += `&gateway=${gatewayFilter}`;
+    if (statusFilter) url += `&status=${statusFilter}`;
+
+    const res = await apiFetch(url);
+    const result = await handleApiResponse(res, 'Failed to fetch payment logs');
+
+    if (result && result.success) {
+      const logs = result.data?.items || result.data || [];
+      renderPaymentLogs(logs);
+    } else {
+      container.innerHTML = `<div class="empty-state"><p>Failed to load payment logs</p></div>`;
+    }
+  } catch (err) {
+    console.error('Error loading payment logs:', err);
+    container.innerHTML = `<div class="empty-state"><p>Error: ${err.message}</p></div>`;
+  }
+}
+
+function renderPaymentLogs(logs) {
+  const container = document.getElementById('paymentLogsContainer');
+
+  if (!logs || logs.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="opacity: 0.5; margin-bottom: 12px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p>No payment logs found</p>
+      </div>
+    `;
+    return;
+  }
+
+  const getStatusBadge = (status) => {
+    const colors = {
+      'success': { bg: '#dcfce7', text: '#166534' },
+      'failed': { bg: '#fee2e2', text: '#991b1b' },
+      'error': { bg: '#fef3c7', text: '#92400e' },
+      'initiated': { bg: '#e0e7ff', text: '#3730a3' },
+      'processing': { bg: '#dbeafe', text: '#1d4ed8' }
+    };
+    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
+    return `<span style="display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: ${color.bg}; color: ${color.text}; text-transform: uppercase;">${status}</span>`;
+  };
+
+  const getGatewayBadge = (gateway) => {
+    const colors = {
+      'razorpay': { bg: '#e0f2fe', text: '#0369a1' },
+      'paypal': { bg: '#fef3c7', text: '#b45309' },
+      'stripe': { bg: '#ede9fe', text: '#6d28d9' }
+    };
+    const color = colors[gateway] || { bg: '#f3f4f6', text: '#374151' };
+    return `<span style="display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; background: ${color.bg}; color: ${color.text}; text-transform: capitalize;">${gateway}</span>`;
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  };
+
+  let html = `
+    <div style="overflow-x: auto;">
+      <table class="data-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Gateway</th>
+            <th>Action</th>
+            <th>Status</th>
+            <th>Amount</th>
+            <th>Order ID</th>
+            <th>Duration</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  logs.forEach(log => {
+    const amount = log.amount ? `${log.currency || ''} ${log.amount.toFixed(2)}` : '-';
+    const duration = log.durationMs ? `${log.durationMs}ms` : '-';
+    const errorDisplay = log.errorMessage
+      ? `<span style="color: #dc2626; font-size: 12px; cursor: help;" title="${log.errorMessage.replace(/"/g, '&quot;')}">${log.errorCode || 'Error'}</span>`
+      : '-';
+
+    html += `
+      <tr style="cursor: pointer;" onclick="showPaymentLogDetails(${log.id}, ${JSON.stringify(log).replace(/"/g, '&quot;')})">
+        <td style="white-space: nowrap; font-size: 13px;">${formatDate(log.createdAt)}</td>
+        <td>${getGatewayBadge(log.gateway)}</td>
+        <td style="font-size: 13px; text-transform: capitalize;">${log.action.replace(/_/g, ' ')}</td>
+        <td>${getStatusBadge(log.status)}</td>
+        <td style="font-weight: 500;">${amount}</td>
+        <td style="font-size: 12px; font-family: monospace; color: var(--text-secondary);">${log.orderId || log.transactionId || '-'}</td>
+        <td style="font-size: 12px; color: var(--text-secondary);">${duration}</td>
+        <td>${errorDisplay}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+function showPaymentLogDetails(id, log) {
+  let requestData = '-';
+  let responseData = '-';
+
+  try {
+    if (log.requestData) {
+      requestData = JSON.stringify(JSON.parse(log.requestData), null, 2);
+    }
+  } catch (e) {
+    requestData = log.requestData || '-';
+  }
+
+  try {
+    if (log.responseData) {
+      responseData = JSON.stringify(JSON.parse(log.responseData), null, 2);
+    }
+  } catch (e) {
+    responseData = log.responseData || '-';
+  }
+
+  Swal.fire({
+    title: `Payment Log #${id}`,
+    html: `
+      <div style="text-align: left; font-size: 14px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div><strong>Gateway:</strong> ${log.gateway}</div>
+          <div><strong>Action:</strong> ${log.action}</div>
+          <div><strong>Status:</strong> ${log.status}</div>
+          <div><strong>Duration:</strong> ${log.durationMs || '-'}ms</div>
+          <div><strong>Amount:</strong> ${log.amount ? `${log.currency || ''} ${log.amount}` : '-'}</div>
+          <div><strong>Order ID:</strong> ${log.orderId || '-'}</div>
+        </div>
+        ${log.errorMessage ? `<div style="background: #fee2e2; padding: 12px; border-radius: 8px; margin-bottom: 12px;"><strong>Error:</strong> ${log.errorCode || ''} - ${log.errorMessage}</div>` : ''}
+        <div style="margin-bottom: 12px;">
+          <strong>Request:</strong>
+          <pre style="background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 8px; overflow: auto; max-height: 150px; font-size: 12px;">${requestData}</pre>
+        </div>
+        <div>
+          <strong>Response:</strong>
+          <pre style="background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 8px; overflow: auto; max-height: 150px; font-size: 12px;">${responseData}</pre>
+        </div>
+      </div>
+    `,
+    width: 700,
+    showCloseButton: true,
+    showConfirmButton: false
+  });
+}
+
 // Load data on page load
 loadData();
 loadContactSubmissions();
+loadPaymentLogs();
 </script>
 </body>
 </html>
