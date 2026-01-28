@@ -827,9 +827,132 @@
                 display: none;
             }
         }
+
+        /* Processing Overlay */
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .processing-content {
+            text-align: center;
+            color: #fff;
+        }
+
+        .processing-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .processing-subtitle {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .processing-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .processing-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #64748b;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .processing-step.active {
+            color: #fff;
+        }
+
+        .processing-step.completed {
+            color: #22c55e;
+        }
+
+        .processing-step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+        }
+
+        .processing-step.active .processing-step-icon {
+            background: #3b82f6;
+            animation: pulse 1.5s infinite;
+        }
+
+        .processing-step.completed .processing-step-icon {
+            background: #22c55e;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
     </style>
 </head>
 <body>
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-spinner"></div>
+        <div class="processing-content">
+            <div class="processing-title">Setting Up Your Account</div>
+            <div class="processing-subtitle">Payment successful! Please wait...</div>
+            <div class="processing-steps">
+                <div class="processing-step" id="step-verify">
+                    <div class="processing-step-icon">1</div>
+                    <span>Verifying payment</span>
+                </div>
+                <div class="processing-step" id="step-account">
+                    <div class="processing-step-icon">2</div>
+                    <span>Creating your account</span>
+                </div>
+                <div class="processing-step" id="step-site">
+                    <div class="processing-step-icon">3</div>
+                    <span>Setting up your site</span>
+                </div>
+                <div class="processing-step" id="step-finish">
+                    <div class="processing-step-icon">4</div>
+                    <span>Finishing up</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar">
         <a href="/" class="nav-logo">
@@ -1483,6 +1606,40 @@
             }
         }
 
+        // Processing overlay functions
+        function showProcessingOverlay() {
+            document.getElementById('processingOverlay').classList.add('active');
+            // Reset all steps
+            ['step-verify', 'step-account', 'step-site', 'step-finish'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('active', 'completed');
+            });
+        }
+
+        function hideProcessingOverlay() {
+            document.getElementById('processingOverlay').classList.remove('active');
+        }
+
+        function updateProcessingStep(stepId, status) {
+            const steps = ['step-verify', 'step-account', 'step-site', 'step-finish'];
+            const currentIndex = steps.indexOf(stepId);
+
+            steps.forEach((id, index) => {
+                const el = document.getElementById(id);
+                el.classList.remove('active', 'completed');
+
+                if (index < currentIndex) {
+                    el.classList.add('completed');
+                    el.querySelector('.processing-step-icon').innerHTML = '✓';
+                } else if (index === currentIndex) {
+                    el.classList.add(status === 'completed' ? 'completed' : 'active');
+                    if (status === 'completed') {
+                        el.querySelector('.processing-step-icon').innerHTML = '✓';
+                    }
+                }
+            });
+        }
+
         // Log registration events to server for debugging
         async function logRegistrationEvent(action, status, details = {}) {
             const logData = {
@@ -1632,6 +1789,8 @@
                 }
 
                 await logRegistrationEvent('post_payment_check', 'passed');
+                updateProcessingStep('step-verify', 'completed');
+                updateProcessingStep('step-account', 'active');
                 submitText.textContent = 'Creating account...';
 
                 // Step 1: Register user
@@ -1664,6 +1823,8 @@
                 }
 
                 await logRegistrationEvent('register_api', 'success');
+                updateProcessingStep('step-account', 'completed');
+                updateProcessingStep('step-site', 'active');
 
                 accessToken = registerResult.data.accessToken;
                 submitText.textContent = 'Creating site...';
@@ -1703,6 +1864,8 @@
                 createdSiteName = siteResult.data.name;
 
                 await logRegistrationEvent('create_site', 'success', { siteId: createdSiteId });
+                updateProcessingStep('step-site', 'completed');
+                updateProcessingStep('step-finish', 'active');
                 console.log('[REG] Registration complete!', { siteId: createdSiteId, siteName: createdSiteName });
 
                 // Reset button state
@@ -1718,6 +1881,7 @@
                     error: error.message,
                     stack: error.stack
                 });
+                hideProcessingOverlay();
                 showAlert(error.message || 'An error occurred. Please try again.', 'error');
                 submitBtn.disabled = false;
                 submitText.textContent = 'Create My Site';
@@ -1817,6 +1981,11 @@
                             paymentId: response.razorpay_payment_id
                         });
 
+                        // Show processing overlay
+                        closePaymentModal();
+                        showProcessingOverlay();
+                        updateProcessingStep('step-verify', 'active');
+
                         try {
                             // Payment successful - NOW create account and site
                             btn.textContent = 'Creating account...';
@@ -1850,6 +2019,7 @@
                                     });
                                 } catch (logErr) { console.error('Failed to log orphaned payment:', logErr); }
 
+                                hideProcessingOverlay();
                                 showAlert('Payment successful but account creation failed. Please contact support with payment ID: ' + response.razorpay_payment_id, 'error');
                                 btn.disabled = false;
                                 btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
@@ -1877,22 +2047,28 @@
 
                             const verifyData = await verifyResponse.json();
                             if (verifyResponse.ok && verifyData.success) {
+                                updateProcessingStep('step-finish', 'completed');
+                                // Brief delay to show completed state
+                                await new Promise(r => setTimeout(r, 500));
+                                hideProcessingOverlay();
                                 showAlert('Payment successful! Redirecting...', 'success');
-                                closePaymentModal();
+                                setTimeout(() => {
+                                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                                }, 1000);
+                            } else {
+                                // Account created, payment received but verification failed - still redirect
+                                updateProcessingStep('step-finish', 'completed');
+                                await new Promise(r => setTimeout(r, 500));
+                                hideProcessingOverlay();
+                                showAlert('Account created! Payment verification pending. Redirecting...', 'success');
                                 setTimeout(() => {
                                     window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                                 }, 1500);
-                            } else {
-                                // Account created, payment received but verification failed - still redirect
-                                showAlert('Account created! Payment verification pending. Redirecting...', 'success');
-                                closePaymentModal();
-                                setTimeout(() => {
-                                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
-                                }, 2000);
                             }
                         } catch (err) {
                             console.error('[REG] Error in Razorpay handler:', err);
                             await logRegistrationEvent('razorpay_handler', 'error', { error: err.message });
+                            hideProcessingOverlay();
                             showAlert('Payment received but there was an issue. Please contact support.', 'error');
                             btn.disabled = false;
                             btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
