@@ -1483,11 +1483,40 @@
             }
         }
 
+        // Log registration events to server for debugging
+        async function logRegistrationEvent(action, status, details = {}) {
+            const logData = {
+                action: `registration_${action}`,
+                gateway: 'registration',
+                status: status,
+                metadata: JSON.stringify({
+                    ...details,
+                    email: userData?.email,
+                    username: userData?.username,
+                    domain: siteData?.Domain,
+                    planId: selectedPlanData?.id,
+                    planName: selectedPlanData?.name,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                })
+            };
+            console.log(`[REG] ${action}:`, status, details);
+            try {
+                await fetch(`${API_BASE}/api/payments/log-event`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(logData)
+                });
+            } catch (e) { console.error('Failed to log event:', e); }
+        }
+
         // Final submission
         async function submitRegistration() {
             const submitBtn = document.getElementById('submitBtn');
             const submitText = document.getElementById('submitText');
             const submitSpinner = document.getElementById('submitSpinner');
+
+            console.log('[REG] submitRegistration called', { userData, siteData, selectedPlanData, isCreatingAccount });
 
             // Ensure a plan is selected
             if (!selectedPlanData) {
@@ -1497,9 +1526,11 @@
 
             // Check if this is a paid plan
             const isFree = selectedPlanData.monthlyPrice === 0;
+            console.log('[REG] Plan check:', { isFree, monthlyPrice: selectedPlanData.monthlyPrice });
 
             if (isFree) {
                 // For FREE plans: Create account immediately, then redirect
+                await logRegistrationEvent('free_plan_submit', 'initiated');
                 const success = await createAccountAndSite();
                 if (success) {
                     showAlert('Account created successfully! Redirecting...', 'success');
@@ -1513,6 +1544,8 @@
                 submitText.textContent = 'Verifying...';
                 submitSpinner.style.display = 'block';
 
+                await logRegistrationEvent('pre_payment_check', 'initiated');
+
                 try {
                     // Re-check email and username availability before accepting payment
                     const [emailCheck, usernameCheck] = await Promise.all([
@@ -1520,7 +1553,10 @@
                         fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(userData.username)}`).then(r => r.json())
                     ]);
 
+                    console.log('[REG] Pre-payment availability check:', { emailCheck, usernameCheck });
+
                     if (!emailCheck.success || !emailCheck.data?.available) {
+                        await logRegistrationEvent('pre_payment_check', 'email_taken', { emailCheck });
                         showAlert('This email is already registered. Please go back and use a different email.', 'error');
                         submitBtn.disabled = false;
                         submitText.textContent = 'Create My Site';
@@ -1528,6 +1564,7 @@
                         return;
                     }
                     if (!usernameCheck.success || !usernameCheck.data?.available) {
+                        await logRegistrationEvent('pre_payment_check', 'username_taken', { usernameCheck });
                         showAlert('This username is already taken. Please go back and choose a different username.', 'error');
                         submitBtn.disabled = false;
                         submitText.textContent = 'Create My Site';
@@ -1535,12 +1572,16 @@
                         return;
                     }
 
+                    await logRegistrationEvent('pre_payment_check', 'passed');
+
                     // All clear - show payment modal
                     submitBtn.disabled = false;
                     submitText.textContent = 'Create My Site';
                     submitSpinner.style.display = 'none';
                     openPaymentModal();
                 } catch (err) {
+                    console.error('[REG] Pre-payment check error:', err);
+                    await logRegistrationEvent('pre_payment_check', 'error', { error: err.message });
                     showAlert('Failed to verify account availability. Please try again.', 'error');
                     submitBtn.disabled = false;
                     submitText.textContent = 'Create My Site';
@@ -1551,12 +1592,17 @@
 
         // Create account and site (called after payment success for paid plans, immediately for free plans)
         async function createAccountAndSite() {
+            console.log('[REG] createAccountAndSite called', { isCreatingAccount, userData, siteData });
+
             // Guard to prevent double registration
             if (isCreatingAccount) {
-                console.log('Account creation already in progress, skipping...');
+                console.log('[REG] BLOCKED: Account creation already in progress');
+                await logRegistrationEvent('create_account', 'blocked_duplicate');
                 return false;
             }
             isCreatingAccount = true;
+
+            await logRegistrationEvent('create_account', 'started');
 
             const submitBtn = document.getElementById('submitBtn');
             const submitText = document.getElementById('submitText');
@@ -1568,21 +1614,28 @@
 
             try {
                 // Pre-check: Verify email and username are still available before creating account
+                console.log('[REG] Post-payment availability check...');
                 const [emailCheck, usernameCheck] = await Promise.all([
                     fetch(`${API_BASE}/api/auth/check-email?email=${encodeURIComponent(userData.email)}`).then(r => r.json()),
                     fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(userData.username)}`).then(r => r.json())
                 ]);
 
+                console.log('[REG] Post-payment availability results:', { emailCheck, usernameCheck });
+
                 if (!emailCheck.success || !emailCheck.data?.available) {
+                    await logRegistrationEvent('post_payment_check', 'email_taken', { emailCheck });
                     throw new Error('This email is already registered. Please use a different email.');
                 }
                 if (!usernameCheck.success || !usernameCheck.data?.available) {
+                    await logRegistrationEvent('post_payment_check', 'username_taken', { usernameCheck });
                     throw new Error('This username is already taken. Please choose a different username.');
                 }
 
+                await logRegistrationEvent('post_payment_check', 'passed');
                 submitText.textContent = 'Creating account...';
 
                 // Step 1: Register user
+                console.log('[REG] Calling /api/auth/register...');
                 const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1596,13 +1649,21 @@
                 });
 
                 const registerResult = await registerResponse.json();
+                console.log('[REG] Register response:', { status: registerResponse.status, result: registerResult });
 
                 if (!registerResponse.ok || !registerResult.success) {
                     const errorMsg = registerResult.message ||
                                     (registerResult.errors && registerResult.errors.length > 0 ? registerResult.errors.join(', ') : null) ||
                                     'Registration failed';
+                    await logRegistrationEvent('register_api', 'failed', {
+                        status: registerResponse.status,
+                        error: errorMsg,
+                        response: registerResult
+                    });
                     throw new Error(errorMsg);
                 }
+
+                await logRegistrationEvent('register_api', 'success');
 
                 accessToken = registerResult.data.accessToken;
                 submitText.textContent = 'Creating site...';
@@ -1613,6 +1674,7 @@
                     paymentReference: currentPaymentReference || undefined
                 };
 
+                console.log('[REG] Calling /api/sites...', sitePayload);
                 const siteResponse = await fetch(`${API_BASE}/api/sites`, {
                     method: 'POST',
                     headers: {
@@ -1623,16 +1685,25 @@
                 });
 
                 const siteResult = await siteResponse.json();
+                console.log('[REG] Site creation response:', { status: siteResponse.status, result: siteResult });
 
                 if (!siteResponse.ok || !siteResult.success) {
                     const errorMsg = siteResult.message ||
                                     (siteResult.errors && siteResult.errors.length > 0 ? siteResult.errors.join(', ') : null) ||
                                     'Site creation failed';
+                    await logRegistrationEvent('create_site', 'failed', {
+                        status: siteResponse.status,
+                        error: errorMsg,
+                        response: siteResult
+                    });
                     throw new Error(errorMsg);
                 }
 
                 createdSiteId = siteResult.data.id;
                 createdSiteName = siteResult.data.name;
+
+                await logRegistrationEvent('create_site', 'success', { siteId: createdSiteId });
+                console.log('[REG] Registration complete!', { siteId: createdSiteId, siteName: createdSiteName });
 
                 // Reset button state
                 submitBtn.disabled = false;
@@ -1642,6 +1713,11 @@
                 return true;
 
             } catch (error) {
+                console.error('[REG] ERROR in createAccountAndSite:', error);
+                await logRegistrationEvent('create_account', 'error', {
+                    error: error.message,
+                    stack: error.stack
+                });
                 showAlert(error.message || 'An error occurred. Please try again.', 'error');
                 submitBtn.disabled = false;
                 submitText.textContent = 'Create My Site';
@@ -1720,6 +1796,9 @@
 
                 btn.textContent = 'Opening payment...';
 
+                console.log('[REG] Opening Razorpay checkout', { orderId: orderData.data.orderId, paymentReference: currentPaymentReference });
+                await logRegistrationEvent('razorpay_checkout', 'opening', { orderId: orderData.data.orderId });
+
                 // Open Razorpay checkout
                 const options = {
                     key: orderData.data.keyId,
@@ -1729,6 +1808,15 @@
                     description: `${selectedPlanData.name} Plan - ${cycle}`,
                     order_id: orderData.data.orderId,
                     handler: async function(response) {
+                        console.log('[REG] Razorpay payment SUCCESS', {
+                            orderId: response.razorpay_order_id,
+                            paymentId: response.razorpay_payment_id
+                        });
+                        await logRegistrationEvent('razorpay_payment', 'success', {
+                            orderId: response.razorpay_order_id,
+                            paymentId: response.razorpay_payment_id
+                        });
+
                         try {
                             // Payment successful - NOW create account and site
                             btn.textContent = 'Creating account...';
@@ -1803,6 +1891,8 @@
                                 }, 2000);
                             }
                         } catch (err) {
+                            console.error('[REG] Error in Razorpay handler:', err);
+                            await logRegistrationEvent('razorpay_handler', 'error', { error: err.message });
                             showAlert('Payment received but there was an issue. Please contact support.', 'error');
                             btn.disabled = false;
                             btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;
