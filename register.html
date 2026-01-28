@@ -855,26 +855,21 @@
             <div class="step-indicator">
                 <div class="step active" id="step1-indicator">
                     <div class="step-number">1</div>
-                    <span class="step-label">Account</span>
+                    <span class="step-label">Account & Site</span>
                 </div>
                 <div class="step-connector" id="connector1"></div>
                 <div class="step" id="step2-indicator">
                     <div class="step-number">2</div>
-                    <span class="step-label">Site Setup</span>
-                </div>
-                <div class="step-connector" id="connector2"></div>
-                <div class="step" id="step3-indicator">
-                    <div class="step-number">3</div>
                     <span class="step-label">Choose Plan</span>
                 </div>
             </div>
 
             <div id="alert" class="alert"></div>
 
-            <!-- Step 1: Account Info -->
+            <!-- Step 1: Account & Site Info -->
             <div class="form-step active" id="step1">
                 <h2 class="form-title">Create Your Account</h2>
-                <p class="form-subtitle">Start your free trial today</p>
+                <p class="form-subtitle">Enter your details and website domain</p>
 
                 <form id="step1-form">
                     <div class="form-group">
@@ -932,6 +927,12 @@
                         <div class="form-error" id="confirm-error"></div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="domain">Your Website Domain</label>
+                        <input type="text" id="domain" name="domain" placeholder="myapp.com" required>
+                        <div class="form-error" id="domain-error"></div>
+                    </div>
+
                     <div class="btn-container">
                         <button type="submit" class="btn btn-primary">
                             Continue
@@ -947,65 +948,8 @@
                 </p>
             </div>
 
-            <!-- Step 2: Site Setup -->
+            <!-- Step 2: Choose Plan -->
             <div class="form-step" id="step2">
-                <h2 class="form-title">Set Up Your Site</h2>
-                <p class="form-subtitle">Configure your first support site</p>
-
-                <form id="step2-form">
-                    <div class="form-group">
-                        <label for="siteName">Site Name</label>
-                        <input type="text" id="siteName" name="siteName" placeholder="My Awesome App" required>
-                        <div class="form-error" id="siteName-error"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="domain">Domain</label>
-                        <input type="text" id="domain" name="domain" placeholder="myapp.com" required>
-                        <div class="form-error" id="domain-error"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="companyName">Company Name <span class="optional">(optional)</span></label>
-                        <input type="text" id="companyName" name="companyName" placeholder="Acme Inc.">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="industry">Industry <span class="optional">(optional)</span></label>
-                        <select id="industry" name="industry">
-                            <option value="">Select an industry</option>
-                            <option value="technology">Technology</option>
-                            <option value="ecommerce">E-Commerce</option>
-                            <option value="saas">SaaS</option>
-                            <option value="healthcare">Healthcare</option>
-                            <option value="finance">Finance</option>
-                            <option value="education">Education</option>
-                            <option value="retail">Retail</option>
-                            <option value="travel">Travel & Hospitality</option>
-                            <option value="media">Media & Entertainment</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-secondary" onclick="goToStep(1)">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
-                            Back
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            Continue
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Step 3: Choose Plan -->
-            <div class="form-step" id="step3">
                 <h2 class="form-title">Choose Your Plan</h2>
                 <p class="form-subtitle">Select the plan that fits your needs</p>
 
@@ -1016,7 +960,7 @@
                 </div>
 
                 <div class="btn-container">
-                    <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
+                    <button type="button" class="btn btn-secondary" onclick="goToStep(1)">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" fill="none"/>
                         </svg>
@@ -1402,7 +1346,7 @@
             clearAlert();
             clearFieldErrors();
 
-            // Update step indicators
+            // Update step indicators (now only 2 steps)
             document.querySelectorAll('.step').forEach((step, index) => {
                 step.classList.remove('active', 'completed');
                 if (index + 1 < stepNum) {
@@ -1412,25 +1356,17 @@
                 }
             });
 
-            // Update connectors
+            // Update connector
             const connector1 = document.getElementById('connector1');
-            const connector2 = document.getElementById('connector2');
-
             if (stepNum > 1) {
                 connector1.classList.add('active');
             } else {
                 connector1.classList.remove('active');
             }
 
-            if (stepNum > 2) {
-                connector2.classList.add('active');
-            } else {
-                connector2.classList.remove('active');
-            }
-
-            // Toggle wide container for step 3
+            // Toggle wide container for step 2 (plan selection)
             const container = document.querySelector('.register-container');
-            if (stepNum === 3) {
+            if (stepNum === 2) {
                 container.classList.add('wide');
             } else {
                 container.classList.remove('wide');
@@ -1445,7 +1381,7 @@
             });
         }
 
-        // Validate step 1
+        // Validate step 1 (includes domain validation)
         function validateStep1() {
             clearFieldErrors();
             let valid = true;
@@ -1454,6 +1390,7 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const domain = document.getElementById('domain').value.trim();
 
             if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
                 showFieldError('email', 'Please enter a valid email address');
@@ -1489,22 +1426,6 @@
                 valid = false;
             }
 
-            return valid;
-        }
-
-        // Validate step 2
-        function validateStep2() {
-            clearFieldErrors();
-            let valid = true;
-
-            const siteName = document.getElementById('siteName').value.trim();
-            const domain = document.getElementById('domain').value.trim();
-
-            if (!siteName || siteName.length < 2) {
-                showFieldError('siteName', 'Site name must be at least 2 characters');
-                valid = false;
-            }
-
             if (!domain || !domain.match(/^[a-zA-Z0-9][a-zA-Z0-9-_.]+\.[a-zA-Z]{2,}$/)) {
                 showFieldError('domain', 'Please enter a valid domain (e.g., myapp.com)');
                 valid = false;
@@ -1513,11 +1434,14 @@
             return valid;
         }
 
-        // Step 1 form submission
+
+        // Step 1 form submission (now includes domain, goes directly to plan selection)
         document.getElementById('step1-form').addEventListener('submit', (e) => {
             e.preventDefault();
 
             if (!validateStep1()) return;
+
+            const domain = document.getElementById('domain').value.trim();
 
             // Store user data for later
             userData = {
@@ -1528,24 +1452,13 @@
                 password: document.getElementById('password').value
             };
 
-            goToStep(2);
-        });
-
-        // Step 2 form submission
-        document.getElementById('step2-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            if (!validateStep2()) return;
-
-            // Store site data for later
+            // Store site data (use domain as site name)
             siteData = {
-                Name: document.getElementById('siteName').value.trim(),
-                Domain: document.getElementById('domain').value.trim(),
-                CompanyName: document.getElementById('companyName').value.trim() || undefined,
-                Industry: document.getElementById('industry').value || undefined
+                Name: domain,
+                Domain: domain
             };
 
-            goToStep(3);
+            goToStep(2);
         });
 
         // Plan selection
@@ -1576,8 +1489,14 @@
             const submitText = document.getElementById('submitText');
             const submitSpinner = document.getElementById('submitSpinner');
 
+            // Ensure a plan is selected
+            if (!selectedPlanData) {
+                showAlert('Please select a plan before continuing.', 'error');
+                return;
+            }
+
             // Check if this is a paid plan
-            const isFree = !selectedPlanData || selectedPlanData.monthlyPrice === 0;
+            const isFree = selectedPlanData.monthlyPrice === 0;
 
             if (isFree) {
                 // For FREE plans: Create account immediately, then redirect
@@ -1597,6 +1516,13 @@
 
         // Create account and site (called after payment success for paid plans, immediately for free plans)
         async function createAccountAndSite() {
+            // Guard to prevent double registration
+            if (isCreatingAccount) {
+                console.log('Account creation already in progress, skipping...');
+                return false;
+            }
+            isCreatingAccount = true;
+
             const submitBtn = document.getElementById('submitBtn');
             const submitText = document.getElementById('submitText');
             const submitSpinner = document.getElementById('submitSpinner');
@@ -1670,6 +1596,7 @@
                 submitBtn.disabled = false;
                 submitText.textContent = 'Create My Site';
                 submitSpinner.style.display = 'none';
+                isCreatingAccount = false; // Reset flag so user can retry
                 return false;
             }
         }
@@ -1702,6 +1629,9 @@
 
         // Payment reference for linking registration payments to sites
         let currentPaymentReference = null;
+
+        // Guard to prevent double registration
+        let isCreatingAccount = false;
 
         // ==================== RAZORPAY PAYMENT ====================
         async function payWithRazorpay() {
