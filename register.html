@@ -1508,9 +1508,44 @@
                     }, 1000);
                 }
             } else {
-                // For PAID plans: Show payment modal first, create account only after successful payment
-                submitBtn.disabled = false;
-                openPaymentModal();
+                // For PAID plans: Verify availability first, then show payment modal
+                submitBtn.disabled = true;
+                submitText.textContent = 'Verifying...';
+                submitSpinner.style.display = 'block';
+
+                try {
+                    // Re-check email and username availability before accepting payment
+                    const [emailCheck, usernameCheck] = await Promise.all([
+                        fetch(`${API_BASE}/api/auth/check-email?email=${encodeURIComponent(userData.email)}`).then(r => r.json()),
+                        fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(userData.username)}`).then(r => r.json())
+                    ]);
+
+                    if (!emailCheck.success || !emailCheck.data?.available) {
+                        showAlert('This email is already registered. Please go back and use a different email.', 'error');
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Create My Site';
+                        submitSpinner.style.display = 'none';
+                        return;
+                    }
+                    if (!usernameCheck.success || !usernameCheck.data?.available) {
+                        showAlert('This username is already taken. Please go back and choose a different username.', 'error');
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Create My Site';
+                        submitSpinner.style.display = 'none';
+                        return;
+                    }
+
+                    // All clear - show payment modal
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Create My Site';
+                    submitSpinner.style.display = 'none';
+                    openPaymentModal();
+                } catch (err) {
+                    showAlert('Failed to verify account availability. Please try again.', 'error');
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Create My Site';
+                    submitSpinner.style.display = 'none';
+                }
             }
         }
 
@@ -1528,10 +1563,25 @@
             const submitSpinner = document.getElementById('submitSpinner');
 
             submitBtn.disabled = true;
-            submitText.textContent = 'Creating account...';
+            submitText.textContent = 'Verifying availability...';
             submitSpinner.style.display = 'block';
 
             try {
+                // Pre-check: Verify email and username are still available before creating account
+                const [emailCheck, usernameCheck] = await Promise.all([
+                    fetch(`${API_BASE}/api/auth/check-email?email=${encodeURIComponent(userData.email)}`).then(r => r.json()),
+                    fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(userData.username)}`).then(r => r.json())
+                ]);
+
+                if (!emailCheck.success || !emailCheck.data?.available) {
+                    throw new Error('This email is already registered. Please use a different email.');
+                }
+                if (!usernameCheck.success || !usernameCheck.data?.available) {
+                    throw new Error('This username is already taken. Please choose a different username.');
+                }
+
+                submitText.textContent = 'Creating account...';
+
                 // Step 1: Register user
                 const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {
                     method: 'POST',
