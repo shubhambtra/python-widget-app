@@ -59,13 +59,13 @@
           </div>
         </div>
 
-        <!-- Pricing Section -->
+        <!-- Pricing Section (USD) -->
         <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span style="font-weight: 600; font-size: 0.95rem;">Pricing</span>
+            <span style="font-weight: 600; font-size: 0.95rem;">Pricing (USD)</span>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
             <div style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; text-align: center;">
@@ -90,6 +90,38 @@
                 <input type="number" id="planTrialDays" min="0" value="0" style="width: 60px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
               </div>
               <span style="font-size: 0.75rem; color: #9ca3af;">days free</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing Section (INR - India) -->
+        <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; background: #fff7ed;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #374151;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#f97316">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span style="font-weight: 600; font-size: 0.95rem;">Pricing (INR - India)</span>
+            <label style="display: flex; align-items: center; gap: 8px; margin-left: auto; cursor: pointer; padding: 6px 12px; background: white; border: 1px solid #fed7aa; border-radius: 6px;">
+              <input type="checkbox" id="planInrEnabled" style="width: 16px; height: 16px; accent-color: #f97316;">
+              <span style="font-size: 0.8rem; font-weight: 500; color: #c2410c;">Enable INR Pricing</span>
+            </label>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div style="background: white; border: 1px solid #fed7aa; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #c2410c; text-transform: uppercase; letter-spacing: 0.5px;">Monthly (INR)</label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <span style="font-size: 1.5rem; color: #374151; margin-right: 4px;">₹</span>
+                <input type="number" id="planMonthlyPriceInr" min="0" step="1" placeholder="0" style="width: 100px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">/month</span>
+            </div>
+            <div style="background: white; border: 1px solid #fed7aa; border-radius: 12px; padding: 16px; text-align: center;">
+              <label style="font-size: 0.75rem; font-weight: 600; color: #c2410c; text-transform: uppercase; letter-spacing: 0.5px;">Annual (INR)</label>
+              <div style="display: flex; align-items: center; justify-content: center; margin-top: 8px;">
+                <span style="font-size: 1.5rem; color: #374151; margin-right: 4px;">₹</span>
+                <input type="number" id="planAnnualPriceInr" min="0" step="1" placeholder="0" style="width: 100px; padding: 8px; border: none; font-size: 1.5rem; font-weight: 600; color: #111827; text-align: center; background: transparent;">
+              </div>
+              <span style="font-size: 0.75rem; color: #9ca3af;">/year</span>
             </div>
           </div>
         </div>
@@ -505,6 +537,7 @@ function renderPlansTable(plans) {
             <td>
               <div style="font-weight: 600; color: #22c55e;">$${plan.monthlyPrice}/mo</div>
               ${plan.annualPrice ? `<div style="font-size: 12px; color: #6b7280;">$${plan.annualPrice}/yr</div>` : ''}
+              ${plan.inrEnabled ? `<div style="font-size: 11px; color: #f97316; margin-top: 4px;">₹${plan.monthlyPriceInr || 0}/mo${plan.annualPriceInr ? ' | ₹' + plan.annualPriceInr + '/yr' : ''}</div>` : ''}
             </td>
             <td>
               <div style="font-size: 12px; line-height: 1.6;">
@@ -563,6 +596,10 @@ function openCreatePlanModal() {
   document.getElementById('planAiAutoReplyEnabled').checked = false;
   document.getElementById('planMaxAiAnalyses').value = '';
   document.getElementById('planMaxAiAutoReplies').value = '';
+  // INR fields
+  document.getElementById('planInrEnabled').checked = false;
+  document.getElementById('planMonthlyPriceInr').value = '';
+  document.getElementById('planAnnualPriceInr').value = '';
   openModal('planModal');
 }
 
@@ -592,6 +629,10 @@ function openEditPlanModal(planId) {
   document.getElementById('planAiAutoReplyEnabled').checked = plan.aiAutoReplyEnabled || false;
   document.getElementById('planMaxAiAnalyses').value = plan.maxAiAnalysesPerMonth || '';
   document.getElementById('planMaxAiAutoReplies').value = plan.maxAiAutoRepliesPerMonth || '';
+  // INR fields
+  document.getElementById('planInrEnabled').checked = plan.inrEnabled || false;
+  document.getElementById('planMonthlyPriceInr').value = plan.monthlyPriceInr || '';
+  document.getElementById('planAnnualPriceInr').value = plan.annualPriceInr || '';
 
   openModal('planModal');
 }
@@ -605,6 +646,10 @@ async function savePlan() {
     description: document.getElementById('planDescription').value || null,
     monthlyPrice: parseFloat(document.getElementById('planMonthlyPrice').value) || 0,
     annualPrice: parseFloat(document.getElementById('planAnnualPrice').value) || null,
+    // INR pricing
+    monthlyPriceInr: parseFloat(document.getElementById('planMonthlyPriceInr').value) || null,
+    annualPriceInr: parseFloat(document.getElementById('planAnnualPriceInr').value) || null,
+    inrEnabled: document.getElementById('planInrEnabled').checked,
     maxAgents: parseInt(document.getElementById('planMaxAgents').value) || null,
     maxConversationsPerMonth: parseInt(document.getElementById('planMaxConversations').value) || null,
     maxMessagesPerMonth: parseInt(document.getElementById('planMaxMessages').value) || null,
