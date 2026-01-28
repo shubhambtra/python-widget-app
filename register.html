@@ -1095,8 +1095,41 @@
         let availablePlans = [];
         let selectedPlanData = null;
 
+        // Location-based currency
+        let userCountry = null;
+        let useInr = false;
+
+        // Detect user's country for currency selection
+        async function detectUserCountry() {
+            try {
+                // Use free IP geolocation API
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                userCountry = data.country_code;
+                useInr = (userCountry === 'IN');
+                console.log('Detected country:', userCountry, 'Use INR:', useInr);
+            } catch (err) {
+                console.error('Failed to detect country:', err);
+                // Default to USD if detection fails
+                userCountry = 'US';
+                useInr = false;
+            }
+        }
+
+        // Get display price for a plan
+        function getPlanPrice(plan, cycle = 'monthly') {
+            if (useInr && plan.inrEnabled && plan.monthlyPriceInr) {
+                const price = cycle === 'yearly' ? (plan.annualPriceInr || plan.monthlyPriceInr * 12) : plan.monthlyPriceInr;
+                return { amount: price, currency: 'INR', symbol: '₹' };
+            }
+            const price = cycle === 'yearly' ? (plan.annualPrice || plan.monthlyPrice * 12) : plan.monthlyPrice;
+            return { amount: price, currency: 'USD', symbol: '$' };
+        }
+
         // Fetch plans from API
         async function fetchPlans() {
+            // Detect country first
+            await detectUserCountry();
             try {
                 const response = await fetch(`${API_BASE}/api/subscriptions/plans`);
                 const result = await response.json();
@@ -1130,6 +1163,7 @@
             container.innerHTML = availablePlans.map((plan, index) => {
                 const isPopular = plan.name.toLowerCase() === 'pro' || plan.sortOrder === 3;
                 const isFree = plan.monthlyPrice === 0;
+                const priceInfo = getPlanPrice(plan, 'monthly');
 
                 // Build features list
                 const features = [];
@@ -1146,7 +1180,7 @@
                         <div class="plan-header">
                             <h3 class="plan-name">${plan.name}</h3>
                             <div class="plan-price">
-                                <span class="price">$${plan.monthlyPrice}</span>
+                                <span class="price">${priceInfo.symbol}${priceInfo.amount}</span>
                                 <span class="period">/month</span>
                             </div>
                         </div>
@@ -1659,10 +1693,10 @@
             if (!selectedPlanData) return;
 
             const cycle = document.getElementById('billingCycle').value;
-            const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
+            const priceInfo = getPlanPrice(selectedPlanData, cycle);
             const period = cycle === 'yearly' ? 'per year' : 'per month';
 
-            document.getElementById('paymentAmount').textContent = '$' + amount;
+            document.getElementById('paymentAmount').textContent = priceInfo.symbol + priceInfo.amount;
             document.getElementById('paymentPeriod').textContent = period;
         }
 
@@ -1679,7 +1713,7 @@
                 if (!selectedPlanData) throw new Error('No plan selected');
 
                 const cycle = document.getElementById('billingCycle').value;
-                const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
+                const priceInfo = getPlanPrice(selectedPlanData, cycle);
 
                 // Create Razorpay order FIRST (before account creation) using anonymous endpoint
                 const orderResponse = await fetch(`${API_BASE}/api/payments/razorpay/create-registration-order`, {
@@ -1688,8 +1722,8 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        amount: amount,
-                        currency: selectedPlanData.currency || 'INR',
+                        amount: priceInfo.amount,
+                        currency: priceInfo.currency,
                         planId: selectedPlanData.id,
                         billingCycle: cycle,
                         email: userData.email
@@ -1787,8 +1821,8 @@
                                         gateway: 'razorpay',
                                         status: 'cancelled',
                                         orderId: orderData.data.orderId,
-                                        amount: amount,
-                                        currency: selectedPlanData.currency || 'INR',
+                                        amount: priceInfo.amount,
+                                        currency: priceInfo.currency,
                                         errorMessage: 'User dismissed payment modal'
                                     })
                                 });
@@ -1815,8 +1849,8 @@
                                 gateway: 'razorpay',
                                 status: 'failed',
                                 orderId: orderData.data.orderId,
-                                amount: amount,
-                                currency: selectedPlanData.currency || 'INR',
+                                amount: priceInfo.amount,
+                                currency: priceInfo.currency,
                                 errorMessage: response.error.description,
                                 errorCode: response.error.code,
                                 metadata: JSON.stringify({ reason: response.error.reason, source: response.error.source })
@@ -1850,7 +1884,8 @@
                 if (!selectedPlanData) throw new Error('No plan selected');
 
                 const cycle = document.getElementById('billingCycle').value;
-                const amount = cycle === 'yearly' ? selectedPlanData.annualPrice : selectedPlanData.monthlyPrice;
+                // PayPal always uses USD (doesn't support INR)
+                const amount = cycle === 'yearly' ? (selectedPlanData.annualPrice || selectedPlanData.monthlyPrice * 12) : selectedPlanData.monthlyPrice;
 
                 // Create PayPal order FIRST using anonymous endpoint (no account yet)
                 const orderResponse = await fetch(`${API_BASE}/api/payments/paypal/create-registration-order`, {
@@ -1860,7 +1895,7 @@
                     },
                     body: JSON.stringify({
                         amount: amount,
-                        currency: selectedPlanData.currency || 'USD',
+                        currency: 'USD',
                         planId: selectedPlanData.id,
                         billingCycle: cycle,
                         email: userData.email
