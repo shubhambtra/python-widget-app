@@ -1685,6 +1685,33 @@
 
                             const accountCreated = await createAccountAndSite();
                             if (!accountCreated) {
+                                // Log orphaned payment for admin tracking
+                                try {
+                                    await fetch(`${API_BASE}/api/payments/log-event`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            action: 'orphaned_payment',
+                                            gateway: 'razorpay',
+                                            status: 'payment_success_registration_failed',
+                                            orderId: response.razorpay_order_id,
+                                            transactionId: response.razorpay_payment_id,
+                                            amount: priceInfo.amount,
+                                            currency: priceInfo.currency,
+                                            errorMessage: 'Payment successful but account creation failed',
+                                            metadata: JSON.stringify({
+                                                email: userData.email,
+                                                username: userData.username,
+                                                domain: siteData.Domain,
+                                                planId: selectedPlanData.id,
+                                                planName: selectedPlanData.name,
+                                                billingCycle: cycle,
+                                                paymentReference: currentPaymentReference
+                                            })
+                                        })
+                                    });
+                                } catch (logErr) { console.error('Failed to log orphaned payment:', logErr); }
+
                                 showAlert('Payment successful but account creation failed. Please contact support with payment ID: ' + response.razorpay_payment_id, 'error');
                                 btn.disabled = false;
                                 btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Pay with Razorpay`;

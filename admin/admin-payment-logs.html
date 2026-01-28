@@ -108,6 +108,15 @@
       <div class="stat-value" id="avgDuration">0ms</div>
       <div class="stat-label">Avg Duration</div>
     </div>
+    <div class="stat-card" onclick="filterOrphaned()" style="cursor: pointer;" title="Click to filter orphaned payments">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <div class="stat-value" id="orphanedCount">0</div>
+      <div class="stat-label">Orphaned Payments</div>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -139,6 +148,7 @@
           <option value="create_order">Create Order</option>
           <option value="verify_payment">Verify Payment</option>
           <option value="capture_payment">Capture Payment</option>
+          <option value="orphaned_payment">Orphaned Payment</option>
           <option value="refund">Refund</option>
         </select>
       </div>
@@ -219,13 +229,20 @@ function updateStats() {
   const success = allLogs.filter(l => l.status === 'success').length;
   const failed = allLogs.filter(l => l.status === 'failed').length;
   const error = allLogs.filter(l => l.status === 'error').length;
+  const orphaned = allLogs.filter(l => l.action === 'orphaned_payment').length;
   const durations = allLogs.filter(l => l.durationMs).map(l => l.durationMs);
   const avgDuration = durations.length > 0 ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
 
   document.getElementById('successCount').textContent = success;
   document.getElementById('failedCount').textContent = failed;
   document.getElementById('errorCount').textContent = error;
+  document.getElementById('orphanedCount').textContent = orphaned;
   document.getElementById('avgDuration').textContent = avgDuration + 'ms';
+}
+
+function filterOrphaned() {
+  document.getElementById('actionFilter').value = 'orphaned_payment';
+  loadPaymentLogs();
 }
 
 function renderLogs() {
@@ -329,6 +346,7 @@ function renderLogs() {
 function showLogDetails(log) {
   let requestData = '-';
   let responseData = '-';
+  let metadataHtml = '';
 
   try {
     if (log.requestData) {
@@ -346,10 +364,31 @@ function showLogDetails(log) {
     responseData = log.responseData || '-';
   }
 
+  // Parse metadata for orphaned payments
+  if (log.action === 'orphaned_payment' && log.metadata) {
+    try {
+      const metadata = JSON.parse(log.metadata);
+      metadataHtml = `
+        <div style="background: #fef3c7; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #f59e0b;">
+          <h4 style="margin: 0 0 12px 0; color: #92400e;">Orphaned Payment - User Details</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+            <div><strong>Email:</strong> ${metadata.email || '-'}</div>
+            <div><strong>Username:</strong> ${metadata.username || '-'}</div>
+            <div><strong>Domain:</strong> ${metadata.domain || '-'}</div>
+            <div><strong>Plan:</strong> ${metadata.planName || metadata.planId || '-'}</div>
+            <div><strong>Billing Cycle:</strong> ${metadata.billingCycle || '-'}</div>
+            <div><strong>Payment Ref:</strong> <span style="font-family: monospace; font-size: 11px;">${metadata.paymentReference || '-'}</span></div>
+          </div>
+        </div>
+      `;
+    } catch (e) {}
+  }
+
   Swal.fire({
     title: `Payment Log #${log.id}`,
     html: `
       <div style="text-align: left; font-size: 14px;">
+        ${metadataHtml}
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
           <div><strong>Gateway:</strong> ${log.gateway}</div>
           <div><strong>Action:</strong> ${log.action.replace(/_/g, ' ')}</div>
