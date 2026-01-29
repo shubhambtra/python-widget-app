@@ -269,10 +269,8 @@ let selectedUpgradePlan = null;
 document.addEventListener('DOMContentLoaded', async () => {
   setupNavigation();
   await loadSiteInfo();
-  await Promise.all([
-    loadSubscriptionInfo(),
-    loadAvailablePlans()
-  ]);
+  await loadSubscriptionInfo();
+  await loadAvailablePlans();
   handlePayPalReturn();
   hideLoading();
 });
@@ -576,7 +574,7 @@ function renderUpgradePlans() {
     return;
   }
 
-  const upgradePlans = availablePlans.filter(plan => plan.id !== currentPlanId && plan.monthlyPrice > 0);
+  const upgradePlans = availablePlans.filter(plan => plan.id !== currentPlanId);
 
   if (upgradePlans.length === 0) {
     container.innerHTML = `
