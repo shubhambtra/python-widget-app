@@ -1380,17 +1380,20 @@
                 if (plan.maxStorageMb) features.push(`${plan.maxStorageMb}MB storage`);
                 if (plan.description) features.push(plan.description);
 
+                const trialDays = plan.trialDays || 0;
+
                 return `
                     <div class="pricing-card ${isPopular ? 'featured' : ''}">
                         ${isPopular ? '<div class="pricing-badge">Most Popular</div>' : ''}
                         <div class="pricing-header">
                             <h3>${plan.name}</h3>
                             <div class="price">$${Math.round(plan.monthlyPrice)}<span>/month</span></div>
+                            ${isFree && trialDays > 0 ? `<div style="margin-top: 8px; font-size: 14px; color: #0ea5e9; font-weight: 600;">${trialDays}-day free trial</div>` : ''}
                         </div>
                         <ul class="pricing-features">
                             ${features.slice(0, 6).map(f => `<li>${f}</li>`).join('')}
                         </ul>
-                        <a href="/register" class="${isPopular ? 'btn-primary' : 'btn-secondary'}">${isFree ? 'Get Started Free' : 'Get Started'}</a>
+                        <a href="/register" class="${isPopular ? 'btn-primary' : 'btn-secondary'}">${isFree ? (trialDays > 0 ? `Start ${trialDays}-Day Free Trial` : 'Get Started Free') : 'Get Started'}</a>
                     </div>
                 `;
             }).join('');

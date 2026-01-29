@@ -63,6 +63,62 @@ function handleTokenExpired() {
   setTimeout(() => location.href = '/login', 1500);
 }
 
+// Handle subscription/trial expiration - show non-dismissible modal
+let _subscriptionExpiredShown = false;
+function handleSubscriptionExpired(errorCode) {
+  if (_subscriptionExpiredShown) return;
+  _subscriptionExpiredShown = true;
+
+  const isTrial = errorCode === 'TRIAL_EXPIRED';
+  const title = isTrial ? 'Trial Expired' : 'Subscription Expired';
+  const message = isTrial
+    ? 'Your free trial has expired. Please choose a plan to continue using the service.'
+    : 'Your subscription has expired. Please renew or upgrade your plan to continue.';
+
+  // Remove existing modal if any
+  const existing = document.getElementById('subscriptionExpiredModal');
+  if (existing) existing.remove();
+
+  const modalHtml = `
+    <div class="modal-overlay show" id="subscriptionExpiredModal" style="z-index: 10000;">
+      <div class="modal" style="max-width: 480px;">
+        <div class="modal-header">
+          <h2 style="display: flex; align-items: center; gap: 8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#ef4444">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            ${title}
+          </h2>
+        </div>
+        <div class="modal-body" style="padding: 24px;">
+          <p style="color: var(--text-secondary, #64748b); font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+            ${message}
+          </p>
+          <button class="btn btn-primary" onclick="window.location.href=buildSiteAdminUrl('site-admin-subscription.html')" style="width: 100%; padding: 14px; font-size: 16px;">
+            View Plans & Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+// Check a 403 response for subscription expiration error codes
+async function checkSubscriptionError(res) {
+  try {
+    const text = await res.text();
+    if (!text) return false;
+    const data = JSON.parse(text);
+    const code = data.code || data.error;
+    if (code === 'SUBSCRIPTION_EXPIRED' || code === 'TRIAL_EXPIRED') {
+      handleSubscriptionExpired(code);
+      return true;
+    }
+  } catch { /* ignore parse errors */ }
+  return false;
+}
+
 // ==================== API HELPERS ====================
 async function apiGet(endpoint) {
   console.log('API GET:', endpoint);
@@ -71,9 +127,17 @@ async function apiGet(endpoint) {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     console.log('API GET response:', res.status, res.statusText);
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       handleTokenExpired();
       throw new Error('Session expired');
+    }
+    if (res.status === 403) {
+      const cloned = res.clone();
+      if (await checkSubscriptionError(cloned)) {
+        throw new Error('Subscription expired');
+      }
+      handleTokenExpired();
+      throw new Error('Access denied');
     }
     if (!res.ok) {
       const text = await res.text();
@@ -104,9 +168,17 @@ async function apiPost(endpoint, body) {
       },
       body: JSON.stringify(body)
     });
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       handleTokenExpired();
       throw new Error('Session expired');
+    }
+    if (res.status === 403) {
+      const cloned = res.clone();
+      if (await checkSubscriptionError(cloned)) {
+        throw new Error('Subscription expired');
+      }
+      handleTokenExpired();
+      throw new Error('Access denied');
     }
     if (!res.ok) {
       const text = await res.text();
@@ -133,9 +205,17 @@ async function apiPut(endpoint, body) {
       },
       body: JSON.stringify(body)
     });
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       handleTokenExpired();
       throw new Error('Session expired');
+    }
+    if (res.status === 403) {
+      const cloned = res.clone();
+      if (await checkSubscriptionError(cloned)) {
+        throw new Error('Subscription expired');
+      }
+      handleTokenExpired();
+      throw new Error('Access denied');
     }
     if (!res.ok) {
       const text = await res.text();
@@ -158,9 +238,17 @@ async function apiDelete(endpoint) {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       handleTokenExpired();
       throw new Error('Session expired');
+    }
+    if (res.status === 403) {
+      const cloned = res.clone();
+      if (await checkSubscriptionError(cloned)) {
+        throw new Error('Subscription expired');
+      }
+      handleTokenExpired();
+      throw new Error('Access denied');
     }
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return true;
@@ -376,6 +464,72 @@ async function loadSiteInfo() {
     return null;
   }
 }
+
+// ==================== FREE PLAN TRIAL BANNER ====================
+async function loadTrialBanner() {
+  try {
+    const res = await fetch(`${API_BASE}/subscriptions/sites/${siteId}/overview`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return;
+    const json = await res.json();
+    const data = json.success ? json.data : json;
+    const subscription = data?.subscription;
+    if (!subscription) return;
+
+    const plan = data?.plan;
+    const isFree = plan && plan.monthlyPrice === 0;
+    if (!isFree) return;
+
+    const status = subscription.status;
+    const now = new Date();
+    let daysLeft = 0;
+    let bannerText = '';
+
+    if (status === 'trialing' && subscription.trialEnd) {
+      daysLeft = Math.ceil((new Date(subscription.trialEnd) - now) / (1000 * 60 * 60 * 24));
+      if (daysLeft <= 0) {
+        bannerText = 'Your free trial has expired.';
+      } else {
+        bannerText = `Free trial: <strong>${daysLeft} day${daysLeft === 1 ? '' : 's'}</strong> remaining.`;
+      }
+    } else if (status === 'expired') {
+      bannerText = 'Your free trial has expired.';
+      daysLeft = 0;
+    } else {
+      return; // active paid plan, no banner needed
+    }
+
+    const isExpired = daysLeft <= 0;
+    const isUrgent = daysLeft <= 3;
+    const bgColor = isExpired ? '#ef4444' : isUrgent ? '#f59e0b' : '#0ea5e9';
+    const upgradeUrl = buildSiteAdminUrl('site-admin-subscription.html');
+
+    const bannerHtml = `
+      <div id="freeTrialBanner" style="background: ${bgColor}; color: white; padding: 8px 24px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 12px; z-index: 49;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="flex-shrink: 0;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>${bannerText}</span>
+        <a href="${upgradeUrl}" style="color: white; text-decoration: underline; font-weight: 600; white-space: nowrap;">Upgrade Now</a>
+      </div>
+    `;
+
+    // Insert after topbar inside .main-content
+    const topbar = document.querySelector('.main-content .topbar');
+    if (topbar) {
+      topbar.insertAdjacentHTML('afterend', bannerHtml);
+    }
+  } catch (err) {
+    console.error('Trial banner error:', err);
+  }
+}
+
+// Auto-load trial banner on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  // Delay slightly so auth check runs first
+  setTimeout(loadTrialBanner, 500);
+});
 
 // ==================== LIVE MONITOR ====================
 function openLiveMonitor() {
