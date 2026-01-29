@@ -531,6 +531,45 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(loadTrialBanner, 500);
 });
 
+// ==================== REPORT ISSUE ====================
+function openReportIssue() {
+  const qp = new URLSearchParams();
+  if (token) qp.set('token', token);
+  if (siteId) qp.set('siteId', siteId);
+  if (userName) qp.set('name', userName);
+  // Try to get email from page if available
+  const emailEl = document.getElementById('dropdownEmail') || document.getElementById('userEmail');
+  if (emailEl && emailEl.textContent) qp.set('email', emailEl.textContent);
+  window.open('/report-issue.html?' + qp.toString(), '_blank');
+}
+
+function injectReportIssueLink() {
+  const sidebar = document.querySelector('.sidebar-nav, .sidebar');
+  if (!sidebar) return;
+  // Check if already injected
+  if (document.getElementById('reportIssueSidebarLink')) return;
+
+  const link = document.createElement('a');
+  link.id = 'reportIssueSidebarLink';
+  link.href = '#';
+  link.className = 'nav-item';
+  link.title = 'Report Issue';
+  link.style.cssText = 'margin-top: 8px; border-top: 1px solid var(--border-color, rgba(255,255,255,0.08)); padding-top: 12px;';
+  link.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <span>Report Issue</span>
+  `;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    openReportIssue();
+  });
+  sidebar.appendChild(link);
+}
+
+document.addEventListener('DOMContentLoaded', injectReportIssueLink);
+
 // ==================== LIVE MONITOR ====================
 function openLiveMonitor() {
   // Build Support URL with admin role for supervisor view

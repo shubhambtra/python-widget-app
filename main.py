@@ -445,6 +445,16 @@ def serve_site_admin_shared_js():
 def knowledge_base_page():
     return FileResponse(BASE_DIR / "knowledge-base.html")
 
+@app.get("/report-issue")
+def report_issue_page():
+    return FileResponse(BASE_DIR / "report-issue.html")
+
+
+@app.get("/report-issue.html")
+def report_issue_page_html():
+    return FileResponse(BASE_DIR / "report-issue.html")
+
+
 @app.get("/test-widget")
 def test_widget_page():
     return FileResponse(BASE_DIR / "test-widget.html")
