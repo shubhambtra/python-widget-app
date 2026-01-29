@@ -331,6 +331,42 @@ function renderPlanInfo(overview) {
     else if (subscription.status !== 'active') statusColor = '#f59e0b';
   }
 
+  // Pre-compute subscription display values
+  let subscriptionHtml = '';
+  if (subscription) {
+    const periodEnd = new Date(subscription.currentPeriodEnd);
+    const isFarFuture = periodEnd.getFullYear() - new Date().getFullYear() > 10;
+    const isFree = plan.monthlyPrice === 0;
+    const periodLabel = subscription.status === 'expired' ? 'Expired On'
+      : subscription.status === 'trialing' ? 'Trial Ends'
+      : 'Renews On';
+    const periodDisplay = isFarFuture ? 'Never' : periodEnd.toLocaleDateString();
+    const statusText = subscription.status === 'trialing' ? 'Trial' : subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
+
+    subscriptionHtml = `
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 20px;">
+        <div>
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Status</div>
+          <div style="font-size: 14px; font-weight: 600; color: ${statusColor}; margin-top: 4px;">
+            ${statusText}
+          </div>
+        </div>
+        ${!isFree ? `<div>
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Billing Cycle</div>
+          <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">
+            ${subscription.billingCycle.charAt(0).toUpperCase() + subscription.billingCycle.slice(1)}
+          </div>
+        </div>` : ''}
+        <div>
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">${isFarFuture ? 'Expires' : periodLabel}</div>
+          <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">
+            ${periodDisplay}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   container.innerHTML = `
     <div style="display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap;">
       <div style="flex: 1; min-width: 280px;">
@@ -345,37 +381,7 @@ function renderPlanInfo(overview) {
             <div style="color: #64748b; font-size: 14px;">${plan.description || 'Standard plan'}</div>
           </div>
         </div>
-
-        ${subscription ? (() => {
-          const periodEnd = new Date(subscription.currentPeriodEnd);
-          const isFarFuture = periodEnd.getFullYear() - new Date().getFullYear() > 10;
-          const isFree = plan.monthlyPrice === 0;
-          const periodLabel = subscription.status === 'expired' ? 'Expired On'
-            : subscription.status === 'trialing' ? 'Trial Ends'
-            : 'Renews On';
-          const periodDisplay = isFarFuture ? 'Never' : periodEnd.toLocaleDateString();
-          return `
-          <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 20px;">
-            <div>
-              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Status</div>
-              <div style="font-size: 14px; font-weight: 600; color: ${statusColor}; margin-top: 4px;">
-                ${subscription.status === 'trialing' ? 'Trial' : subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
-              </div>
-            </div>
-            ${!isFree ? `<div>
-              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Billing Cycle</div>
-              <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">
-                ${subscription.billingCycle.charAt(0).toUpperCase() + subscription.billingCycle.slice(1)}
-              </div>
-            </div>` : ''}
-            <div>
-              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">${isFarFuture ? 'Expires' : periodLabel}</div>
-              <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">
-                ${periodDisplay}
-              </div>`})()}
-            </div>
-          </div>
-        ` : ''}
+        ${subscriptionHtml}
       </div>
 
       <div style="background: #f8fafc; border-radius: 12px; padding: 20px; min-width: 200px;">
