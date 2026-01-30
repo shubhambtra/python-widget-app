@@ -85,7 +85,10 @@ let siteSettingsData = {
   // Feature flags
   featureSupervisorMode: true, featureAiAnalysis: true, featureAiAutoReply: true, featureFileSharing: true,
   featureCsatRatings: true, featureVisitorInfo: true, featureCannedResponses: true, featureConversationTransfer: true,
-  featureTeamChat: true, featureTypingIndicators: true, featureReadReceipts: true
+  featureTeamChat: true, featureTypingIndicators: true, featureReadReceipts: true,
+  featureInternalNotes: true, featureEmojiPicker: true, featureEmailSending: true,
+  featureConversationSearch: true, featureMessageSearch: true, featureBulkActions: true,
+  featureThemes: true, featureAgentStatus: true, featureNotifications: true
 };
 
 // Convert relative URL to absolute URL
@@ -138,7 +141,16 @@ async function loadSiteSettings() {
           featureConversationTransfer: result.data.featureConversationTransfer ?? true,
           featureTeamChat: result.data.featureTeamChat ?? true,
           featureTypingIndicators: result.data.featureTypingIndicators ?? true,
-          featureReadReceipts: result.data.featureReadReceipts ?? true
+          featureReadReceipts: result.data.featureReadReceipts ?? true,
+          featureInternalNotes: result.data.featureInternalNotes ?? true,
+          featureEmojiPicker: result.data.featureEmojiPicker ?? true,
+          featureEmailSending: result.data.featureEmailSending ?? true,
+          featureConversationSearch: result.data.featureConversationSearch ?? true,
+          featureMessageSearch: result.data.featureMessageSearch ?? true,
+          featureBulkActions: result.data.featureBulkActions ?? true,
+          featureThemes: result.data.featureThemes ?? true,
+          featureAgentStatus: result.data.featureAgentStatus ?? true,
+          featureNotifications: result.data.featureNotifications ?? true
         };
       }
     }
@@ -431,6 +443,96 @@ function renderSettingsView() {
                 <span class="toggle-slider"></span>
               </label>
             </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Internal Notes</div>
+                <div class="feature-toggle-desc">Allow agents to add private notes and comments on conversations</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureInternalNotes" ${siteSettingsData.featureInternalNotes ? 'checked' : ''} onchange="toggleFeature('featureInternalNotes', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Emoji Picker</div>
+                <div class="feature-toggle-desc">Allow agents to send emojis in conversations</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureEmojiPicker" ${siteSettingsData.featureEmojiPicker ? 'checked' : ''} onchange="toggleFeature('featureEmojiPicker', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Email Sending</div>
+                <div class="feature-toggle-desc">Allow agents to send emails to visitors from the chat panel</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureEmailSending" ${siteSettingsData.featureEmailSending ? 'checked' : ''} onchange="toggleFeature('featureEmailSending', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Conversation Search</div>
+                <div class="feature-toggle-desc">Search and filter conversations in the sidebar</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureConversationSearch" ${siteSettingsData.featureConversationSearch ? 'checked' : ''} onchange="toggleFeature('featureConversationSearch', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Message Search</div>
+                <div class="feature-toggle-desc">Search within conversation messages</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureMessageSearch" ${siteSettingsData.featureMessageSearch ? 'checked' : ''} onchange="toggleFeature('featureMessageSearch', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Bulk Actions</div>
+                <div class="feature-toggle-desc">Select and perform actions on multiple conversations at once</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureBulkActions" ${siteSettingsData.featureBulkActions ? 'checked' : ''} onchange="toggleFeature('featureBulkActions', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Themes</div>
+                <div class="feature-toggle-desc">Allow agents to customize dashboard appearance and themes</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureThemes" ${siteSettingsData.featureThemes ? 'checked' : ''} onchange="toggleFeature('featureThemes', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Agent Status</div>
+                <div class="feature-toggle-desc">Allow agents to set their availability status (online, away, busy)</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureAgentStatus" ${siteSettingsData.featureAgentStatus ? 'checked' : ''} onchange="toggleFeature('featureAgentStatus', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="feature-toggle-item">
+              <div class="feature-toggle-info">
+                <div class="feature-toggle-name">Notifications</div>
+                <div class="feature-toggle-desc">Enable notification alerts for new messages and events</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featureNotifications" ${siteSettingsData.featureNotifications ? 'checked' : ''} onchange="toggleFeature('featureNotifications', this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
           </div>
         </div>
         <div style="display: flex; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--border-color);"><button id="saveFeatureSettingsBtn" class="settings-save-btn" onclick="saveFeatureSettings()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Save Feature Settings</button></div>
@@ -490,7 +592,16 @@ async function saveFeatureSettings() {
       featureConversationTransfer: document.getElementById('featureConversationTransfer').checked,
       featureTeamChat: document.getElementById('featureTeamChat').checked,
       featureTypingIndicators: document.getElementById('featureTypingIndicators').checked,
-      featureReadReceipts: document.getElementById('featureReadReceipts').checked
+      featureReadReceipts: document.getElementById('featureReadReceipts').checked,
+      featureInternalNotes: document.getElementById('featureInternalNotes').checked,
+      featureEmojiPicker: document.getElementById('featureEmojiPicker').checked,
+      featureEmailSending: document.getElementById('featureEmailSending').checked,
+      featureConversationSearch: document.getElementById('featureConversationSearch').checked,
+      featureMessageSearch: document.getElementById('featureMessageSearch').checked,
+      featureBulkActions: document.getElementById('featureBulkActions').checked,
+      featureThemes: document.getElementById('featureThemes').checked,
+      featureAgentStatus: document.getElementById('featureAgentStatus').checked,
+      featureNotifications: document.getElementById('featureNotifications').checked
     };
 
     const response = await apiFetch(`${API_BASE}/SiteSettings`, { method: 'PUT', body: JSON.stringify(payload) });

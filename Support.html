@@ -35,7 +35,7 @@
       <span class="badge" id="notificationBadge" style="display:none;"></span>
     </button>
 
-    <button class="topbar-btn" title="Team Chat" onclick="toggleAgentsPanel()">
+    <button class="topbar-btn" title="Team Chat" id="btnTeamChat" onclick="toggleAgentsPanel()">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
@@ -78,14 +78,14 @@
 
     <!-- Agent Status Selector -->
     <div class="agent-status-wrapper">
-      <button class="agent-status-btn" id="agentStatusBtn" onclick="toggleAgentStatusMenu()">
+      <button class="agent-status-btn" id="agentStatusBtn" onclick="toggleAgentStatusMenu()" style="display:none">
         <span class="agent-status-dot online" id="agentStatusDot"></span>
         <span class="agent-status-text" id="agentStatusText">Online</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      <div class="agent-status-dropdown" id="agentStatusDropdown">
+      <div class="agent-status-dropdown" id="agentStatusDropdown" style="display:none">
         <button class="status-option" onclick="setAgentStatus('online')">
           <span class="agent-status-dot online"></span>
           <span>Online</span>
@@ -392,7 +392,7 @@
   </div>
 
   <!-- ANALYSIS PANEL -->
-  <div class="analysis-panel">
+  <div class="analysis-panel" id="visitorInfoPanel">
     <div class="analysis-header">
       <h3>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -809,7 +809,16 @@ let platformFeatures = {
   conversationTransfer: true,
   teamChat: true,
   typingIndicators: true,
-  readReceipts: true
+  readReceipts: true,
+  internalNotes: true,
+  emojiPicker: true,
+  emailSending: true,
+  conversationSearch: true,
+  messageSearch: true,
+  bulkActions: true,
+  themes: true,
+  agentStatus: true,
+  notifications: true
 };
 
 // Bulk select state
@@ -1542,7 +1551,7 @@ function renderMessages() {
 
     // Read receipt checkmarks for support messages
     let readReceipt = '';
-    if (m.from === 'support') {
+    if (m.from === 'support' && platformFeatures.readReceipts) {
       const status = m.readAt ? 'read' : (m.deliveredAt ? 'delivered' : 'sent');
       readReceipt = `<span class="read-receipt ${status}" title="${status.charAt(0).toUpperCase() + status.slice(1)}">
         ${status === 'read' ? `
@@ -1576,6 +1585,7 @@ function renderMessages() {
 }
 
 function showTypingIndicator() {
+  if (!platformFeatures.typingIndicators) return;
   const existing = document.getElementById("typingIndicator");
   if (existing) return;
 
@@ -1769,7 +1779,7 @@ messageInput.addEventListener("input", () => {
   messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + "px";
 
   // Send typing indicator
-  if (!currentVisitor) return;
+  if (!currentVisitor || !platformFeatures.typingIndicators) return;
 
   if (!isTyping) {
     isTyping = true;
@@ -3186,7 +3196,16 @@ async function loadPlatformFeatures() {
           conversationTransfer: result.data.featureConversationTransfer ?? true,
           teamChat: result.data.featureTeamChat ?? true,
           typingIndicators: result.data.featureTypingIndicators ?? true,
-          readReceipts: result.data.featureReadReceipts ?? true
+          readReceipts: result.data.featureReadReceipts ?? true,
+          internalNotes: result.data.featureInternalNotes ?? true,
+          emojiPicker: result.data.featureEmojiPicker ?? true,
+          emailSending: result.data.featureEmailSending ?? true,
+          conversationSearch: result.data.featureConversationSearch ?? true,
+          messageSearch: result.data.featureMessageSearch ?? true,
+          bulkActions: result.data.featureBulkActions ?? true,
+          themes: result.data.featureThemes ?? true,
+          agentStatus: result.data.featureAgentStatus ?? true,
+          notifications: result.data.featureNotifications ?? true
         };
         applyFeatureFlags();
       }
@@ -3205,46 +3224,110 @@ function applyFeatureFlags() {
     supervisorBtn.style.display = 'flex';
   }
 
-  // AI Analysis toggle - actual ID is 'toggleAnalysis', container is 'analysisToggleContainer'
+  // AI Analysis toggle
   const analysisToggleContainer = document.getElementById('analysisToggleContainer');
   if (analysisToggleContainer) {
     analysisToggleContainer.style.display = platformFeatures.aiAnalysis ? '' : 'none';
   }
 
-  // AI Auto Reply toggle - actual ID is 'toggleAutoReply', container is 'autoReplyToggleContainer'
+  // AI Auto Reply toggle
   const autoReplyToggleContainer = document.getElementById('autoReplyToggleContainer');
   if (autoReplyToggleContainer) {
     autoReplyToggleContainer.style.display = platformFeatures.aiAutoReply ? '' : 'none';
   }
 
-  // File sharing - actual ID is 'btnAttach'
+  // File sharing
   const fileAttachBtn = document.getElementById('btnAttach');
   if (fileAttachBtn) {
     fileAttachBtn.style.display = platformFeatures.fileSharing ? '' : 'none';
   }
 
-  // Canned responses / Quick replies - actual ID is 'btnQuickReplies'
+  // Canned responses / Quick replies
   const quickRepliesBtn = document.getElementById('btnQuickReplies');
   if (quickRepliesBtn) {
     quickRepliesBtn.style.display = platformFeatures.cannedResponses ? '' : 'none';
   }
 
-  // Conversation transfer - actual ID is 'btnTransfer'
+  // Conversation transfer
   const transferBtn = document.getElementById('btnTransfer');
   if (transferBtn) {
     transferBtn.style.display = platformFeatures.conversationTransfer ? '' : 'none';
   }
 
-  // Team chat button
-  const teamChatBtn = document.querySelector('[onclick="toggleAgentsPanel()"]');
+  // Team chat button (topbar) and sidebar agents section
+  const teamChatBtn = document.getElementById('btnTeamChat');
   if (teamChatBtn) {
     teamChatBtn.style.display = platformFeatures.teamChat ? '' : 'none';
+  }
+  const agentsSection = document.getElementById('agentsSection');
+  if (agentsSection) {
+    agentsSection.style.display = platformFeatures.teamChat ? '' : 'none';
   }
 
   // Close conversation button (CSAT is part of closing)
   const closeConvBtn = document.getElementById('btnCloseConv');
   if (closeConvBtn) {
     closeConvBtn.style.display = platformFeatures.csatRatings ? '' : 'none';
+  }
+
+  // Visitor Info Panel (right sidebar)
+  const visitorInfoPanel = document.getElementById('visitorInfoPanel');
+  if (visitorInfoPanel) {
+    visitorInfoPanel.style.display = platformFeatures.visitorInfo ? '' : 'none';
+  }
+
+  // Internal Notes section
+  const commentsSection = document.getElementById('commentsSection');
+  if (commentsSection) {
+    commentsSection.style.display = platformFeatures.internalNotes ? '' : 'none';
+  }
+
+  // Emoji picker button
+  const emojiBtn = document.getElementById('btnEmoji');
+  if (emojiBtn) {
+    emojiBtn.style.display = platformFeatures.emojiPicker ? '' : 'none';
+  }
+
+  // Email sending button
+  const sendEmailBtn = document.getElementById('btnSendEmail');
+  if (sendEmailBtn && !platformFeatures.emailSending) {
+    sendEmailBtn.style.display = 'none';
+  }
+
+  // Conversation search (topbar)
+  const searchCenter = document.querySelector('.topbar-center');
+  if (searchCenter) {
+    searchCenter.style.display = platformFeatures.conversationSearch ? '' : 'none';
+  }
+
+  // Message search button (in chat header)
+  const msgSearchBtn = document.getElementById('btnSearchMessages');
+  if (msgSearchBtn) {
+    msgSearchBtn.style.display = platformFeatures.messageSearch ? '' : 'none';
+  }
+
+  // Bulk actions button
+  const bulkSelectBtn = document.getElementById('btnBulkSelect');
+  if (bulkSelectBtn) {
+    bulkSelectBtn.style.display = platformFeatures.bulkActions ? '' : 'none';
+  }
+
+  // Themes / Settings button
+  const settingsBtn = document.querySelector('.topbar-btn[title="Settings"]');
+  if (settingsBtn) {
+    settingsBtn.style.display = platformFeatures.themes ? '' : 'none';
+  }
+
+  // Agent status selector
+  const agentStatusWrapper = document.querySelector('.agent-status-wrapper');
+  if (agentStatusWrapper) {
+    agentStatusWrapper.style.display = platformFeatures.agentStatus ? '' : 'none';
+  }
+
+  // Notifications button
+  const notificationsBtn = document.getElementById('notificationsBtn');
+  if (notificationsBtn) {
+    notificationsBtn.style.display = platformFeatures.notifications ? '' : 'none';
   }
 
   console.log('Platform features applied:', platformFeatures);

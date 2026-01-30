@@ -81,7 +81,16 @@ let featureSettings = {
   featureConversationTransfer: true,
   featureTeamChat: true,
   featureTypingIndicators: true,
-  featureReadReceipts: true
+  featureReadReceipts: true,
+  featureInternalNotes: true,
+  featureEmojiPicker: true,
+  featureEmailSending: true,
+  featureConversationSearch: true,
+  featureMessageSearch: true,
+  featureBulkActions: true,
+  featureThemes: true,
+  featureAgentStatus: true,
+  featureNotifications: true
 };
 
 document.querySelectorAll('#sidebarNav .nav-item').forEach(item => {
@@ -105,7 +114,16 @@ async function loadFeatures() {
           featureConversationTransfer: result.data.featureConversationTransfer ?? true,
           featureTeamChat: result.data.featureTeamChat ?? true,
           featureTypingIndicators: result.data.featureTypingIndicators ?? true,
-          featureReadReceipts: result.data.featureReadReceipts ?? true
+          featureReadReceipts: result.data.featureReadReceipts ?? true,
+          featureInternalNotes: result.data.featureInternalNotes ?? true,
+          featureEmojiPicker: result.data.featureEmojiPicker ?? true,
+          featureEmailSending: result.data.featureEmailSending ?? true,
+          featureConversationSearch: result.data.featureConversationSearch ?? true,
+          featureMessageSearch: result.data.featureMessageSearch ?? true,
+          featureBulkActions: result.data.featureBulkActions ?? true,
+          featureThemes: result.data.featureThemes ?? true,
+          featureAgentStatus: result.data.featureAgentStatus ?? true,
+          featureNotifications: result.data.featureNotifications ?? true
         };
       }
     }
@@ -127,7 +145,16 @@ function renderFeatures() {
     { id: 'featureConversationTransfer', name: 'Conversation Transfer', desc: 'Transfer conversations between agents', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />', category: 'Communication' },
     { id: 'featureTeamChat', name: 'Team Chat', desc: 'Internal messaging between support agents', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />', category: 'Communication' },
     { id: 'featureTypingIndicators', name: 'Typing Indicators', desc: 'Show when someone is typing a message', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />', category: 'Communication' },
-    { id: 'featureReadReceipts', name: 'Read Receipts', desc: 'Show message delivery and read status', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />', category: 'Communication' }
+    { id: 'featureReadReceipts', name: 'Read Receipts', desc: 'Show message delivery and read status', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />', category: 'Communication' },
+    { id: 'featureInternalNotes', name: 'Internal Notes', desc: 'Allow agents to add private notes and comments on conversations', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />', category: 'Productivity' },
+    { id: 'featureEmojiPicker', name: 'Emoji Picker', desc: 'Allow agents to send emojis in conversations', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />', category: 'Communication' },
+    { id: 'featureEmailSending', name: 'Email Sending', desc: 'Allow agents to send emails to visitors from the chat panel', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />', category: 'Communication' },
+    { id: 'featureConversationSearch', name: 'Conversation Search', desc: 'Search and filter conversations in the sidebar', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />', category: 'Productivity' },
+    { id: 'featureMessageSearch', name: 'Message Search', desc: 'Search within conversation messages', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-2.44M5 21v-5m0 5l-4.879-2.44M11 7H7" />', category: 'Productivity' },
+    { id: 'featureBulkActions', name: 'Bulk Actions', desc: 'Select and perform actions on multiple conversations at once', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />', category: 'Management' },
+    { id: 'featureThemes', name: 'Themes', desc: 'Allow agents to customize dashboard appearance and themes', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />', category: 'Management' },
+    { id: 'featureAgentStatus', name: 'Agent Status', desc: 'Allow agents to set their availability status (online, away, busy)', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" />', category: 'Management' },
+    { id: 'featureNotifications', name: 'Notifications', desc: 'Enable notification alerts for new messages and events', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />', category: 'Communication' }
   ];
 
   // Group by category
