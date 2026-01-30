@@ -2656,6 +2656,29 @@ BEGIN
         -- Contact Info
         support_email NVARCHAR(255) NULL,
         support_phone NVARCHAR(50) NULL,
+        support_address NVARCHAR(255) NULL,
+
+        -- Feature Flags
+        feature_supervisor_mode BIT NOT NULL DEFAULT 1,
+        feature_ai_analysis BIT NOT NULL DEFAULT 1,
+        feature_ai_auto_reply BIT NOT NULL DEFAULT 1,
+        feature_file_sharing BIT NOT NULL DEFAULT 1,
+        feature_csat_ratings BIT NOT NULL DEFAULT 1,
+        feature_visitor_info BIT NOT NULL DEFAULT 1,
+        feature_canned_responses BIT NOT NULL DEFAULT 1,
+        feature_conversation_transfer BIT NOT NULL DEFAULT 1,
+        feature_team_chat BIT NOT NULL DEFAULT 1,
+        feature_typing_indicators BIT NOT NULL DEFAULT 1,
+        feature_read_receipts BIT NOT NULL DEFAULT 1,
+        feature_internal_notes BIT NOT NULL DEFAULT 1,
+        feature_emoji_picker BIT NOT NULL DEFAULT 1,
+        feature_email_sending BIT NOT NULL DEFAULT 1,
+        feature_conversation_search BIT NOT NULL DEFAULT 1,
+        feature_message_search BIT NOT NULL DEFAULT 1,
+        feature_bulk_actions BIT NOT NULL DEFAULT 1,
+        feature_themes BIT NOT NULL DEFAULT 1,
+        feature_agent_status BIT NOT NULL DEFAULT 1,
+        feature_notifications BIT NOT NULL DEFAULT 1,
 
         -- Additional Settings (JSON for extensibility)
         additional_settings NVARCHAR(MAX) NULL,
