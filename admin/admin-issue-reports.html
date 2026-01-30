@@ -551,6 +551,11 @@ function getFileUrl(file) {
     raw = file.url || file.fileUrl || file.filePath || file.path || file.downloadUrl || '';
   }
   if (!raw) return '#';
+  // Fix absolute server filesystem paths (e.g. D:/inetpub/.../uploads/issues/...)
+  const uploadsIdx = raw.replace(/\\/g, '/').indexOf('/uploads/');
+  if (uploadsIdx !== -1) {
+    raw = raw.replace(/\\/g, '/').substring(uploadsIdx);
+  }
   if (raw.startsWith('http')) return raw;
   return CONFIG.API_URL + (raw.startsWith('/') ? '' : '/') + raw;
 }
