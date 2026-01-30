@@ -536,31 +536,27 @@ async function deleteIssue(issueId, title) {
   }
 }
 
-// Extract file name from various API response formats
+// Extract file name from attachment object
 function getFileName(file) {
   if (typeof file === 'string') return file.split('/').pop().split('?')[0];
-  return file.fileName || file.originalFileName || file.name || file.originalName || (file.url || file.fileUrl || file.filePath || 'file').split('/').pop().split('?')[0] || 'file';
+  return file.originalName || file.fileName || file.name || file.storedName || 'file';
 }
 
-// Extract full URL from various API response formats
+// Build download URL using the API attachments endpoint
 function getFileUrl(file) {
-  let raw = '';
+  // Attachment object with id - use the dedicated download endpoint
+  if (file && typeof file === 'object' && file.id) {
+    return `${API_BASE}/IssueReports/attachments/${file.id}`;
+  }
+  // Fallback for string URLs
   if (typeof file === 'string') {
-    raw = file;
-  } else {
-    raw = file.url || file.fileUrl || file.filePath || file.path || file.downloadUrl || '';
+    if (file.startsWith('http')) return file;
+    return CONFIG.API_URL + (file.startsWith('/') ? '' : '/') + file;
   }
-  if (!raw) return '#';
-  // Fix absolute server filesystem paths (e.g. D:/inetpub/.../uploads/issues/...)
-  const uploadsIdx = raw.replace(/\\/g, '/').indexOf('/uploads/');
-  if (uploadsIdx !== -1) {
-    raw = raw.replace(/\\/g, '/').substring(uploadsIdx);
-  }
-  if (raw.startsWith('http')) return raw;
-  return CONFIG.API_URL + (raw.startsWith('/') ? '' : '/') + raw;
+  return '#';
 }
 
-// Download file with auth support
+// Download file
 async function downloadFile(event, fileIdx) {
   event.preventDefault();
   const file = window._issueFiles && window._issueFiles[fileIdx];
@@ -575,10 +571,7 @@ async function downloadFile(event, fileIdx) {
   }
 
   try {
-    // Try fetching with auth token (handles API-protected files)
-    const res = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${authToken}` }
-    });
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Download failed');
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
@@ -590,15 +583,8 @@ async function downloadFile(event, fileIdx) {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
   } catch (err) {
-    // Fallback: direct navigation (bypasses CORS)
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // Fallback: open in new tab
+    window.open(url, '_blank');
   }
 }
 
