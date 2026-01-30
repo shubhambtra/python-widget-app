@@ -1830,10 +1830,12 @@
                 accessToken = registerResult.data.accessToken;
                 submitText.textContent = 'Creating site...';
 
-                // Step 2: Create site (include payment reference if available)
+                // Step 2: Create site (include payment reference and plan details if available)
                 const sitePayload = {
                     ...siteData,
-                    paymentReference: currentPaymentReference || undefined
+                    paymentReference: currentPaymentReference || undefined,
+                    planId: selectedPlanData?.id || undefined,
+                    billingCycle: selectedPlanData ? (document.getElementById('billingCycle')?.value || 'monthly') : undefined
                 };
 
                 console.log('[REG] Calling /api/sites...', sitePayload);
