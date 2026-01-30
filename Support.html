@@ -1372,7 +1372,7 @@ function selectUser(vid) {
   if (email) {
     emailBadge.style.display = "flex";
     emailText.textContent = email;
-    btnSendEmail.style.display = "flex";
+    btnSendEmail.style.display = platformFeatures.emailSending ? "flex" : "none";
   } else {
     emailBadge.style.display = "none";
     btnSendEmail.style.display = "none";
@@ -1390,7 +1390,7 @@ function selectUser(vid) {
     statusEl.textContent = user.isOnline ? "Online" : "Offline";
     statusEl.style.color = user.isOnline ? "#22c55e" : "#94a3b8";
     chatInputArea.classList.remove('disabled');
-    document.getElementById('btnCloseConv').style.display = 'flex';
+    document.getElementById('btnCloseConv').style.display = platformFeatures.csatRatings ? 'flex' : 'none';
   }
 
   // Show CSAT rating if available
@@ -4256,10 +4256,12 @@ function viewConversationAsSupervisor(visitorId) {
 const originalSelectUser = selectUser;
 selectUser = function(vid) {
   originalSelectUser(vid);
-  // Load comments for this conversation
-  if (users[vid]?.conversationId) {
+  // Load comments for this conversation (only if internal notes feature is enabled)
+  if (platformFeatures.internalNotes && users[vid]?.conversationId) {
     loadComments(users[vid].conversationId);
   }
+  // Re-apply feature flags after selectUser to enforce visibility
+  applyFeatureFlags();
 };
 
 // ==================== INIT COLLABORATION FEATURES ====================
