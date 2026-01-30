@@ -139,6 +139,20 @@
         unreadCount = e.data.count || 0;
         updateBadge();
         break;
+
+      case "WIDGET_POSITION":
+        if (e.data.position === "bottom-left") {
+          container.style.right = "auto";
+          container.style.left = "20px";
+          badge.style.right = "auto";
+          badge.style.left = "-8px";
+        } else {
+          container.style.left = "auto";
+          container.style.right = "20px";
+          badge.style.left = "auto";
+          badge.style.right = "-8px";
+        }
+        break;
     }
   });
 

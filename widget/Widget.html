@@ -1773,6 +1773,10 @@ async function fetchWidgetConfig() {
           const welcomeP = document.querySelector('.welcome-screen p');
           if (welcomeP) welcomeP.textContent = cfg.welcomeMessage;
         }
+        // Send position to parent (widget.js) to update container placement
+        if (cfg.position && window.parent !== window) {
+          window.parent.postMessage({ type: 'WIDGET_POSITION', position: cfg.position }, '*');
+        }
       }
     }
   } catch (e) {
