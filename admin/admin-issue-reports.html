@@ -369,16 +369,18 @@ function viewIssue(issueId) {
 
   // Build attachments section
   let attachmentsHtml = '';
-  const files = report.attachments || report.files || [];
+  const files = report.attachments || report.files || report.fileUrls || [];
+  console.log('Issue report files data:', JSON.stringify(files, null, 2));
   if (files.length > 0) {
+    // Store file data globally for download handler
+    window._issueFiles = files;
     attachmentsHtml = `
       <div class="detail-section">
         <h3>Attachments (${files.length})</h3>
         <div style="display: flex; flex-direction: column; gap: 8px;">
-          ${files.map(file => {
-            const fileName = typeof file === 'string' ? file.split('/').pop() : (file.fileName || file.name || 'File');
-            const rawUrl = typeof file === 'string' ? file : (file.url || file.filePath || '');
-            const fullUrl = rawUrl.startsWith('http') ? rawUrl : (rawUrl ? CONFIG.API_URL + (rawUrl.startsWith('/') ? '' : '/') + rawUrl : '#');
+          ${files.map((file, idx) => {
+            const fileName = getFileName(file);
+            const fullUrl = getFileUrl(file);
             const isImg = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(fileName);
             return `
               <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color);">
@@ -388,7 +390,7 @@ function viewIssue(issueId) {
                 <div style="flex: 1; min-width: 0;">
                   <div style="font-size: 13px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(fileName)}</div>
                 </div>
-                <a href="#" onclick="downloadFile('${escapeHtml(fullUrl)}', '${escapeHtml(fileName)}'); return false;" style="color: var(--accent-color, #6366f1); font-size: 12px; font-weight: 500; text-decoration: none; flex-shrink: 0; cursor: pointer;">Download</a>
+                <a href="${escapeHtml(fullUrl)}" download="${escapeHtml(fileName)}" target="_blank" rel="noopener" onclick="downloadFile(event, ${idx})" style="color: var(--accent-color, #6366f1); font-size: 12px; font-weight: 500; text-decoration: none; flex-shrink: 0; cursor: pointer;">Download</a>
               </div>
             `;
           }).join('')}
@@ -534,23 +536,64 @@ async function deleteIssue(issueId, title) {
   }
 }
 
-// Download file
-async function downloadFile(url, fileName) {
+// Extract file name from various API response formats
+function getFileName(file) {
+  if (typeof file === 'string') return file.split('/').pop().split('?')[0];
+  return file.fileName || file.originalFileName || file.name || file.originalName || (file.url || file.fileUrl || file.filePath || 'file').split('/').pop().split('?')[0] || 'file';
+}
+
+// Extract full URL from various API response formats
+function getFileUrl(file) {
+  let raw = '';
+  if (typeof file === 'string') {
+    raw = file;
+  } else {
+    raw = file.url || file.fileUrl || file.filePath || file.path || file.downloadUrl || '';
+  }
+  if (!raw) return '#';
+  if (raw.startsWith('http')) return raw;
+  return CONFIG.API_URL + (raw.startsWith('/') ? '' : '/') + raw;
+}
+
+// Download file with auth support
+async function downloadFile(event, fileIdx) {
+  event.preventDefault();
+  const file = window._issueFiles && window._issueFiles[fileIdx];
+  if (!file) return;
+
+  const url = getFileUrl(file);
+  const name = getFileName(file);
+
+  if (url === '#') {
+    showToast('File URL not available');
+    return;
+  }
+
   try {
-    const res = await fetch(url);
+    // Try fetching with auth token (handles API-protected files)
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
     if (!res.ok) throw new Error('Download failed');
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
-    a.download = fileName || 'download';
+    a.download = name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(blobUrl);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
   } catch (err) {
-    // Fallback: open in new tab
-    window.open(url, '_blank');
+    // Fallback: direct navigation (bypasses CORS)
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 }
 
