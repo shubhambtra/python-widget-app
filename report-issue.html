@@ -62,21 +62,59 @@ body {
   font-size: 1.25rem;
 }
 
-.nav-buttons {
+.nav-menu {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
-.nav-link-btn {
+.nav-link {
   color: #94a3b8;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 
-.nav-link-btn:hover {
+.nav-link:hover,
+.nav-link.active {
   color: #fff;
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem 1.25rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.register-btn {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
 }
 
 /* Card */
@@ -423,9 +461,18 @@ body {
     <div class="logo-icon" data-brand="icon">C</div>
     <span data-brand="name">Assistica AI</span>
   </a>
+  <div class="nav-menu">
+    <a href="/#features" class="nav-link">Features</a>
+    <a href="/#pricing" class="nav-link">Pricing</a>
+    <a href="/tutorials" class="nav-link">Tutorials</a>
+    <a href="/#about" class="nav-link">About Us</a>
+    <a href="/#contact" class="nav-link">Contact</a>
+    <a href="/guide" class="nav-link">Guide</a>
+    <a href="/report-issue.html" class="nav-link active">Report Issue</a>
+  </div>
   <div class="nav-buttons">
-    <a href="/" class="nav-link-btn">Home</a>
-    <a href="/login" class="nav-link-btn">Login</a>
+    <a href="/login" class="login-btn">Login</a>
+    <a href="/register" class="register-btn">Get Started</a>
   </div>
 </nav>
 
