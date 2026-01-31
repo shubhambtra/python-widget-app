@@ -12,6 +12,29 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Site Details Modal -->
+<div class="modal-overlay" id="siteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>
+        <div class="modal-avatar site" id="siteModalAvatar">S</div>
+        <span id="siteModalTitle">Site Details</span>
+      </h2>
+      <button class="close-btn" onclick="closeModal('siteModal')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="siteModalBody">
+      <div class="loading-state"><div class="loading-spinner"></div><p>Loading site details...</p></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('siteModal')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Sidebar -->
 <aside class="sidebar">
   <a href="/" class="sidebar-logo">
@@ -185,7 +208,7 @@ function renderPaymentsTable(payments) {
     <table><thead><tr><th>Date</th><th>Site</th><th>Amount</th><th>Status</th><th>Payment ID</th></tr></thead>
     <tbody>${payments.map(p => `<tr>
       <td>${formatDate(p.createdAt)}</td>
-      <td><div class="site-info"><div class="site-icon">${(p.siteName || 'S')[0].toUpperCase()}</div><span>${escapeHtml(p.siteName || '-')}</span></div></td>
+      <td><div class="site-info" style="cursor: pointer;" onclick="viewSiteDetails('${p.siteId}', '${escapeHtml(p.siteName || '')}')"><div class="site-icon">${(p.siteName || 'S')[0].toUpperCase()}</div><span style="color: #3b82f6; text-decoration: underline;">${escapeHtml(p.siteName || '-')}</span></div></td>
       <td style="font-weight: 600; color: #10b981;">${p.currency || 'USD'} ${(p.amount || 0).toLocaleString()}</td>
       <td><span class="badge ${p.status === 'succeeded' ? 'active' : p.status === 'pending' ? 'pro' : 'inactive'}">${p.status}</span></td>
       <td style="font-family: monospace; font-size: 12px; color: #94a3b8;">${(p.razorpayPaymentId || p.stripePaymentIntentId || p.id || '').substring(0, 16)}...</td>
@@ -203,7 +226,7 @@ function renderInvoicesTable(invoices) {
     <tbody>${invoices.map(i => `<tr>
       <td>${formatDate(i.createdAt)}</td>
       <td style="font-family: monospace; font-weight: 500;">${escapeHtml(i.invoiceNumber)}</td>
-      <td><div class="site-info"><div class="site-icon">${(i.siteName || 'S')[0].toUpperCase()}</div><span>${escapeHtml(i.siteName || '-')}</span></div></td>
+      <td><div class="site-info" style="cursor: pointer;" onclick="viewSiteDetails('${i.siteId}', '${escapeHtml(i.siteName || '')}')"><div class="site-icon">${(i.siteName || 'S')[0].toUpperCase()}</div><span style="color: #3b82f6; text-decoration: underline;">${escapeHtml(i.siteName || '-')}</span></div></td>
       <td style="font-weight: 600; color: #10b981;">${i.currency || 'USD'} ${(i.total || 0).toLocaleString()}</td>
       <td><span class="badge ${i.status === 'paid' ? 'active' : i.status === 'open' ? 'pro' : 'inactive'}">${i.status}</span></td>
       <td style="font-size: 12px; color: #94a3b8;">${formatDate(i.periodStart)} - ${formatDate(i.periodEnd)}</td>
@@ -214,6 +237,120 @@ function renderInvoicesTable(invoices) {
 function downloadInvoice(invoiceId, pdfUrl) {
   if (pdfUrl) { window.open(pdfUrl, '_blank'); return; }
   window.open(`${API_BASE}/admin/payments/invoices/${invoiceId}/download`, '_blank');
+}
+
+async function viewSiteDetails(siteId, siteName) {
+  if (!siteId) return;
+
+  document.getElementById('siteModalAvatar').textContent = (siteName || 'S')[0].toUpperCase();
+  document.getElementById('siteModalTitle').textContent = siteName || 'Site Details';
+  document.getElementById('siteModalBody').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>Loading site details...</p></div>';
+  openModal('siteModal');
+
+  try {
+    const res = await apiFetch(`${API_BASE}/sites/${siteId}`);
+    const result = await res.json();
+
+    if (!result.success || !result.data) {
+      document.getElementById('siteModalBody').innerHTML = '<div class="empty-state"><p>Site details not available</p></div>';
+      return;
+    }
+
+    const site = result.data;
+    const statusBadge = site.isActive !== false
+      ? '<span class="badge active">Active</span>'
+      : '<span class="badge inactive">Inactive</span>';
+    const planBadge = `<span class="badge ${(site.plan || 'free').toLowerCase()}">${site.plan || 'Free'}</span>`;
+
+    document.getElementById('siteModalBody').innerHTML = `
+      <div class="detail-section">
+        <h3>Basic Information</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Site Name</label>
+            <div class="value">${escapeHtml(site.name || '-')}</div>
+          </div>
+          <div class="detail-item">
+            <label>Domain</label>
+            <div class="value">${escapeHtml(site.domain || '-')}</div>
+          </div>
+          <div class="detail-item">
+            <label>Status</label>
+            <div class="value">${statusBadge}</div>
+          </div>
+          <div class="detail-item">
+            <label>Plan</label>
+            <div class="value">${planBadge}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Owner Information</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Username</label>
+            <div class="value">${escapeHtml(site.ownerUsername || '-')}</div>
+          </div>
+          <div class="detail-item">
+            <label>Email</label>
+            <div class="value">${escapeHtml(site.ownerEmail || '-')}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Site Details</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Company</label>
+            <div class="value">${escapeHtml(site.companyName || '-')}</div>
+          </div>
+          <div class="detail-item">
+            <label>Website</label>
+            <div class="value">${escapeHtml(site.companyWebsite || '-')}</div>
+          </div>
+          <div class="detail-item">
+            <label>AI Enabled</label>
+            <div class="value">${site.aiEnabled ? 'Yes' : 'No'}</div>
+          </div>
+          <div class="detail-item">
+            <label>Created</label>
+            <div class="value">${formatDate(site.createdAt)}</div>
+          </div>
+          <div class="detail-item full-width">
+            <label>Site ID</label>
+            <div class="value" style="font-family: monospace; font-size: 12px;">${escapeHtml(site.id || '-')}</div>
+          </div>
+        </div>
+      </div>
+
+      ${site.currentSubscription ? `
+      <div class="detail-section">
+        <h3>Subscription</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Status</label>
+            <div class="value"><span class="badge ${site.currentSubscription.status === 'active' ? 'active' : 'inactive'}">${site.currentSubscription.status}</span></div>
+          </div>
+          <div class="detail-item">
+            <label>Billing Cycle</label>
+            <div class="value">${site.currentSubscription.billingCycle || '-'}</div>
+          </div>
+          <div class="detail-item">
+            <label>Period Start</label>
+            <div class="value">${formatDate(site.currentSubscription.currentPeriodStart)}</div>
+          </div>
+          <div class="detail-item">
+            <label>Period End</label>
+            <div class="value">${formatDate(site.currentSubscription.currentPeriodEnd)}</div>
+          </div>
+        </div>
+      </div>` : ''}
+    `;
+  } catch (err) {
+    document.getElementById('siteModalBody').innerHTML = `<div class="empty-state"><p>Failed to load site details: ${escapeHtml(err.message)}</p></div>`;
+  }
 }
 
 loadPaymentsView();

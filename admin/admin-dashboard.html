@@ -559,6 +559,10 @@ function viewSite(siteId) {
       <h3>Owner Information</h3>
       <div class="detail-grid">
         <div class="detail-item">
+          <label>Username</label>
+          <div class="value">${escapeHtml(site.ownerUsername || '-')}</div>
+        </div>
+        <div class="detail-item">
           <label>Owner Email</label>
           <div class="value">${escapeHtml(site.ownerEmail || '-')}</div>
         </div>
