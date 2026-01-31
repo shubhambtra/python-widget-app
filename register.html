@@ -2227,13 +2227,20 @@
                     const storedSiteData = sessionStorage.getItem('paypalSiteData');
 
                     if (orderId && storedUserData && storedSiteData) {
-                        showAlert('PayPal payment approved! Creating your account...', 'success');
+                        // Show processing overlay with step progress
+                        showProcessingOverlay();
+                        updateProcessingStep('step-verify', 'active');
 
                         try {
                             const paypalUserData = JSON.parse(storedUserData);
                             const paypalSiteData = JSON.parse(storedSiteData);
 
-                            // Step 1: Register user
+                            // Step 1: Verifying payment
+                            await new Promise(r => setTimeout(r, 500));
+                            updateProcessingStep('step-verify', 'completed');
+                            updateProcessingStep('step-account', 'active');
+
+                            // Step 2: Register user
                             const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -2252,8 +2259,10 @@
                             }
 
                             const paypalAccessToken = registerResult.data.accessToken;
+                            updateProcessingStep('step-account', 'completed');
+                            updateProcessingStep('step-site', 'active');
 
-                            // Step 2: Create site with payment reference
+                            // Step 3: Create site with payment reference
                             const sitePayload = {
                                 ...paypalSiteData,
                                 paymentReference: paymentReference
@@ -2275,9 +2284,10 @@
 
                             const paypalSiteId = siteResult.data.id;
                             const paypalSiteName = siteResult.data.name;
+                            updateProcessingStep('step-site', 'completed');
+                            updateProcessingStep('step-finish', 'active');
 
-                            // Step 3: Capture PayPal payment
-                            showAlert('Completing payment...', 'success');
+                            // Step 4: Capture PayPal payment
                             const captureResponse = await fetch(`${API_BASE}/api/sites/${paypalSiteId}/payments/paypal/capture`, {
                                 method: 'POST',
                                 headers: {
@@ -2301,6 +2311,10 @@
                             sessionStorage.removeItem('paypalUserData');
                             sessionStorage.removeItem('paypalSiteData');
 
+                            updateProcessingStep('step-finish', 'completed');
+                            await new Promise(r => setTimeout(r, 500));
+                            hideProcessingOverlay();
+
                             if (captureData.success) {
                                 showAlert('Payment successful! Plan upgraded. Redirecting...', 'success');
                             } else {
@@ -2308,10 +2322,11 @@
                             }
                             setTimeout(() => {
                                 window.location.href = `/site-admin.html?siteId=${paypalSiteId}&token=${encodeURIComponent(paypalAccessToken)}&siteName=${encodeURIComponent(paypalSiteName || '')}`;
-                            }, 1500);
+                            }, 1000);
 
                         } catch (err) {
                             console.error('PayPal completion error:', err);
+                            hideProcessingOverlay();
                             showAlert('Error: ' + err.message + '. Please contact support.', 'error');
                             // Clear session storage
                             sessionStorage.removeItem('paypalOrderId');
