@@ -383,6 +383,16 @@ def admin_issue_reports_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-issue-reports.html")
 
 
+@app.get("/admin-demo-requests")
+def admin_demo_requests_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-demo-requests.html")
+
+
+@app.get("/admin-demo-requests.html")
+def admin_demo_requests_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-demo-requests.html")
+
+
 @app.get("/profile.html")
 def profile_page():
     return FileResponse(BASE_DIR / "profile.html")
