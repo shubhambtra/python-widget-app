@@ -813,6 +813,122 @@
             color: #fff;
         }
 
+        /* Demo Request Modal */
+        .demo-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .demo-modal-overlay.active {
+            display: flex;
+        }
+
+        .demo-modal {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .demo-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 0;
+        }
+
+        .demo-modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .demo-modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .demo-modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-modal-body {
+            padding: 1.5rem;
+        }
+
+        .demo-modal-body .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .demo-modal-body label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .demo-modal-body input,
+        .demo-modal-body textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .demo-modal-body input:focus,
+        .demo-modal-body textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .demo-modal-body textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .demo-modal-body .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .demo-modal-body .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Toast */
         .toast {
             position: fixed;
@@ -964,6 +1080,12 @@
             <a href="#features" class="btn-secondary">
                 Learn More
             </a>
+            <button class="btn-secondary" onclick="openDemoModal()" style="cursor: pointer;">
+                Request a Demo
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </button>
         </div>
     </section>
 
@@ -1300,6 +1422,55 @@
         </div>
     </footer>
 
+    <!-- Demo Request Modal -->
+    <div class="demo-modal-overlay" id="demoModalOverlay">
+        <div class="demo-modal">
+            <div class="demo-modal-header">
+                <h2>Request a Demo</h2>
+                <button class="demo-modal-close" onclick="closeDemoModal()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="demo-modal-body">
+                <p style="color: #94a3b8; margin-bottom: 1.25rem; font-size: 0.95rem;">Fill in your details and we'll get back to you with a personalized demo.</p>
+                <form id="demoRequestForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="demoName">Name *</label>
+                            <input type="text" id="demoName" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="demoEmail">Email *</label>
+                            <input type="email" id="demoEmail" placeholder="your@email.com" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="demoCompany">Company *</label>
+                            <input type="text" id="demoCompany" placeholder="Your company" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="demoPhone">Phone</label>
+                            <input type="tel" id="demoPhone" placeholder="Your phone number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="demoMessage">Message</label>
+                        <textarea id="demoMessage" placeholder="Tell us about your needs..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+                        Submit Request
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
@@ -1347,6 +1518,60 @@
         } catch (error) {
             console.error('Contact form error:', error);
             showToast('Failed to send message. Please try again.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+
+    // Demo Request Modal
+    function openDemoModal() {
+        document.getElementById('demoModalOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDemoModal() {
+        document.getElementById('demoModalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('demoModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeDemoModal();
+    });
+
+    document.getElementById('demoRequestForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Submitting...';
+
+        const name = document.getElementById('demoName').value;
+        const email = document.getElementById('demoEmail').value;
+        const company = document.getElementById('demoCompany').value;
+        const phone = document.getElementById('demoPhone').value || null;
+        const message = document.getElementById('demoMessage').value || null;
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE}/DemoRequests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, company, phone, message })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showToast(result.message || 'Demo request submitted! We\'ll be in touch soon.', 'success');
+                this.reset();
+                closeDemoModal();
+            } else {
+                showToast(result.message || 'Failed to submit request. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Demo request error:', error);
+            showToast('Failed to submit request. Please try again.', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
