@@ -544,7 +544,7 @@ function openReportIssue() {
 }
 
 function injectReportIssueLink() {
-  const sidebar = document.querySelector('.sidebar-nav, .sidebar');
+  const sidebar = document.querySelector('.sidebar-nav') || document.querySelector('.sidebar');
   if (!sidebar) return;
   // Check if already injected
   if (document.getElementById('reportIssueSidebarLink')) return;
