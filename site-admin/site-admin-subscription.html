@@ -794,7 +794,8 @@ async function payWithPayPal() {
       amount: amount,
       currency: 'USD',
       planId: selectedUpgradePlan.id,
-      billingCycle: billingCycle
+      billingCycle: billingCycle,
+      returnUrl: window.location.origin + window.location.pathname
     });
 
     sessionStorage.setItem('paypalOrderId', orderResponse.orderId);
