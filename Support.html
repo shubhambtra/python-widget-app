@@ -1174,6 +1174,11 @@ async function loadHistoricalConversations() {
         if (!users[vid].email) {
           users[vid].email = conv.visitorEmail;
         }
+        // Use actual last message time from DB for sorting (WebSocket join time is not accurate)
+        const historicalActivity = new Date(conv.lastMessageAt || conv.createdAt);
+        if (!users[vid].messages.length) {
+          users[vid].lastActivity = historicalActivity;
+        }
         users[vid].lastMessagePreview = users[vid].lastMessagePreview || conv.lastMessagePreview;
         users[vid].unread = users[vid].unread || conv.unreadCount || 0;
 
