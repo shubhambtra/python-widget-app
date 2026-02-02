@@ -333,6 +333,16 @@ def admin_settings_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-settings.html")
 
 
+@app.get("/admin-appsettings")
+def admin_appsettings_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-appsettings.html")
+
+
+@app.get("/admin-appsettings.html")
+def admin_appsettings_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-appsettings.html")
+
+
 @app.get("/admin-visitors")
 def admin_visitors_page():
     return FileResponse(BASE_DIR / "admin" / "admin-visitors.html")
