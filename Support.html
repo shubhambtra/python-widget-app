@@ -47,6 +47,12 @@
       </svg>
     </button>
 
+    <button class="topbar-btn" title="Workflows" onclick="openWorkflowsModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    </button>
+
     <button class="topbar-btn" title="Settings" onclick="openSettings()">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -168,6 +174,12 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
       </svg>
     </button>
+    <button class="btn-filter" id="btnFilter" onclick="toggleFilterPanel()" title="Filter Conversations">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <span class="filter-badge" id="filterBadge" style="display:none;">0</span>
+    </button>
   </div>
 
   <!-- Bulk Actions Bar -->
@@ -192,6 +204,97 @@
       </button>
     </div>
     <button class="bulk-cancel-btn" onclick="cancelBulkSelect()">Cancel</button>
+  </div>
+
+  <!-- Filter Panel -->
+  <div class="filter-panel" id="filterPanel" style="display:none;">
+    <div class="filter-group">
+      <div class="filter-label">Status</div>
+      <div class="filter-chips">
+        <button class="filter-chip" data-filter="status" data-value="active" onclick="toggleFilterChip(this)">Active</button>
+        <button class="filter-chip" data-filter="status" data-value="closed" onclick="toggleFilterChip(this)">Closed</button>
+        <button class="filter-chip" data-filter="status" data-value="pending" onclick="toggleFilterChip(this)">Pending</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Priority</div>
+      <div class="filter-chips">
+        <button class="filter-chip" data-filter="priority" data-value="normal" onclick="toggleFilterChip(this)">Normal</button>
+        <button class="filter-chip" data-filter="priority" data-value="high" onclick="toggleFilterChip(this)">High</button>
+        <button class="filter-chip" data-filter="priority" data-value="urgent" onclick="toggleFilterChip(this)">Urgent</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Resolution</div>
+      <div class="filter-chips">
+        <button class="filter-chip" data-filter="resolutionStatus" data-value="resolved" onclick="toggleFilterChip(this)">Resolved</button>
+        <button class="filter-chip" data-filter="resolutionStatus" data-value="unresolved" onclick="toggleFilterChip(this)">Unresolved</button>
+        <button class="filter-chip" data-filter="resolutionStatus" data-value="spam" onclick="toggleFilterChip(this)">Spam</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Date Range</div>
+      <div class="filter-date-range">
+        <input type="date" class="filter-input" id="filterDateFrom" placeholder="From" />
+        <input type="date" class="filter-input" id="filterDateTo" placeholder="To" />
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Assigned Agent</div>
+      <select class="filter-select" id="filterAgent">
+        <option value="">All Agents</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Tags</div>
+      <input type="text" class="filter-input" id="filterTags" placeholder="Comma-separated tags" />
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">CSAT Rating</div>
+      <div class="filter-date-range">
+        <select class="filter-select" id="filterRatingMin">
+          <option value="">Min</option>
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+        </select>
+        <select class="filter-select" id="filterRatingMax">
+          <option value="">Max</option>
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-section-divider">AI Filters</div>
+    <div class="filter-group">
+      <div class="filter-label">Sentiment</div>
+      <div class="filter-chips">
+        <button class="filter-chip" data-filter="sentiment" data-value="positive" onclick="toggleFilterChip(this)">Positive</button>
+        <button class="filter-chip" data-filter="sentiment" data-value="neutral" onclick="toggleFilterChip(this)">Neutral</button>
+        <button class="filter-chip" data-filter="sentiment" data-value="negative" onclick="toggleFilterChip(this)">Negative</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Intent</div>
+      <select class="filter-select" id="filterIntent">
+        <option value="">All Intents</option>
+        <option value="purchase">Purchase</option>
+        <option value="support">Support</option>
+        <option value="complaint">Complaint</option>
+        <option value="billing">Billing</option>
+        <option value="technical">Technical</option>
+        <option value="general">General</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Urgency</div>
+      <div class="filter-chips">
+        <button class="filter-chip" data-filter="urgency" data-value="low" onclick="toggleFilterChip(this)">Low</button>
+        <button class="filter-chip" data-filter="urgency" data-value="medium" onclick="toggleFilterChip(this)">Medium</button>
+        <button class="filter-chip" data-filter="urgency" data-value="high" onclick="toggleFilterChip(this)">High</button>
+      </div>
+    </div>
+    <div class="filter-panel-footer">
+      <button class="filter-clear-btn" onclick="clearAllFilters()">Clear All</button>
+      <button class="filter-apply-btn" onclick="applyFilters()">Apply Filters</button>
+    </div>
   </div>
 
   <div class="users-list" id="usersList">
@@ -758,6 +861,78 @@
   </div>
 </div>
 
+<!-- Workflows Modal -->
+<div id="workflowsModal" class="workflows-modal-overlay" style="display: none;" onclick="if(event.target === this) closeWorkflowsModal()">
+  <div class="workflows-modal">
+    <div class="workflows-modal-header">
+      <h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Automated Workflows
+      </h3>
+      <button class="workflows-modal-close" onclick="closeWorkflowsModal()">&times;</button>
+    </div>
+    <div class="workflows-modal-body">
+      <!-- List View -->
+      <div id="workflowListView">
+        <div class="workflows-toolbar">
+          <button class="workflow-add-btn" onclick="showWorkflowEditor()">+ New Workflow</button>
+        </div>
+        <div class="workflows-list" id="workflowsList">
+          <div class="no-workflows">No workflows configured yet</div>
+        </div>
+      </div>
+      <!-- Editor View -->
+      <div id="workflowEditorView" style="display:none;">
+        <div class="workflow-editor">
+          <div class="workflow-editor-header">
+            <h4 id="workflowEditorTitle">New Workflow</h4>
+            <button class="workflow-back-btn" onclick="hideWorkflowEditor()">Back to List</button>
+          </div>
+          <div class="workflow-form">
+            <div class="workflow-form-group">
+              <label>Name</label>
+              <input type="text" id="wfName" class="filter-input" placeholder="Workflow name" />
+            </div>
+            <div class="workflow-form-group">
+              <label>Description</label>
+              <input type="text" id="wfDescription" class="filter-input" placeholder="Optional description" />
+            </div>
+            <div class="workflow-form-group">
+              <label>Trigger</label>
+              <select id="wfTrigger" class="filter-select">
+                <option value="new_message">New Message</option>
+                <option value="customer_join">Customer Join</option>
+                <option value="conversation_idle">Conversation Idle</option>
+                <option value="sentiment_change">Sentiment Change</option>
+              </select>
+            </div>
+            <div class="workflow-form-group">
+              <label>Priority</label>
+              <input type="number" id="wfPriority" class="filter-input" value="0" min="0" />
+            </div>
+            <div class="workflow-form-group">
+              <label>Conditions</label>
+              <div id="wfConditions"></div>
+              <button class="workflow-add-row-btn" onclick="addConditionRow()">+ Add Condition</button>
+            </div>
+            <div class="workflow-form-group">
+              <label>Actions</label>
+              <div id="wfActions"></div>
+              <button class="workflow-add-row-btn" onclick="addActionRow()">+ Add Action</button>
+            </div>
+            <div class="workflow-form-actions">
+              <button class="filter-clear-btn" onclick="hideWorkflowEditor()">Cancel</button>
+              <button class="filter-apply-btn" onclick="saveWorkflow()">Save Workflow</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="/config.js"></script>
 <script src="/branding.js"></script>
 <script>
@@ -1049,6 +1224,19 @@ ws.onmessage = (e) => {
       renderUsers();
     }
   }
+
+  // Workflow notifications
+  if (data.type === "workflow_notification") {
+    showToast(data.message || "Workflow action executed", "info");
+  }
+
+  if (data.type === "escalation") {
+    showToast(data.message || "Conversation escalated!", "warning");
+  }
+
+  if (data.type === "workflows_loaded") {
+    console.log("Workflows loaded on server:", data.count);
+  }
 };
 
 ws.onclose = () => {
@@ -1164,6 +1352,14 @@ async function loadHistoricalConversations() {
     for (const conv of conversations) {
       const vid = conv.visitorId;
       console.log("Adding conversation:", conv.visitorName, "vid:", vid);
+      // Build analysis summary from API fields
+      const analysisSummary = (conv.sentiment || conv.intent || conv.urgencyScore != null) ? {
+        sentiment: conv.sentiment,
+        sentimentScore: conv.sentimentScore,
+        intent: conv.intent,
+        urgencyScore: conv.urgencyScore
+      } : null;
+
       if (!users[vid]) {
         users[vid] = {
           name: conv.visitorName || "Visitor",
@@ -1174,8 +1370,14 @@ async function loadHistoricalConversations() {
           unread: conv.unreadCount || 0,
           lastActivity: new Date(conv.lastMessageAt || conv.createdAt),
           lastMessagePreview: conv.lastMessagePreview,
-          analysis: null,
-          isOnline: false
+          analysis: analysisSummary,
+          isOnline: false,
+          status: conv.status,
+          priority: conv.priority,
+          assignedUserId: conv.assignedUserId,
+          tags: conv.tags,
+          rating: conv.rating,
+          resolutionStatus: conv.resolutionStatus
         };
       } else {
         // Merge historical data into existing user (e.g., from WebSocket user_joined)
@@ -1192,6 +1394,13 @@ async function loadHistoricalConversations() {
         }
         users[vid].lastMessagePreview = users[vid].lastMessagePreview || conv.lastMessagePreview;
         users[vid].unread = users[vid].unread || conv.unreadCount || 0;
+        if (analysisSummary && !users[vid].analysis) users[vid].analysis = analysisSummary;
+        users[vid].status = conv.status;
+        users[vid].priority = conv.priority;
+        users[vid].assignedUserId = conv.assignedUserId;
+        users[vid].tags = conv.tags;
+        users[vid].rating = conv.rating;
+        users[vid].resolutionStatus = conv.resolutionStatus;
 
         // If this is the currently selected user and messages weren't loaded yet, load them now
         if (currentVisitor === vid && !users[vid].messagesLoaded && users[vid].conversationId) {
@@ -1294,25 +1503,28 @@ const analysisContent = document.getElementById("analysisContent");
 const emojiPicker = document.getElementById("emojiPicker");
 
 // ==================== RENDER FUNCTIONS ====================
-function renderUsers() {
+function renderUsers(filterVids) {
   // Update conversation count
-  const count = Object.keys(users).length;
-  document.getElementById("conversationCount").textContent = count;
+  const totalCount = Object.keys(users).length;
+  const entries = Object.entries(users)
+    .filter(([vid]) => !filterVids || filterVids.has(vid))
+    .sort((a, b) => b[1].lastActivity - a[1].lastActivity);
+  const displayCount = entries.length;
+  document.getElementById("conversationCount").textContent = filterVids ? `${displayCount} / ${totalCount}` : totalCount;
 
-  if (count === 0) {
+  if (displayCount === 0) {
     usersList.innerHTML = `
       <div class="no-users">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
         </svg>
-        <p>No active conversations</p>
+        <p>${filterVids ? 'No conversations match filters' : 'No active conversations'}</p>
       </div>
     `;
     return;
   }
 
-  usersList.innerHTML = Object.entries(users)
-    .sort((a, b) => b[1].lastActivity - a[1].lastActivity)
+  usersList.innerHTML = entries
     .map(([vid, user]) => {
       const initials = getInitials(user.name);
       const lastMsg = user.messages[user.messages.length - 1];
@@ -4289,6 +4501,383 @@ if (document.readyState === 'loading') {
   initSupervisorFeatures();
 }
 
+// ==================== ADVANCED FILTERS ====================
+
+let activeFilters = {};
+let filterActive = false;
+
+function toggleFilterPanel() {
+  const panel = document.getElementById('filterPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  // Populate agent dropdown
+  const agentSelect = document.getElementById('filterAgent');
+  if (agentSelect && agentSelect.options.length <= 1 && siteAgents.length > 0) {
+    siteAgents.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.userId;
+      opt.textContent = a.name || a.email;
+      agentSelect.appendChild(opt);
+    });
+  }
+}
+
+function toggleFilterChip(el) {
+  el.classList.toggle('active');
+}
+
+function clearAllFilters() {
+  document.querySelectorAll('.filter-chip.active').forEach(c => c.classList.remove('active'));
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  document.getElementById('filterAgent').value = '';
+  document.getElementById('filterTags').value = '';
+  document.getElementById('filterRatingMin').value = '';
+  document.getElementById('filterRatingMax').value = '';
+  document.getElementById('filterIntent').value = '';
+  activeFilters = {};
+  filterActive = false;
+  const badge = document.getElementById('filterBadge');
+  badge.style.display = 'none';
+  renderUsers();
+}
+
+function applyFilters() {
+  activeFilters = {};
+  let filterCount = 0;
+
+  // Chip filters (single-select per group)
+  ['status', 'priority', 'resolutionStatus', 'sentiment', 'urgency'].forEach(group => {
+    const activeChip = document.querySelector(`.filter-chip[data-filter="${group}"].active`);
+    if (activeChip) {
+      activeFilters[group] = activeChip.dataset.value;
+      filterCount++;
+    }
+  });
+
+  // Date range
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  if (dateFrom) { activeFilters.dateFrom = dateFrom; filterCount++; }
+  if (dateTo) { activeFilters.dateTo = dateTo; filterCount++; }
+
+  // Agent
+  const agent = document.getElementById('filterAgent').value;
+  if (agent) { activeFilters.assignedUserId = agent; filterCount++; }
+
+  // Tags
+  const tags = document.getElementById('filterTags').value.trim();
+  if (tags) { activeFilters.tags = tags; filterCount++; }
+
+  // Rating
+  const ratingMin = document.getElementById('filterRatingMin').value;
+  const ratingMax = document.getElementById('filterRatingMax').value;
+  if (ratingMin) { activeFilters.ratingMin = parseInt(ratingMin); filterCount++; }
+  if (ratingMax) { activeFilters.ratingMax = parseInt(ratingMax); filterCount++; }
+
+  // Intent
+  const intent = document.getElementById('filterIntent').value;
+  if (intent) { activeFilters.intent = intent; filterCount++; }
+
+  // Update badge
+  const badge = document.getElementById('filterBadge');
+  if (filterCount > 0) {
+    badge.textContent = filterCount;
+    badge.style.display = 'inline-flex';
+    filterActive = true;
+  } else {
+    badge.style.display = 'none';
+    filterActive = false;
+  }
+
+  loadFilteredConversations();
+}
+
+async function loadFilteredConversations() {
+  if (!filterActive || Object.keys(activeFilters).length === 0) {
+    renderUsers();
+    return;
+  }
+
+  const params = new URLSearchParams();
+  params.set('pageSize', '200');
+  if (activeFilters.status) params.set('status', activeFilters.status);
+  if (activeFilters.priority) params.set('priority', activeFilters.priority);
+  if (activeFilters.assignedUserId) params.set('assignedUserId', activeFilters.assignedUserId);
+  if (activeFilters.dateFrom) params.set('from', activeFilters.dateFrom);
+  if (activeFilters.dateTo) params.set('to', activeFilters.dateTo);
+  if (activeFilters.tags) params.set('tags', activeFilters.tags);
+  if (activeFilters.ratingMin) params.set('ratingMin', activeFilters.ratingMin);
+  if (activeFilters.ratingMax) params.set('ratingMax', activeFilters.ratingMax);
+  if (activeFilters.resolutionStatus) params.set('resolutionStatus', activeFilters.resolutionStatus);
+  if (activeFilters.sentiment) params.set('sentiment', activeFilters.sentiment);
+  if (activeFilters.intent) params.set('intent', activeFilters.intent);
+  if (activeFilters.urgency) {
+    const urgencyMap = { low: 0.3, medium: 0.6, high: 0.8 };
+    const maxMap = { low: 0.3, medium: 0.7, high: 1.0 };
+    params.set('urgencyScoreMin', urgencyMap[activeFilters.urgency] || 0);
+    params.set('urgencyScoreMax', maxMap[activeFilters.urgency] || 1.0);
+  }
+
+  try {
+    const url = `${API_BASE}/sites/${siteId}/conversations?${params.toString()}`;
+    const response = await fetch(url, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    const result = await response.json();
+    if (!result.success) return;
+
+    const items = result.data.items || [];
+    const filterVids = new Set(items.map(c => c.visitorId));
+    renderUsers(filterVids);
+  } catch (err) {
+    console.error("Filter fetch error:", err);
+  }
+}
+
+// ==================== WORKFLOW MANAGEMENT ====================
+
+let workflows = [];
+let editingWorkflowId = null;
+
+function openWorkflowsModal() {
+  document.getElementById('workflowsModal').style.display = 'flex';
+  loadWorkflows();
+}
+
+function closeWorkflowsModal() {
+  document.getElementById('workflowsModal').style.display = 'none';
+  hideWorkflowEditor();
+}
+
+async function loadWorkflows() {
+  try {
+    const response = await fetch(`${API_BASE}/sites/${siteId}/workflows`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    const result = await response.json();
+    workflows = result.data || [];
+    renderWorkflowsList();
+  } catch (err) {
+    console.error("Failed to load workflows:", err);
+  }
+}
+
+function renderWorkflowsList() {
+  const container = document.getElementById('workflowsList');
+  if (workflows.length === 0) {
+    container.innerHTML = '<div class="no-workflows">No workflows configured yet</div>';
+    return;
+  }
+
+  container.innerHTML = workflows.map(wf => {
+    const triggerLabels = {
+      new_message: 'New Message',
+      customer_join: 'Customer Join',
+      conversation_idle: 'Idle',
+      sentiment_change: 'Sentiment Change'
+    };
+    const condStr = wf.conditions.map(c => `${c.field} ${c.operator} ${c.value}`).join(', ');
+    const actStr = wf.actions.map(a => `${a.type}: ${a.value}`).join(', ');
+
+    return `
+      <div class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-card-title">${escapeHtml(wf.name)}</div>
+          <div class="workflow-card-actions">
+            <label class="workflow-toggle">
+              <input type="checkbox" ${wf.isEnabled ? 'checked' : ''} onchange="toggleWorkflow('${wf.id}', this.checked)" />
+              <span class="workflow-toggle-slider"></span>
+            </label>
+            <button class="workflow-edit-btn" onclick="showWorkflowEditor('${wf.id}')">Edit</button>
+            <button class="workflow-delete-btn" onclick="deleteWorkflow('${wf.id}')">Del</button>
+          </div>
+        </div>
+        <div class="workflow-card-body">
+          <span class="workflow-trigger-badge">${triggerLabels[wf.triggerType] || wf.triggerType}</span>
+          ${wf.description ? `<span class="workflow-desc">${escapeHtml(wf.description)}</span>` : ''}
+          ${condStr ? `<div class="workflow-detail"><strong>If:</strong> ${escapeHtml(condStr)}</div>` : ''}
+          ${actStr ? `<div class="workflow-detail"><strong>Then:</strong> ${escapeHtml(actStr)}</div>` : ''}
+          <div class="workflow-meta">Priority: ${wf.priority} | Runs: ${wf.executionCount}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showWorkflowEditor(workflowId) {
+  document.getElementById('workflowListView').style.display = 'none';
+  document.getElementById('workflowEditorView').style.display = 'block';
+
+  if (workflowId) {
+    editingWorkflowId = workflowId;
+    const wf = workflows.find(w => w.id === workflowId);
+    if (wf) {
+      document.getElementById('workflowEditorTitle').textContent = 'Edit Workflow';
+      document.getElementById('wfName').value = wf.name;
+      document.getElementById('wfDescription').value = wf.description || '';
+      document.getElementById('wfTrigger').value = wf.triggerType;
+      document.getElementById('wfPriority').value = wf.priority;
+      // Rebuild conditions
+      document.getElementById('wfConditions').innerHTML = '';
+      (wf.conditions || []).forEach(c => addConditionRow(c.field, c.operator, c.value));
+      // Rebuild actions
+      document.getElementById('wfActions').innerHTML = '';
+      (wf.actions || []).forEach(a => addActionRow(a.type, a.value));
+    }
+  } else {
+    editingWorkflowId = null;
+    document.getElementById('workflowEditorTitle').textContent = 'New Workflow';
+    document.getElementById('wfName').value = '';
+    document.getElementById('wfDescription').value = '';
+    document.getElementById('wfTrigger').value = 'new_message';
+    document.getElementById('wfPriority').value = '0';
+    document.getElementById('wfConditions').innerHTML = '';
+    document.getElementById('wfActions').innerHTML = '';
+  }
+}
+
+function hideWorkflowEditor() {
+  document.getElementById('workflowListView').style.display = 'block';
+  document.getElementById('workflowEditorView').style.display = 'none';
+  editingWorkflowId = null;
+}
+
+function addConditionRow(field, operator, value) {
+  const container = document.getElementById('wfConditions');
+  const row = document.createElement('div');
+  row.className = 'workflow-condition-row';
+  row.innerHTML = `
+    <select class="filter-select wf-cond-field">
+      <option value="message_text" ${field === 'message_text' ? 'selected' : ''}>Message Text</option>
+      <option value="sentiment" ${field === 'sentiment' ? 'selected' : ''}>Sentiment</option>
+      <option value="intent" ${field === 'intent' ? 'selected' : ''}>Intent</option>
+      <option value="urgency_score" ${field === 'urgency_score' ? 'selected' : ''}>Urgency Score</option>
+      <option value="visitor_name" ${field === 'visitor_name' ? 'selected' : ''}>Visitor Name</option>
+      <option value="visitor_email" ${field === 'visitor_email' ? 'selected' : ''}>Visitor Email</option>
+      <option value="priority" ${field === 'priority' ? 'selected' : ''}>Priority</option>
+      <option value="idle_minutes" ${field === 'idle_minutes' ? 'selected' : ''}>Idle Minutes</option>
+    </select>
+    <select class="filter-select wf-cond-op">
+      <option value="contains" ${operator === 'contains' ? 'selected' : ''}>contains</option>
+      <option value="equals" ${operator === 'equals' ? 'selected' : ''}>equals</option>
+      <option value="not_equals" ${operator === 'not_equals' ? 'selected' : ''}>not equals</option>
+      <option value="greater_than" ${operator === 'greater_than' ? 'selected' : ''}>greater than</option>
+      <option value="less_than" ${operator === 'less_than' ? 'selected' : ''}>less than</option>
+    </select>
+    <input type="text" class="filter-input wf-cond-val" value="${escapeHtml(value || '')}" placeholder="Value" />
+    <button class="workflow-remove-row" onclick="this.parentElement.remove()">x</button>
+  `;
+  container.appendChild(row);
+}
+
+function addActionRow(type, value) {
+  const container = document.getElementById('wfActions');
+  const row = document.createElement('div');
+  row.className = 'workflow-action-row';
+  row.innerHTML = `
+    <select class="filter-select wf-act-type">
+      <option value="assign_agent" ${type === 'assign_agent' ? 'selected' : ''}>Assign Agent</option>
+      <option value="add_tag" ${type === 'add_tag' ? 'selected' : ''}>Add Tag</option>
+      <option value="set_priority" ${type === 'set_priority' ? 'selected' : ''}>Set Priority</option>
+      <option value="send_notification" ${type === 'send_notification' ? 'selected' : ''}>Send Notification</option>
+      <option value="escalate" ${type === 'escalate' ? 'selected' : ''}>Escalate</option>
+      <option value="auto_close" ${type === 'auto_close' ? 'selected' : ''}>Auto Close</option>
+    </select>
+    <input type="text" class="filter-input wf-act-val" value="${escapeHtml(value || '')}" placeholder="Value (e.g., round_robin, billing, high)" />
+    <button class="workflow-remove-row" onclick="this.parentElement.remove()">x</button>
+  `;
+  container.appendChild(row);
+}
+
+async function saveWorkflow() {
+  const name = document.getElementById('wfName').value.trim();
+  if (!name) { showToast('Workflow name is required', 'error'); return; }
+
+  const conditions = [];
+  document.querySelectorAll('.workflow-condition-row').forEach(row => {
+    conditions.push({
+      field: row.querySelector('.wf-cond-field').value,
+      operator: row.querySelector('.wf-cond-op').value,
+      value: row.querySelector('.wf-cond-val').value
+    });
+  });
+
+  const actions = [];
+  document.querySelectorAll('.workflow-action-row').forEach(row => {
+    actions.push({
+      type: row.querySelector('.wf-act-type').value,
+      value: row.querySelector('.wf-act-val').value
+    });
+  });
+
+  const payload = {
+    name,
+    description: document.getElementById('wfDescription').value.trim() || null,
+    triggerType: document.getElementById('wfTrigger').value,
+    priority: parseInt(document.getElementById('wfPriority').value) || 0,
+    conditions,
+    actions,
+    isEnabled: true
+  };
+
+  try {
+    const method = editingWorkflowId ? 'PUT' : 'POST';
+    const url = editingWorkflowId
+      ? `${API_BASE}/sites/${siteId}/workflows/${editingWorkflowId}`
+      : `${API_BASE}/sites/${siteId}/workflows`;
+
+    const response = await fetch(url, {
+      method,
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      showToast('Failed to save workflow', 'error');
+      return;
+    }
+
+    showToast(editingWorkflowId ? 'Workflow updated' : 'Workflow created', 'success');
+    hideWorkflowEditor();
+    await loadWorkflows();
+    // Notify Python server to reload workflows
+    ws.send(JSON.stringify({ type: 'reload_workflows' }));
+  } catch (err) {
+    console.error("Save workflow error:", err);
+    showToast('Error saving workflow', 'error');
+  }
+}
+
+async function toggleWorkflow(workflowId, enabled) {
+  try {
+    await fetch(`${API_BASE}/sites/${siteId}/workflows/${workflowId}`, {
+      method: 'PUT',
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ isEnabled: enabled })
+    });
+    ws.send(JSON.stringify({ type: 'reload_workflows' }));
+  } catch (err) {
+    console.error("Toggle workflow error:", err);
+  }
+}
+
+async function deleteWorkflow(workflowId) {
+  if (!confirm('Delete this workflow?')) return;
+  try {
+    await fetch(`${API_BASE}/sites/${siteId}/workflows/${workflowId}`, {
+      method: 'DELETE',
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    showToast('Workflow deleted', 'success');
+    await loadWorkflows();
+    ws.send(JSON.stringify({ type: 'reload_workflows' }));
+  } catch (err) {
+    console.error("Delete workflow error:", err);
+  }
+}
+
 // Export functions
 window.openAgentChat = openAgentChat;
 window.closeAgentChat = closeAgentChat;
@@ -4302,6 +4891,19 @@ window.openSupervisorModal = openSupervisorModal;
 window.closeSupervisorModal = closeSupervisorModal;
 window.loadSupervisorData = loadSupervisorData;
 window.viewConversationAsSupervisor = viewConversationAsSupervisor;
+window.toggleFilterPanel = toggleFilterPanel;
+window.toggleFilterChip = toggleFilterChip;
+window.clearAllFilters = clearAllFilters;
+window.applyFilters = applyFilters;
+window.openWorkflowsModal = openWorkflowsModal;
+window.closeWorkflowsModal = closeWorkflowsModal;
+window.showWorkflowEditor = showWorkflowEditor;
+window.hideWorkflowEditor = hideWorkflowEditor;
+window.saveWorkflow = saveWorkflow;
+window.toggleWorkflow = toggleWorkflow;
+window.deleteWorkflow = deleteWorkflow;
+window.addConditionRow = addConditionRow;
+window.addActionRow = addActionRow;
 </script>
 
 </body>

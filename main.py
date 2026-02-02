@@ -1495,6 +1495,268 @@ async def load_site_toggle_state(site_id: str, token: str):
     return {"auto_reply_enabled": False, "analysis_enabled": False}
 
 
+# ==================== WORKFLOW ENGINE ====================
+
+# Idle timers: {site_id}_{visitor_id} -> asyncio.Task
+_idle_timers = {}
+# Round robin index per site
+_round_robin_index = {}
+
+
+async def load_site_workflows(site_id: str, token: str):
+    """Load enabled workflows from API for a site"""
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                f"{API_BASE_URL}/sites/{site_id}/workflows",
+                headers={"Authorization": f"Bearer {token}"}
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                workflows = data.get("data", [])
+                return [w for w in workflows if w.get("isEnabled", False)]
+    except Exception as e:
+        print(f"Error loading workflows for site {site_id}: {e}")
+    return []
+
+
+def get_round_robin_agent(site: dict):
+    """Get next agent using round robin"""
+    online_agents = [
+        aid for aid, adata in site.get("agents", {}).items()
+        if adata.get("status") == "online"
+    ]
+    if not online_agents:
+        return None
+    site_key = id(site)
+    idx = _round_robin_index.get(site_key, 0) % len(online_agents)
+    _round_robin_index[site_key] = idx + 1
+    return online_agents[idx]
+
+
+def get_least_busy_agent(site: dict):
+    """Get the agent with the fewest active conversations"""
+    online_agents = [
+        aid for aid, adata in site.get("agents", {}).items()
+        if adata.get("status") == "online"
+    ]
+    if not online_agents:
+        return None
+    # Count conversations per agent based on visitor data
+    agent_counts = {aid: 0 for aid in online_agents}
+    # Simple heuristic: return first (least busy is approximate without conversation tracking)
+    return online_agents[0] if online_agents else None
+
+
+async def assign_conversation_via_api(site_id: str, conversation_id: str, user_id: str, token: str):
+    """Assign a conversation to an agent via API"""
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}/assign",
+                json={"userId": user_id},
+                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+            )
+            return resp.status_code == 200
+    except Exception as e:
+        print(f"Error assigning conversation: {e}")
+        return False
+
+
+async def update_conversation_via_api(site_id: str, conversation_id: str, updates: dict, token: str):
+    """Update conversation fields via API"""
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.put(
+                f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}",
+                json=updates,
+                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+            )
+            return resp.status_code == 200
+    except Exception as e:
+        print(f"Error updating conversation: {e}")
+        return False
+
+
+async def close_conversation_via_api(site_id: str, conversation_id: str, token: str):
+    """Close a conversation via API"""
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}/close",
+                json={"resolutionStatus": "resolved", "note": "Auto-closed by workflow"},
+                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+            )
+            return resp.status_code == 200
+    except Exception as e:
+        print(f"Error closing conversation: {e}")
+        return False
+
+
+def evaluate_conditions(conditions: list, context: dict) -> bool:
+    """Evaluate all conditions (AND logic). Returns True if all conditions match."""
+    if not conditions:
+        return True
+    for cond in conditions:
+        field = cond.get("field", "")
+        operator = cond.get("operator", "")
+        value = cond.get("value", "")
+        ctx_value = context.get(field, "")
+
+        if ctx_value is None:
+            ctx_value = ""
+
+        ctx_str = str(ctx_value).lower()
+        val_str = str(value).lower()
+
+        if operator == "contains":
+            if val_str not in ctx_str:
+                return False
+        elif operator == "equals":
+            if ctx_str != val_str:
+                return False
+        elif operator == "not_equals":
+            if ctx_str == val_str:
+                return False
+        elif operator == "greater_than":
+            try:
+                if float(ctx_value) <= float(value):
+                    return False
+            except (ValueError, TypeError):
+                return False
+        elif operator == "less_than":
+            try:
+                if float(ctx_value) >= float(value):
+                    return False
+            except (ValueError, TypeError):
+                return False
+    return True
+
+
+async def execute_actions(site: dict, site_id: str, workflow: dict, context: dict):
+    """Execute workflow actions"""
+    actions = workflow.get("actions", [])
+    conversation_id = context.get("conversation_id")
+    visitor_id = context.get("visitor_id")
+    executed = []
+
+    # Get a token from any connected agent
+    agent_token = None
+    for aid, adata in site.get("agents", {}).items():
+        agent_token = adata.get("token")
+        if agent_token:
+            break
+
+    if not agent_token:
+        print(f"No agent token available for workflow execution")
+        return executed
+
+    for action in actions:
+        action_type = action.get("type", "")
+        action_value = action.get("value", "")
+
+        try:
+            if action_type == "assign_agent" and conversation_id:
+                agent_id = None
+                if action_value == "round_robin":
+                    agent_id = get_round_robin_agent(site)
+                elif action_value == "least_busy":
+                    agent_id = get_least_busy_agent(site)
+                else:
+                    agent_id = action_value  # specific agent ID
+
+                if agent_id:
+                    success = await assign_conversation_via_api(site_id, conversation_id, agent_id, agent_token)
+                    if success:
+                        executed.append(f"assign_agent:{agent_id}")
+                        agent_name = site.get("agents", {}).get(agent_id, {}).get("username", agent_id)
+                        await broadcast_to_agents(site, {
+                            "type": "workflow_notification",
+                            "message": f"Workflow '{workflow.get('name')}' assigned conversation to {agent_name}"
+                        })
+
+            elif action_type == "add_tag" and conversation_id:
+                success = await update_conversation_via_api(site_id, conversation_id, {"tags": [action_value]}, agent_token)
+                if success:
+                    executed.append(f"add_tag:{action_value}")
+
+            elif action_type == "set_priority" and conversation_id:
+                success = await update_conversation_via_api(site_id, conversation_id, {"priority": action_value}, agent_token)
+                if success:
+                    executed.append(f"set_priority:{action_value}")
+
+            elif action_type == "send_notification":
+                await broadcast_to_agents(site, {
+                    "type": "workflow_notification",
+                    "message": action_value or f"Workflow '{workflow.get('name')}' triggered"
+                })
+                executed.append("send_notification")
+
+            elif action_type == "escalate":
+                await broadcast_to_agents(site, {
+                    "type": "escalation",
+                    "message": action_value or f"Escalation: Workflow '{workflow.get('name')}' requires attention",
+                    "visitorId": visitor_id,
+                    "conversationId": conversation_id
+                })
+                executed.append("escalate")
+
+            elif action_type == "auto_close" and conversation_id:
+                success = await close_conversation_via_api(site_id, conversation_id, agent_token)
+                if success:
+                    executed.append("auto_close")
+
+        except Exception as e:
+            print(f"Error executing action {action_type}: {e}")
+
+    return executed
+
+
+async def evaluate_workflows(site: dict, site_id: str, trigger_type: str, context: dict):
+    """Evaluate and execute matching workflows"""
+    workflows = site.get("workflows", [])
+    if not workflows:
+        return
+
+    # Filter by trigger type and sort by priority
+    matching = sorted(
+        [w for w in workflows if w.get("triggerType") == trigger_type and w.get("isEnabled", False)],
+        key=lambda w: w.get("priority", 0)
+    )
+
+    for workflow in matching:
+        conditions = workflow.get("conditions", [])
+        if evaluate_conditions(conditions, context):
+            print(f"Workflow '{workflow.get('name')}' matched for trigger '{trigger_type}'")
+            executed = await execute_actions(site, site_id, workflow, context)
+            if executed:
+                print(f"  Actions executed: {executed}")
+
+
+async def start_idle_timer(site: dict, site_id: str, visitor_id: str, conversation_id: str, timeout_minutes: int = 5):
+    """Start/reset idle timer for a conversation"""
+    timer_key = f"{site_id}_{visitor_id}"
+
+    # Cancel existing timer
+    if timer_key in _idle_timers:
+        _idle_timers[timer_key].cancel()
+
+    async def _idle_callback():
+        try:
+            await asyncio.sleep(timeout_minutes * 60)
+            context = {
+                "visitor_id": visitor_id,
+                "conversation_id": conversation_id,
+                "idle_minutes": str(timeout_minutes),
+                "visitor_name": site.get("names", {}).get(visitor_id, visitor_id)
+            }
+            await evaluate_workflows(site, site_id, "conversation_idle", context)
+        except asyncio.CancelledError:
+            pass
+
+    _idle_timers[timer_key] = asyncio.create_task(_idle_callback())
+
+
 async def broadcast_to_admins(site: dict, message: dict):
     """Broadcast a message to all connected admins for a site"""
     admins_to_remove = []
@@ -1586,6 +1848,8 @@ async def websocket_endpoint(ws: WebSocket):
     if site_id not in connections:
         # Load toggle state from database
         toggle_state = await load_site_toggle_state(site_id, token)
+        # Load workflows from database
+        site_workflows = await load_site_workflows(site_id, token) if token else []
         connections[site_id] = {
             "agents": {},  # agent_user_id -> {"ws": WebSocket, "username": str, "status": str, "token": str}
             "supervisors": {},  # supervisor_user_id -> WebSocket
@@ -1594,7 +1858,8 @@ async def websocket_endpoint(ws: WebSocket):
             "admins": {},  # admin user_id -> WebSocket
             "analysis_enabled": toggle_state["analysis_enabled"],
             "auto_reply_enabled": toggle_state["auto_reply_enabled"],
-            "agent_chats": {}  # Stores agent-to-agent chat messages
+            "agent_chats": {},  # Stores agent-to-agent chat messages
+            "workflows": site_workflows  # Automated workflows
         }
 
     site = connections[site_id]
@@ -1755,6 +2020,14 @@ async def websocket_endpoint(ws: WebSocket):
                 # Send welcome message to customer
                 await send_welcome_message(site_id, visitor_id, conversation_id, ws, site)
 
+                # Evaluate customer_join workflows
+                await evaluate_workflows(site, site_id, "customer_join", {
+                    "visitor_id": visitor_id,
+                    "visitor_name": name,
+                    "visitor_email": email or "",
+                    "conversation_id": conversation_id
+                })
+
             # ----- TYPING INDICATORS -----
             elif data.get("type") == "typing_start" and role == CUSTOMER:
                 await broadcast_to_agents(site, {
@@ -1794,6 +2067,15 @@ async def websocket_endpoint(ws: WebSocket):
                 site["auto_reply_enabled"] = data.get("enabled", False)
                 print(f"Auto Reply toggled: {site['auto_reply_enabled']}")
                 await update_site_toggle(site_id, token, auto_reply_enabled=site["auto_reply_enabled"])
+
+            # ----- RELOAD WORKFLOWS -----
+            elif data.get("type") == "reload_workflows" and role == SUPPORT:
+                print(f"Reloading workflows for site {site_id}")
+                site["workflows"] = await load_site_workflows(site_id, token)
+                await broadcast_to_agents(site, {
+                    "type": "workflows_loaded",
+                    "count": len(site.get("workflows", []))
+                })
 
             # ----- GET ONLINE AGENTS -----
             elif data.get("type") == "get_online_agents" and role == SUPPORT:
@@ -2073,6 +2355,19 @@ async def websocket_endpoint(ws: WebSocket):
 
                 await broadcast_to_agents(site, msg_payload)
 
+                # Evaluate new_message workflows
+                wf_context = {
+                    "visitor_id": visitor_id,
+                    "visitor_name": site["names"].get(visitor_id, visitor_id),
+                    "conversation_id": conversation_id,
+                    "message_text": msg or ""
+                }
+                await evaluate_workflows(site, site_id, "new_message", wf_context)
+
+                # Reset idle timer
+                if conversation_id:
+                    await start_idle_timer(site, site_id, visitor_id, conversation_id)
+
                 # Run AI analysis if analysis or auto-reply is enabled
                 should_analyze = site.get("analysis_enabled", False) or site.get("auto_reply_enabled", False)
                 if msg and not file_data and should_analyze and site.get("agents"):
@@ -2106,6 +2401,17 @@ async def websocket_endpoint(ws: WebSocket):
                                 "used": analysis_usage.get("used"),
                                 "limit": analysis_usage.get("limit")
                             })
+                            # Evaluate sentiment_change workflows if sentiment is negative
+                            if analysis and analysis.get("sentiment", "").lower() in ["negative", "angry", "frustrated"]:
+                                await evaluate_workflows(site, site_id, "sentiment_change", {
+                                    "visitor_id": visitor_id,
+                                    "conversation_id": conversation_id,
+                                    "sentiment": analysis.get("sentiment", ""),
+                                    "intent": analysis.get("intent", ""),
+                                    "urgency_score": str(analysis.get("urgency_score", 0)),
+                                    "message_text": msg
+                                })
+
                     elif site.get("auto_reply_enabled", False):
                         # Use RAG-enhanced analysis for auto-reply to leverage knowledge base
                         analysis = await analyze_customer_message_with_rag(msg, site_id, conversation_id, internal_visitor_id)
