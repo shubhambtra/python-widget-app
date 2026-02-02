@@ -846,6 +846,17 @@ ws.onmessage = (e) => {
   if (loggedOut) return;
   const data = JSON.parse(e.data);
 
+  // Restore toggle states from backend (loaded from DB)
+  if (data.type === "toggle_state") {
+    analysisEnabled = data.analysis_enabled ?? false;
+    autoReplyEnabled = data.auto_reply_enabled ?? false;
+    const analysisCheckbox = document.getElementById("toggleAnalysis");
+    const autoReplyCheckbox = document.getElementById("toggleAutoReply");
+    if (analysisCheckbox) analysisCheckbox.checked = analysisEnabled;
+    if (autoReplyCheckbox) autoReplyCheckbox.checked = autoReplyEnabled;
+    console.log("Toggle state restored from DB:", { analysisEnabled, autoReplyEnabled });
+  }
+
   // New visitor joined
   if (data.type === "user_joined") {
     const vid = data.visitorId;

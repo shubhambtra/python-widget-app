@@ -1446,6 +1446,55 @@ async def update_agent_status(token: str, status: str):
     return False
 
 
+async def update_site_toggle(site_id: str, token: str, auto_reply_enabled: bool = None, analysis_enabled: bool = None):
+    """Persist toggle state to database via .NET API"""
+    payload = {}
+    if auto_reply_enabled is not None:
+        payload["autoReplyEnabled"] = auto_reply_enabled
+    if analysis_enabled is not None:
+        payload["analysisEnabled"] = analysis_enabled
+    if not payload:
+        return False
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.put(
+                f"{API_BASE_URL}/sites/{site_id}",
+                json=payload,
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0
+            )
+            if response.status_code == 200:
+                print(f"Site toggle state saved: {payload}")
+                return True
+            else:
+                print(f"Failed to save site toggle state: {response.status_code}")
+        except Exception as e:
+            print(f"Error saving site toggle state: {e}")
+    return False
+
+
+async def load_site_toggle_state(site_id: str, token: str):
+    """Load toggle state from database via .NET API"""
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.get(
+                f"{API_BASE_URL}/sites/{site_id}",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0
+            )
+            if response.status_code == 200:
+                data = response.json()
+                site_data = data.get("data", {})
+                return {
+                    "auto_reply_enabled": site_data.get("autoReplyEnabled", False),
+                    "analysis_enabled": site_data.get("analysisEnabled", False)
+                }
+        except Exception as e:
+            print(f"Error loading site toggle state: {e}")
+    return {"auto_reply_enabled": False, "analysis_enabled": False}
+
+
 async def broadcast_to_admins(site: dict, message: dict):
     """Broadcast a message to all connected admins for a site"""
     admins_to_remove = []
@@ -1535,14 +1584,16 @@ async def websocket_endpoint(ws: WebSocket):
 
     # -------- INIT SITE --------
     if site_id not in connections:
+        # Load toggle state from database
+        toggle_state = await load_site_toggle_state(site_id, token)
         connections[site_id] = {
             "agents": {},  # agent_user_id -> {"ws": WebSocket, "username": str, "status": str, "token": str}
             "supervisors": {},  # supervisor_user_id -> WebSocket
             "customers": {},
             "names": {},
             "admins": {},  # admin user_id -> WebSocket
-            "analysis_enabled": False,  # Default OFF
-            "auto_reply_enabled": False,  # Default OFF
+            "analysis_enabled": toggle_state["analysis_enabled"],
+            "auto_reply_enabled": toggle_state["auto_reply_enabled"],
             "agent_chats": {}  # Stores agent-to-agent chat messages
         }
 
@@ -1604,6 +1655,13 @@ async def websocket_endpoint(ws: WebSocket):
         await ws.send_json({
             "type": "online_agents_list",
             "agents": online_agents
+        })
+
+        # Send current toggle states to the newly connected agent
+        await ws.send_json({
+            "type": "toggle_state",
+            "analysis_enabled": site["analysis_enabled"],
+            "auto_reply_enabled": site["auto_reply_enabled"]
         })
 
         # Notify existing customers that support is available
@@ -1729,11 +1787,13 @@ async def websocket_endpoint(ws: WebSocket):
             elif data.get("type") == "toggle_analysis" and role == SUPPORT:
                 site["analysis_enabled"] = data.get("enabled", False)
                 print(f"Analysis toggled: {site['analysis_enabled']}")
+                await update_site_toggle(site_id, token, analysis_enabled=site["analysis_enabled"])
 
             # ----- TOGGLE AUTO REPLY -----
             elif data.get("type") == "toggle_auto_reply" and role == SUPPORT:
                 site["auto_reply_enabled"] = data.get("enabled", False)
                 print(f"Auto Reply toggled: {site['auto_reply_enabled']}")
+                await update_site_toggle(site_id, token, auto_reply_enabled=site["auto_reply_enabled"])
 
             # ----- GET ONLINE AGENTS -----
             elif data.get("type") == "get_online_agents" and role == SUPPORT:
