@@ -594,6 +594,95 @@
             justify-content: center;
         }
 
+        /* Billing Toggle */
+        .billing-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .billing-toggle-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .billing-toggle-label.active {
+            color: #fff;
+        }
+
+        .billing-toggle {
+            position: relative;
+            width: 56px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .billing-toggle.annual {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border-color: transparent;
+        }
+
+        .billing-toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .billing-toggle.annual .billing-toggle-knob {
+            transform: translateX(26px);
+        }
+
+        .billing-save-badge {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            padding: 0.3rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Price display for annual discount */
+        .price-original {
+            font-size: 1.25rem;
+            color: #64748b;
+            text-decoration: line-through;
+            font-weight: 400;
+            margin-right: 0.5rem;
+        }
+
+        .price-annual-note {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .plan-discount-badge {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
         /* Contact Section */
         .contact {
             padding: 6rem 2rem;
@@ -1274,6 +1363,14 @@
         <div class="section-header">
             <h2>Simple, Transparent Pricing</h2>
             <p>Choose the plan that works best for your business. All plans include core features.</p>
+            <div class="billing-toggle-wrapper">
+                <span class="billing-toggle-label active" id="monthlyLabel" onclick="setBillingCycle('monthly')">Monthly</span>
+                <div class="billing-toggle" id="billingToggle" onclick="toggleBillingCycle()">
+                    <div class="billing-toggle-knob"></div>
+                </div>
+                <span class="billing-toggle-label" id="annualLabel" onclick="setBillingCycle('annual')">Annual</span>
+                <span class="billing-save-badge">Save 20%</span>
+            </div>
         </div>
         <div class="pricing-grid" id="pricingGrid">
             <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
@@ -1578,6 +1675,92 @@
         }
     });
 
+    // Billing cycle state
+    let currentBillingCycle = 'monthly';
+    let cachedPlans = null;
+
+    function toggleBillingCycle() {
+        setBillingCycle(currentBillingCycle === 'monthly' ? 'annual' : 'monthly');
+    }
+
+    function setBillingCycle(cycle) {
+        currentBillingCycle = cycle;
+        const toggle = document.getElementById('billingToggle');
+        const monthlyLabel = document.getElementById('monthlyLabel');
+        const annualLabel = document.getElementById('annualLabel');
+
+        if (cycle === 'annual') {
+            toggle.classList.add('annual');
+            monthlyLabel.classList.remove('active');
+            annualLabel.classList.add('active');
+        } else {
+            toggle.classList.remove('annual');
+            monthlyLabel.classList.add('active');
+            annualLabel.classList.remove('active');
+        }
+
+        if (cachedPlans) {
+            renderPricingPlans(cachedPlans);
+        }
+    }
+
+    function renderPricingPlans(plans) {
+        const container = document.getElementById('pricingGrid');
+        const popularPlanNames = ['pro', 'professional', 'business'];
+        const isAnnual = currentBillingCycle === 'annual';
+
+        container.innerHTML = plans.map(plan => {
+            const isPopular = popularPlanNames.includes(plan.name.toLowerCase());
+            const isFree = plan.monthlyPrice === 0;
+            const hasAnnualPrice = plan.annualPrice && plan.annualPrice > 0;
+            const annualMonthly = hasAnnualPrice ? plan.annualPrice / 12 : null;
+            const discountPercent = hasAnnualPrice ? Math.round((1 - (plan.annualPrice / (plan.monthlyPrice * 12))) * 100) : 0;
+
+            const features = [];
+            if (plan.maxAgents) features.push(`${plan.maxAgents} agent${plan.maxAgents > 1 ? 's' : ''}`);
+            if (plan.maxConversationsPerMonth) features.push(`${plan.maxConversationsPerMonth.toLocaleString()} conversations/mo`);
+            else features.push('Unlimited conversations');
+            if (plan.maxMessagesPerMonth) features.push(`${plan.maxMessagesPerMonth.toLocaleString()} messages/mo`);
+            else features.push('Unlimited messages');
+            if (plan.maxFileSizeMb) features.push(`${plan.maxFileSizeMb}MB file uploads`);
+            if (plan.maxStorageMb) features.push(`${plan.maxStorageMb}MB storage`);
+            if (plan.description) features.push(plan.description);
+
+            const trialDays = plan.trialDays || 0;
+
+            let priceHtml = '';
+            if (isAnnual && hasAnnualPrice && !isFree) {
+                priceHtml = `
+                    <div class="price">
+                        <span class="price-original">$${Math.round(plan.monthlyPrice)}</span>
+                        $${annualMonthly % 1 === 0 ? Math.round(annualMonthly) : annualMonthly.toFixed(2)}<span>/month</span>
+                    </div>
+                    <div class="price-annual-note">Billed $${Math.round(plan.annualPrice)}/year</div>
+                    ${discountPercent > 0 ? `<div class="plan-discount-badge">Save ${discountPercent}%</div>` : ''}
+                `;
+            } else {
+                priceHtml = `
+                    <div class="price">$${Math.round(plan.monthlyPrice)}<span>/month</span></div>
+                    ${isFree && trialDays > 0 ? `<div style="margin-top: 8px; font-size: 14px; color: #0ea5e9; font-weight: 600;">${trialDays}-day free trial</div>` : ''}
+                `;
+            }
+
+            return `
+                <div class="pricing-card ${isPopular ? 'featured' : ''}">
+                    ${isPopular ? '<div class="pricing-badge">Most Popular</div>' : ''}
+                    <div class="pricing-header">
+                        <h3>${plan.name}</h3>
+                        ${priceHtml}
+                    </div>
+                    <ul class="pricing-features">
+                        ${features.slice(0, 6).map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    <a href="/register" class="${isPopular ? 'btn-primary' : 'btn-secondary'}">${isFree ? (trialDays > 0 ? `Start ${trialDays}-Day Free Trial` : 'Get Started Free') : 'Get Started'}</a>
+                </div>
+            `;
+        }).join('');
+    }
+
     // Fetch and render pricing plans from API
     async function loadPricingPlans() {
         const container = document.getElementById('pricingGrid');
@@ -1590,40 +1773,21 @@
                 return;
             }
 
-            const plans = result.data;
-            const popularPlanNames = ['pro', 'professional', 'business'];
+            cachedPlans = result.data;
 
-            container.innerHTML = plans.map(plan => {
-                const isPopular = popularPlanNames.includes(plan.name.toLowerCase());
-                const isFree = plan.monthlyPrice === 0;
+            // Update the save badge with actual max discount from plans
+            const maxDiscount = Math.max(...cachedPlans
+                .filter(p => p.annualPrice && p.annualPrice > 0 && p.monthlyPrice > 0)
+                .map(p => Math.round((1 - (p.annualPrice / (p.monthlyPrice * 12))) * 100))
+            );
+            const saveBadge = document.querySelector('.billing-save-badge');
+            if (saveBadge && maxDiscount > 0 && isFinite(maxDiscount)) {
+                saveBadge.textContent = `Save ${maxDiscount}%`;
+            } else if (saveBadge) {
+                saveBadge.style.display = 'none';
+            }
 
-                const features = [];
-                if (plan.maxAgents) features.push(`${plan.maxAgents} agent${plan.maxAgents > 1 ? 's' : ''}`);
-                if (plan.maxConversationsPerMonth) features.push(`${plan.maxConversationsPerMonth.toLocaleString()} conversations/mo`);
-                else features.push('Unlimited conversations');
-                if (plan.maxMessagesPerMonth) features.push(`${plan.maxMessagesPerMonth.toLocaleString()} messages/mo`);
-                else features.push('Unlimited messages');
-                if (plan.maxFileSizeMb) features.push(`${plan.maxFileSizeMb}MB file uploads`);
-                if (plan.maxStorageMb) features.push(`${plan.maxStorageMb}MB storage`);
-                if (plan.description) features.push(plan.description);
-
-                const trialDays = plan.trialDays || 0;
-
-                return `
-                    <div class="pricing-card ${isPopular ? 'featured' : ''}">
-                        ${isPopular ? '<div class="pricing-badge">Most Popular</div>' : ''}
-                        <div class="pricing-header">
-                            <h3>${plan.name}</h3>
-                            <div class="price">$${Math.round(plan.monthlyPrice)}<span>/month</span></div>
-                            ${isFree && trialDays > 0 ? `<div style="margin-top: 8px; font-size: 14px; color: #0ea5e9; font-weight: 600;">${trialDays}-day free trial</div>` : ''}
-                        </div>
-                        <ul class="pricing-features">
-                            ${features.slice(0, 6).map(f => `<li>${f}</li>`).join('')}
-                        </ul>
-                        <a href="/register" class="${isPopular ? 'btn-primary' : 'btn-secondary'}">${isFree ? (trialDays > 0 ? `Start ${trialDays}-Day Free Trial` : 'Get Started Free') : 'Get Started'}</a>
-                    </div>
-                `;
-            }).join('');
+            renderPricingPlans(cachedPlans);
 
         } catch (error) {
             console.error('Failed to load pricing plans:', error);
