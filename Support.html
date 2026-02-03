@@ -1490,7 +1490,7 @@ async function loadHistoricalConversations() {
 
     for (const conv of conversations) {
       const vid = conv.visitorId;
-      console.log("Adding conversation:", conv.visitorName, "vid:", vid);
+      console.log("Adding conversation:", conv.visitorName, "vid:", vid, "rating:", conv.rating);
       // Build analysis summary from API fields
       const analysisSummary = (conv.sentiment || conv.intent || conv.urgencyScore != null) ? {
         sentiment: conv.sentiment,
@@ -1801,6 +1801,7 @@ function selectUser(vid) {
   const csatBadge = document.getElementById('csatBadge');
   const csatStars = document.getElementById('csatStars');
   const csatValue = document.getElementById('csatValue');
+  console.log("selectUser csatRating for", vid, ":", user.csatRating);
 
   if (user.csatRating) {
     let starsHtml = '';
