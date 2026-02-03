@@ -206,96 +206,6 @@
     <button class="bulk-cancel-btn" onclick="cancelBulkSelect()">Cancel</button>
   </div>
 
-  <!-- Filter Panel -->
-  <div class="filter-panel" id="filterPanel" style="display:none;">
-    <div class="filter-group">
-      <div class="filter-label">Status</div>
-      <div class="filter-chips">
-        <button class="filter-chip" data-filter="status" data-value="active" onclick="toggleFilterChip(this)">Active</button>
-        <button class="filter-chip" data-filter="status" data-value="closed" onclick="toggleFilterChip(this)">Closed</button>
-        <button class="filter-chip" data-filter="status" data-value="pending" onclick="toggleFilterChip(this)">Pending</button>
-      </div>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Priority</div>
-      <div class="filter-chips">
-        <button class="filter-chip" data-filter="priority" data-value="normal" onclick="toggleFilterChip(this)">Normal</button>
-        <button class="filter-chip" data-filter="priority" data-value="high" onclick="toggleFilterChip(this)">High</button>
-        <button class="filter-chip" data-filter="priority" data-value="urgent" onclick="toggleFilterChip(this)">Urgent</button>
-      </div>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Resolution</div>
-      <div class="filter-chips">
-        <button class="filter-chip" data-filter="resolutionStatus" data-value="resolved" onclick="toggleFilterChip(this)">Resolved</button>
-        <button class="filter-chip" data-filter="resolutionStatus" data-value="unresolved" onclick="toggleFilterChip(this)">Unresolved</button>
-        <button class="filter-chip" data-filter="resolutionStatus" data-value="spam" onclick="toggleFilterChip(this)">Spam</button>
-      </div>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Date Range</div>
-      <div class="filter-date-range">
-        <input type="date" class="filter-input" id="filterDateFrom" placeholder="From" />
-        <input type="date" class="filter-input" id="filterDateTo" placeholder="To" />
-      </div>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Assigned Agent</div>
-      <select class="filter-select" id="filterAgent">
-        <option value="">All Agents</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Tags</div>
-      <input type="text" class="filter-input" id="filterTags" placeholder="Comma-separated tags" />
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">CSAT Rating</div>
-      <div class="filter-date-range">
-        <select class="filter-select" id="filterRatingMin">
-          <option value="">Min</option>
-          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
-        </select>
-        <select class="filter-select" id="filterRatingMax">
-          <option value="">Max</option>
-          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
-        </select>
-      </div>
-    </div>
-    <div class="filter-section-divider">AI Filters</div>
-    <div class="filter-group">
-      <div class="filter-label">Sentiment</div>
-      <div class="filter-chips">
-        <button class="filter-chip" data-filter="sentiment" data-value="positive" onclick="toggleFilterChip(this)">Positive</button>
-        <button class="filter-chip" data-filter="sentiment" data-value="neutral" onclick="toggleFilterChip(this)">Neutral</button>
-        <button class="filter-chip" data-filter="sentiment" data-value="negative" onclick="toggleFilterChip(this)">Negative</button>
-      </div>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Intent</div>
-      <select class="filter-select" id="filterIntent">
-        <option value="">All Intents</option>
-        <option value="purchase">Purchase</option>
-        <option value="support">Support</option>
-        <option value="complaint">Complaint</option>
-        <option value="billing">Billing</option>
-        <option value="technical">Technical</option>
-        <option value="general">General</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <div class="filter-label">Urgency</div>
-      <div class="filter-chips">
-        <button class="filter-chip" data-filter="urgency" data-value="low" onclick="toggleFilterChip(this)">Low</button>
-        <button class="filter-chip" data-filter="urgency" data-value="medium" onclick="toggleFilterChip(this)">Medium</button>
-        <button class="filter-chip" data-filter="urgency" data-value="high" onclick="toggleFilterChip(this)">High</button>
-      </div>
-    </div>
-    <div class="filter-panel-footer">
-      <button class="filter-clear-btn" onclick="clearAllFilters()">Clear All</button>
-      <button class="filter-apply-btn" onclick="applyFilters()">Apply Filters</button>
-    </div>
-  </div>
 
   <div class="users-list" id="usersList">
     <div class="no-users">
@@ -858,6 +768,161 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Filter Drawer (Slide-out from Right) -->
+<div class="filter-drawer-overlay" id="filterDrawerOverlay" onclick="closeFilterDrawer()"></div>
+<div class="filter-drawer" id="filterDrawer">
+  <div class="filter-drawer-header">
+    <h3>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      Filter Conversations
+    </h3>
+    <button class="filter-drawer-close" onclick="closeFilterDrawer()">&times;</button>
+  </div>
+  <div class="filter-drawer-body">
+    <div class="filter-section">
+      <div class="filter-section-title">Basic Filters</div>
+      <div class="filter-group">
+        <div class="filter-label">Status</div>
+        <div class="filter-chips">
+          <button class="filter-chip" data-filter="status" data-value="active" onclick="toggleFilterChip(this)">Active</button>
+          <button class="filter-chip" data-filter="status" data-value="closed" onclick="toggleFilterChip(this)">Closed</button>
+          <button class="filter-chip" data-filter="status" data-value="pending" onclick="toggleFilterChip(this)">Pending</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Priority</div>
+        <div class="filter-chips">
+          <button class="filter-chip" data-filter="priority" data-value="normal" onclick="toggleFilterChip(this)">Normal</button>
+          <button class="filter-chip" data-filter="priority" data-value="high" onclick="toggleFilterChip(this)">High</button>
+          <button class="filter-chip" data-filter="priority" data-value="urgent" onclick="toggleFilterChip(this)">Urgent</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Resolution</div>
+        <div class="filter-chips">
+          <button class="filter-chip" data-filter="resolutionStatus" data-value="resolved" onclick="toggleFilterChip(this)">Resolved</button>
+          <button class="filter-chip" data-filter="resolutionStatus" data-value="unresolved" onclick="toggleFilterChip(this)">Unresolved</button>
+          <button class="filter-chip" data-filter="resolutionStatus" data-value="spam" onclick="toggleFilterChip(this)">Spam</button>
+        </div>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-section-title">Date & Assignment</div>
+      <div class="filter-group">
+        <div class="filter-label">Date Range</div>
+        <div class="filter-row">
+          <div class="filter-field">
+            <span class="filter-field-label">From</span>
+            <input type="date" class="filter-input" id="filterDateFrom" />
+          </div>
+          <div class="filter-field">
+            <span class="filter-field-label">To</span>
+            <input type="date" class="filter-input" id="filterDateTo" />
+          </div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Assigned Agent</div>
+        <select class="filter-select" id="filterAgent">
+          <option value="">All Agents</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Tags</div>
+        <input type="text" class="filter-input" id="filterTags" placeholder="Enter comma-separated tags..." />
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">CSAT Rating</div>
+        <div class="filter-row">
+          <div class="filter-field">
+            <span class="filter-field-label">Min</span>
+            <select class="filter-select" id="filterRatingMin">
+              <option value="">Any</option>
+              <option value="1">1 Star</option>
+              <option value="2">2 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="5">5 Stars</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <span class="filter-field-label">Max</span>
+            <select class="filter-select" id="filterRatingMax">
+              <option value="">Any</option>
+              <option value="1">1 Star</option>
+              <option value="2">2 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="5">5 Stars</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-section filter-section-ai">
+      <div class="filter-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        AI-Powered Filters
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Sentiment</div>
+        <div class="filter-chips">
+          <button class="filter-chip filter-chip-positive" data-filter="sentiment" data-value="positive" onclick="toggleFilterChip(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Positive
+          </button>
+          <button class="filter-chip filter-chip-neutral" data-filter="sentiment" data-value="neutral" onclick="toggleFilterChip(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Neutral
+          </button>
+          <button class="filter-chip filter-chip-negative" data-filter="sentiment" data-value="negative" onclick="toggleFilterChip(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Negative
+          </button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Customer Intent</div>
+        <select class="filter-select" id="filterIntent">
+          <option value="">All Intents</option>
+          <option value="purchase">Purchase Intent</option>
+          <option value="support">Support Request</option>
+          <option value="complaint">Complaint</option>
+          <option value="billing">Billing Inquiry</option>
+          <option value="technical">Technical Issue</option>
+          <option value="general">General Question</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Urgency Level</div>
+        <div class="filter-chips">
+          <button class="filter-chip filter-chip-urgency-low" data-filter="urgency" data-value="low" onclick="toggleFilterChip(this)">Low</button>
+          <button class="filter-chip filter-chip-urgency-medium" data-filter="urgency" data-value="medium" onclick="toggleFilterChip(this)">Medium</button>
+          <button class="filter-chip filter-chip-urgency-high" data-filter="urgency" data-value="high" onclick="toggleFilterChip(this)">High</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="filter-drawer-footer">
+    <button class="filter-clear-btn" onclick="clearAllFilters()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+      Clear All
+    </button>
+    <button class="filter-apply-btn" onclick="applyFilters()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      Apply Filters
+    </button>
   </div>
 </div>
 
@@ -1546,6 +1611,22 @@ function renderUsers(filterVids) {
 
       const isSelected = selectedConversations.has(vid);
 
+      // Get conversation status and priority
+      const convStatus = user.status || 'active';
+      const convPriority = user.priority || 'normal';
+
+      // Build status badge
+      let statusBadge = '';
+      if (convStatus === 'closed') {
+        statusBadge = '<span class="conversation-status-badge status-closed">Closed</span>';
+      } else if (convStatus === 'pending') {
+        statusBadge = '<span class="conversation-status-badge status-pending">Pending</span>';
+      } else if (convPriority === 'urgent') {
+        statusBadge = '<span class="conversation-status-badge priority-urgent">Urgent</span>';
+      } else if (convPriority === 'high') {
+        statusBadge = '<span class="conversation-status-badge priority-high">High</span>';
+      }
+
       return `
         <div class="user-item ${vid === currentVisitor ? 'active' : ''} ${isSelected ? 'selected' : ''}" onclick="${bulkSelectMode ? `toggleConversationSelection('${vid}')` : `selectUser('${vid}')`}">
           ${bulkSelectMode ? `
@@ -1558,7 +1639,10 @@ function renderUsers(filterVids) {
             ${user.isOnline ? '<span class="status-dot"></span>' : '<span class="status-dot" style="background:#94a3b8;"></span>'}
           </div>
           <div class="user-info">
-            <div class="user-name">${escapeHtml(user.name)}</div>
+            <div class="user-name-row">
+              <span class="user-name">${escapeHtml(user.name)}</span>
+              ${statusBadge}
+            </div>
             <div class="user-preview ${user.typing ? 'typing' : ''}">${escapeHtml(preview)}</div>
           </div>
           <div class="user-meta">
@@ -4507,8 +4591,15 @@ let activeFilters = {};
 let filterActive = false;
 
 function toggleFilterPanel() {
-  const panel = document.getElementById('filterPanel');
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  openFilterDrawer();
+}
+
+function openFilterDrawer() {
+  const drawer = document.getElementById('filterDrawer');
+  const overlay = document.getElementById('filterDrawerOverlay');
+  drawer.classList.add('open');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
   // Populate agent dropdown
   const agentSelect = document.getElementById('filterAgent');
   if (agentSelect && agentSelect.options.length <= 1 && siteAgents.length > 0) {
@@ -4519,6 +4610,14 @@ function toggleFilterPanel() {
       agentSelect.appendChild(opt);
     });
   }
+}
+
+function closeFilterDrawer() {
+  const drawer = document.getElementById('filterDrawer');
+  const overlay = document.getElementById('filterDrawerOverlay');
+  drawer.classList.remove('open');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function toggleFilterChip(el) {
@@ -4892,6 +4991,8 @@ window.closeSupervisorModal = closeSupervisorModal;
 window.loadSupervisorData = loadSupervisorData;
 window.viewConversationAsSupervisor = viewConversationAsSupervisor;
 window.toggleFilterPanel = toggleFilterPanel;
+window.openFilterDrawer = openFilterDrawer;
+window.closeFilterDrawer = closeFilterDrawer;
 window.toggleFilterChip = toggleFilterChip;
 window.clearAllFilters = clearAllFilters;
 window.applyFilters = applyFilters;
