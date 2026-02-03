@@ -2400,10 +2400,39 @@ async def websocket_endpoint(ws: WebSocket):
 
                 print(f"CSAT received from {visitor_id}: {rating}/5")
 
+                # Save rating to database via API
+                visitor_data = VISITOR_DATA.get(visitor_id, {})
+                conversation_id = visitor_data.get("conversation_id")
+
+                if conversation_id:
+                    # Get agent token for API call
+                    agent_token = None
+                    for aid, adata in site.get("agents", {}).items():
+                        agent_token = adata.get("token")
+                        if agent_token:
+                            break
+
+                    if agent_token:
+                        try:
+                            async with httpx.AsyncClient(verify=False) as client:
+                                response = await client.post(
+                                    f"{API_BASE_URL}/conversations/{conversation_id}/csat",
+                                    json={"rating": rating, "feedback": feedback},
+                                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {agent_token}"},
+                                    timeout=10.0
+                                )
+                                if response.status_code == 200:
+                                    print(f"CSAT rating saved for conversation {conversation_id}")
+                                else:
+                                    print(f"Failed to save CSAT rating: {response.status_code} - {response.text}")
+                        except Exception as e:
+                            print(f"Error saving CSAT rating: {e}")
+
                 # Notify all agents of the rating
                 await broadcast_to_agents(site, {
                     "type": "csat_received",
                     "visitorId": visitor_id,
+                    "conversationId": conversation_id,
                     "rating": rating,
                     "feedback": feedback
                 })
