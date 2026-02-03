@@ -2370,7 +2370,8 @@ async def websocket_endpoint(ws: WebSocket):
                         agent_username = auth.get("username", "Support")
                         await site["customers"][target_visitor].send_json({
                             "type": "csat_request",
-                            "agentName": agent_username
+                            "agentName": agent_username,
+                            "conversationId": conversation_id
                         })
                     except Exception as e:
                         print(f"Failed to send CSAT request: {e}")
@@ -2397,12 +2398,13 @@ async def websocket_endpoint(ws: WebSocket):
             elif data.get("type") == "csat_response" and role == CUSTOMER:
                 rating = data.get("rating", 0)
                 feedback = data.get("feedback", "")
+                # Get conversationId from message (preferred) or from VISITOR_DATA
+                conversation_id = data.get("conversationId")
+                if not conversation_id:
+                    visitor_data = VISITOR_DATA.get(visitor_id, {})
+                    conversation_id = visitor_data.get("conversation_id")
 
-                print(f"CSAT received from {visitor_id}: {rating}/5")
-
-                # Save rating to database via API
-                visitor_data = VISITOR_DATA.get(visitor_id, {})
-                conversation_id = visitor_data.get("conversation_id")
+                print(f"CSAT received from {visitor_id}: {rating}/5, conversationId: {conversation_id}")
 
                 if conversation_id:
                     # Get agent token for API call

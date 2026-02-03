@@ -1246,7 +1246,7 @@ function connectWebSocket() {
 
     // Handle CSAT request
     if (data.type === "csat_request") {
-      showCsatPopup(data.agentName);
+      showCsatPopup(data.agentName, data.conversationId);
     }
 
     // Handle conversation closed
@@ -1305,8 +1305,10 @@ function updateAgentStatus(status, agentName) {
 
 // ==================== CSAT (Customer Satisfaction) ====================
 let selectedCsatRating = 0;
+let csatConversationId = null;
 
-function showCsatPopup(agentName) {
+function showCsatPopup(agentName, conversationId) {
+  csatConversationId = conversationId;
   // Create CSAT popup overlay
   const overlay = document.createElement('div');
   overlay.id = 'csatOverlay';
@@ -1360,7 +1362,8 @@ function submitCsatRating() {
     socket.send(JSON.stringify({
       type: 'csat_response',
       rating: selectedCsatRating,
-      feedback: feedback
+      feedback: feedback,
+      conversationId: csatConversationId
     }));
   }
 
