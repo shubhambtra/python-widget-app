@@ -3177,6 +3177,207 @@ body {
   color: var(--text-primary);
 }
 
+/* ==================== CONVERSATION ACTIONS MENU ==================== */
+.conv-actions-wrapper {
+  position: relative;
+}
+
+.btn-more-actions {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.btn-more-actions:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.conv-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 280px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+}
+.conv-actions-menu.open {
+  display: block;
+  animation: fadeIn 0.15s ease;
+}
+
+.conv-actions-section {
+  padding: 12px 16px;
+}
+
+.conv-actions-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.conv-actions-chips {
+  display: flex;
+  gap: 8px;
+}
+
+.priority-chip {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.priority-chip:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+.priority-chip.active[data-priority="normal"] {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  border-color: #16a34a;
+}
+.priority-chip.active[data-priority="high"] {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+  border-color: #d97706;
+}
+.priority-chip.active[data-priority="urgent"] {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.conv-actions-divider {
+  height: 1px;
+  background: var(--border-color);
+}
+
+.conv-tags-input-wrapper {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.conv-tags-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+}
+.conv-tags-input:focus {
+  border-color: var(--accent-color);
+}
+
+.conv-tags-add-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.conv-tags-add-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+.conv-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.conv-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.conv-tag-remove {
+  width: 14px;
+  height: 14px;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+}
+.conv-tag-remove:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.conv-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.conv-action-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+.conv-action-btn svg {
+  flex-shrink: 0;
+}
+.conv-action-btn-danger {
+  color: #dc2626;
+}
+.conv-action-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
 .message-search-bar {
   display: flex;
   align-items: center;
