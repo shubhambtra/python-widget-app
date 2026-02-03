@@ -2418,7 +2418,7 @@ async def websocket_endpoint(ws: WebSocket):
                         try:
                             async with httpx.AsyncClient(verify=False) as client:
                                 response = await client.post(
-                                    f"{API_BASE_URL}/conversations/{conversation_id}/csat",
+                                    f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}/csat",
                                     json={"rating": rating, "feedback": feedback},
                                     headers={"Content-Type": "application/json", "Authorization": f"Bearer {agent_token}"},
                                     timeout=10.0

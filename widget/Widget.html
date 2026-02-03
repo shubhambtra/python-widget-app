@@ -1394,8 +1394,8 @@ function showConversationClosed(message) {
       <span>${message || 'This conversation has been closed.'}</span>
     </div>
   `;
-  messagesContainer.appendChild(wrapper);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  messagesArea.appendChild(wrapper);
+  messagesArea.scrollTop = messagesArea.scrollHeight;
 
   // Disable input
   const inputArea = document.querySelector('.input-area');
