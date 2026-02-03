@@ -1515,7 +1515,7 @@ async function loadHistoricalConversations() {
           priority: conv.priority,
           assignedUserId: conv.assignedUserId,
           tags: conv.tags,
-          rating: conv.rating,
+          csatRating: conv.rating,
           resolutionStatus: conv.resolutionStatus
         };
       } else {
@@ -1538,7 +1538,7 @@ async function loadHistoricalConversations() {
         users[vid].priority = conv.priority;
         users[vid].assignedUserId = conv.assignedUserId;
         users[vid].tags = conv.tags;
-        users[vid].rating = conv.rating;
+        users[vid].csatRating = conv.rating;
         users[vid].resolutionStatus = conv.resolutionStatus;
 
         // If this is the currently selected user and messages weren't loaded yet, load them now
