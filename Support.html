@@ -1571,19 +1571,25 @@ const emojiPicker = document.getElementById("emojiPicker");
 function renderUsers(filterVids) {
   // Update conversation count
   const totalCount = Object.keys(users).length;
+  const isFiltering = filterVids !== undefined && filterVids !== null;
   const entries = Object.entries(users)
-    .filter(([vid]) => !filterVids || filterVids.has(vid))
+    .filter(([vid]) => !isFiltering || filterVids.has(vid))
     .sort((a, b) => b[1].lastActivity - a[1].lastActivity);
   const displayCount = entries.length;
-  document.getElementById("conversationCount").textContent = filterVids ? `${displayCount} / ${totalCount}` : totalCount;
+  document.getElementById("conversationCount").textContent = isFiltering ? `${displayCount} / ${totalCount}` : totalCount;
 
   if (displayCount === 0) {
+    const isFilterEmpty = isFiltering && filterVids.size === 0;
     usersList.innerHTML = `
-      <div class="no-users">
+      <div class="no-users ${isFiltering ? 'filtered' : ''}">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+          ${isFiltering ?
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />'
+          }
         </svg>
-        <p>${filterVids ? 'No conversations match filters' : 'No active conversations'}</p>
+        <p>${isFiltering ? 'No conversations match your filters' : 'No active conversations'}</p>
+        ${isFiltering ? '<button class="clear-filter-btn" onclick="clearAllFilters(); renderUsers();">Clear Filters</button>' : ''}
       </div>
     `;
     return;
@@ -3776,6 +3782,7 @@ async function confirmCloseConversation() {
     user.isClosed = true;
     user.closedAt = new Date();
     user.closedStatus = status;
+    user.status = 'closed'; // Update status for badge display and filtering
 
     showToast('Conversation closed successfully', 'success');
     closeCloseConversationModal();
@@ -4688,11 +4695,13 @@ function applyFilters() {
     filterActive = false;
   }
 
+  closeFilterDrawer();
   loadFilteredConversations();
 }
 
 async function loadFilteredConversations() {
   if (!filterActive || Object.keys(activeFilters).length === 0) {
+    console.log('[Filter] No active filters, showing all');
     renderUsers();
     return;
   }
@@ -4719,18 +4728,28 @@ async function loadFilteredConversations() {
 
   try {
     const url = `${API_BASE}/sites/${siteId}/conversations?${params.toString()}`;
+    console.log('[Filter] Fetching:', url);
+    console.log('[Filter] Active filters:', activeFilters);
     const response = await fetch(url, {
       headers: { "Authorization": `Bearer ${token}` }
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+      console.error('[Filter] API error:', response.status);
+      return;
+    }
     const result = await response.json();
-    if (!result.success) return;
+    console.log('[Filter] API result:', result);
+    if (!result.success) {
+      console.error('[Filter] API returned success=false');
+      return;
+    }
 
     const items = result.data.items || [];
     const filterVids = new Set(items.map(c => c.visitorId));
+    console.log('[Filter] Matching visitorIds:', filterVids.size, [...filterVids]);
     renderUsers(filterVids);
   } catch (err) {
-    console.error("Filter fetch error:", err);
+    console.error("[Filter] Fetch error:", err);
   }
 }
 

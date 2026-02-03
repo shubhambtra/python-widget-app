@@ -907,11 +907,41 @@ body {
   color: #94a3b8;
 }
 
+.no-users.filtered {
+  color: var(--text-secondary);
+}
+.no-users.filtered svg {
+  color: var(--accent-color);
+  opacity: 0.7;
+}
+
 .no-users svg {
   width: 48px;
   height: 48px;
   margin-bottom: 12px;
   opacity: 0.5;
+}
+
+.no-users p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.clear-filter-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.clear-filter-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
 }
 
 /* ==================== MAIN CONTENT ==================== */

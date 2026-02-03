@@ -2271,11 +2271,30 @@ async def websocket_endpoint(ws: WebSocket):
             # ----- CLOSE CONVERSATION -----
             elif data.get("type") == "close_conversation" and role == SUPPORT:
                 target_visitor = data.get("visitorId")
+                conversation_id = data.get("conversationId")
                 send_csat = data.get("sendCsat", True)
                 close_status = data.get("status", "resolved")
                 close_note = data.get("note", "")
 
                 print(f"Closing conversation for visitor: {target_visitor}, status: {close_status}")
+
+                # Update conversation status in database via API
+                if conversation_id:
+                    agent_token = auth.get("token", "")
+                    try:
+                        async with httpx.AsyncClient() as client:
+                            response = await client.post(
+                                f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}/close",
+                                json={"resolutionStatus": close_status, "note": close_note},
+                                headers={"Authorization": f"Bearer {agent_token}"},
+                                timeout=10.0
+                            )
+                            if response.status_code == 200:
+                                print(f"Conversation {conversation_id} closed in database with status: {close_status}")
+                            else:
+                                print(f"Failed to close conversation in database: {response.status_code} - {response.text}")
+                    except Exception as e:
+                        print(f"Error updating conversation status: {e}")
 
                 # Send CSAT request to customer if enabled and customer is connected
                 if send_csat and target_visitor in site["customers"]:
