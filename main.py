@@ -1593,6 +1593,60 @@ async def close_conversation_via_api(site_id: str, conversation_id: str, token: 
         return False
 
 
+async def add_intent_tag(site_id: str, conversation_id: str, intent: str, site: dict):
+    """Add customer intent as a tag to the conversation and broadcast to agents"""
+    if not intent:
+        return
+
+    # Get a token from any connected agent
+    agent_token = None
+    for aid, adata in site.get("agents", {}).items():
+        agent_token = adata.get("token")
+        if agent_token:
+            break
+
+    if not agent_token:
+        print(f"No agent token available for adding intent tag")
+        return
+
+    try:
+        async with httpx.AsyncClient(verify=False) as client:
+            # Get current tags
+            get_resp = await client.get(
+                f"{API_BASE_URL}/conversations/{conversation_id}",
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {agent_token}"},
+                timeout=10.0
+            )
+            existing_tags = []
+            if get_resp.status_code == 200:
+                conv_data = get_resp.json()
+                if conv_data.get("success") and conv_data.get("data"):
+                    existing_tags = conv_data["data"].get("tags") or []
+
+            # Add intent as tag (no prefix)
+            if intent not in existing_tags:
+                new_tags = existing_tags + [intent]
+                # Update conversation with new tags
+                update_resp = await client.put(
+                    f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}",
+                    json={"tags": new_tags},
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {agent_token}"},
+                    timeout=10.0
+                )
+                if update_resp.status_code == 200:
+                    print(f"Added intent tag '{intent}' to conversation {conversation_id}")
+                    # Broadcast tag update to all agents for real-time UI update
+                    await broadcast_to_agents(site, {
+                        "type": "conversation_updated",
+                        "conversationId": conversation_id,
+                        "tags": new_tags
+                    })
+                else:
+                    print(f"Failed to add intent tag: {update_resp.status_code}")
+    except Exception as e:
+        print(f"Error adding intent tag: {e}")
+
+
 def evaluate_conditions(conditions: list, context: dict) -> bool:
     """Evaluate all conditions (AND logic). Returns True if all conditions match."""
     if not conditions:
@@ -1996,6 +2050,8 @@ async def websocket_endpoint(ws: WebSocket):
             elif data.get("type") == "init" and role == CUSTOMER:
                 name = data.get("name", visitor_id)
                 email = data.get("email")
+                intent = data.get("intent", "")
+                print(f"[DEBUG] Init received - name: {name}, intent: {intent}")
                 site["names"][visitor_id] = name
 
                 # Initialize chat session with API (creates visitor & conversation)
@@ -2003,18 +2059,30 @@ async def websocket_endpoint(ws: WebSocket):
                 conversation_id = None
                 if chat_data:
                     conversation_id = chat_data.get("conversationId")
+                    print(f"[DEBUG] Conversation created: {conversation_id}")
                     VISITOR_DATA[visitor_id] = {
                         "internal_visitor_id": chat_data.get("visitorId"),
                         "conversation_id": conversation_id
                     }
 
-                # Notify all agents about user joined
+                    # Add intent as tag if provided
+                    if intent and conversation_id:
+                        print(f"[DEBUG] Adding intent tag: {intent} to conversation: {conversation_id}")
+                        await add_intent_tag(site_id, conversation_id, intent, site)
+                    else:
+                        print(f"[DEBUG] Skipping intent tag - intent: '{intent}', conversation_id: {conversation_id}")
+                else:
+                    print(f"[DEBUG] chat_data is None or empty")
+
+                # Notify all agents about user joined (include intent as tag)
                 await broadcast_to_agents(site, {
                     "type": "user_joined",
                     "visitorId": visitor_id,
                     "name": name,
                     "email": email,
-                    "conversationId": conversation_id
+                    "conversationId": conversation_id,
+                    "intent": intent,
+                    "tags": [intent] if intent else []
                 })
 
                 # Send welcome message to customer
@@ -2025,7 +2093,8 @@ async def websocket_endpoint(ws: WebSocket):
                     "visitor_id": visitor_id,
                     "visitor_name": name,
                     "visitor_email": email or "",
-                    "conversation_id": conversation_id
+                    "conversation_id": conversation_id,
+                    "intent": intent
                 })
 
             # ----- TYPING INDICATORS -----

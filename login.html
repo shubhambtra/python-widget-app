@@ -660,27 +660,8 @@ async function login(e) {
       }
     }
 
-    // If .NET login didn't work, try with username via .NET API first
-    if (!loginSuccess) {
-      try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ Username: identifier, Password: password })
-        });
-
-        if (res.ok) {
-          const result = await res.json();
-          if (result.success) {
-            loginSuccess = true;
-            authToken = result.data.accessToken;
-            userData = result.data.user;
-          }
-        }
-      } catch (err) {
-        console.log('.NET API username login failed, trying support login...');
-      }
-    }
+    // Note: /auth/login no longer accepts Username field, only Email
+    // Username-based logins should go directly to /support/login
 
     // If still not logged in, try support login endpoint
     if (!loginSuccess) {
