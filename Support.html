@@ -255,35 +255,18 @@
         <h3 id="chatHeaderName">John Doe</h3>
         <p id="chatHeaderStatus">Online</p>
       </div>
+      <!-- Tags displayed in header -->
+      <div class="chat-header-tags" id="chatHeaderTags"></div>
       <div class="chat-header-actions">
-        <div class="visitor-email-badge" id="visitorEmailBadge" style="display: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          <span id="visitorEmailText"></span>
+        <div class="csat-badge" id="csatBadge" style="display: none;" title="Customer Satisfaction Rating">
+          <span class="csat-stars" id="csatStars"></span>
+          <span class="csat-value" id="csatValue"></span>
         </div>
         <button class="btn-send-email" id="btnSendEmail" style="display: none;" title="Send Email">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
-          Send Email
         </button>
-        <button class="btn-transfer" id="btnTransfer" onclick="openTransferModal()" title="Transfer Conversation">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
-          Transfer
-        </button>
-        <button class="btn-close-conv" id="btnCloseConv" onclick="openCloseConversationModal()" title="Close Conversation">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Close
-        </button>
-        <div class="csat-badge" id="csatBadge" style="display: none;" title="Customer Satisfaction Rating">
-          <span class="csat-stars" id="csatStars"></span>
-          <span class="csat-value" id="csatValue"></span>
-        </div>
         <button class="btn-search-messages" id="btnSearchMessages" onclick="toggleMessageSearch()" title="Search Messages">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -297,6 +280,22 @@
             </svg>
           </button>
           <div class="conv-actions-menu" id="convActionsMenu">
+            <!-- Transfer & Close actions -->
+            <div class="conv-actions-section">
+              <button class="conv-action-btn" id="btnTransferMenu" onclick="openTransferModal(); toggleConvActionsMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Transfer Conversation
+              </button>
+              <button class="conv-action-btn conv-action-btn-success" id="btnCloseMenu" onclick="openCloseConversationModal(); toggleConvActionsMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Close Conversation
+              </button>
+            </div>
+            <div class="conv-actions-divider"></div>
             <div class="conv-actions-section">
               <div class="conv-actions-label">Priority</div>
               <div class="conv-actions-chips">
@@ -1701,6 +1700,12 @@ function renderUsers(filterVids) {
               ${statusBadge}
             </div>
             <div class="user-preview ${user.typing ? 'typing' : ''}">${escapeHtml(preview)}</div>
+            ${(user.tags && user.tags.length > 0) ? `
+              <div class="user-tags">
+                ${user.tags.slice(0, 3).map(tag => `<span class="user-tag">${escapeHtml(tag)}</span>`).join('')}
+                ${user.tags.length > 3 ? `<span class="user-tag user-tag-more">+${user.tags.length - 3}</span>` : ''}
+              </div>
+            ` : ''}
           </div>
           <div class="user-meta">
             <span class="user-time">${timeStr}</span>
@@ -1728,23 +1733,24 @@ function selectUser(vid) {
   messagesContainer.style.display = "flex";
   chatInputArea.style.display = "block";
 
-  // Update header
-  chatHeaderAvatar.textContent = getInitials(users[vid].name);
-  chatHeaderName.textContent = users[vid].name;
-
-  // Update email badge and Send Email button
+  // Update header - show name with email in brackets if available
   const email = users[vid].email || "";
-  const emailBadge = document.getElementById("visitorEmailBadge");
-  const emailText = document.getElementById("visitorEmailText");
-  const btnSendEmail = document.getElementById("btnSendEmail");
+  chatHeaderAvatar.textContent = getInitials(users[vid].name);
+  chatHeaderName.textContent = email ? `${users[vid].name} (${email})` : users[vid].name;
 
-  if (email) {
-    emailBadge.style.display = "flex";
-    emailText.textContent = email;
-    btnSendEmail.style.display = platformFeatures.emailSending ? "flex" : "none";
+  // Update Send Email button
+  const btnSendEmail = document.getElementById("btnSendEmail");
+  btnSendEmail.style.display = email && platformFeatures.emailSending ? "flex" : "none";
+
+  // Update header tags
+  const headerTags = document.getElementById("chatHeaderTags");
+  const tags = users[vid].tags || [];
+  if (tags.length > 0) {
+    headerTags.innerHTML = tags.map(tag => `<span class="header-tag">${escapeHtml(tag)}</span>`).join('');
+    headerTags.style.display = 'flex';
   } else {
-    emailBadge.style.display = "none";
-    btnSendEmail.style.display = "none";
+    headerTags.innerHTML = '';
+    headerTags.style.display = 'none';
   }
 
   // Update online status
@@ -1754,12 +1760,12 @@ function selectUser(vid) {
   if (user.isClosed) {
     statusEl.innerHTML = `<span class="closed-badge">${user.closedStatus || 'Closed'}</span>`;
     chatInputArea.classList.add('disabled');
-    document.getElementById('btnCloseConv').style.display = 'none';
+    document.getElementById('btnCloseMenu').style.display = 'none';
   } else {
     statusEl.textContent = user.isOnline ? "Online" : "Offline";
     statusEl.style.color = user.isOnline ? "#22c55e" : "#94a3b8";
     chatInputArea.classList.remove('disabled');
-    document.getElementById('btnCloseConv').style.display = platformFeatures.csatRatings ? 'flex' : 'none';
+    document.getElementById('btnCloseMenu').style.display = 'flex';
   }
 
   // Show CSAT rating if available
@@ -1987,6 +1993,8 @@ async function addConversationTag() {
       user.tags = newTags;
       input.value = '';
       updateConvActionsMenu();
+      updateHeaderTags();
+      renderUsers();
       showToast('Tag added', 'success');
     } else {
       showToast('Failed to add tag', 'error');
@@ -2019,10 +2027,25 @@ async function removeConversationTag(tag) {
     if (response.ok) {
       user.tags = newTags;
       updateConvActionsMenu();
+      updateHeaderTags();
+      renderUsers();
       showToast('Tag removed', 'success');
     }
   } catch (error) {
     console.error('Error removing tag:', error);
+  }
+}
+
+function updateHeaderTags() {
+  if (!currentVisitor || !users[currentVisitor]) return;
+  const tags = users[currentVisitor].tags || [];
+  const headerTags = document.getElementById("chatHeaderTags");
+  if (tags.length > 0) {
+    headerTags.innerHTML = tags.map(tag => `<span class="header-tag">${escapeHtml(tag)}</span>`).join('');
+    headerTags.style.display = 'flex';
+  } else {
+    headerTags.innerHTML = '';
+    headerTags.style.display = 'none';
   }
 }
 
@@ -4907,11 +4930,12 @@ function applyFilters() {
   activeFilters = {};
   let filterCount = 0;
 
-  // Chip filters (single-select per group)
+  // Chip filters (multi-select per group - comma-separated values)
   ['status', 'priority', 'resolutionStatus', 'sentiment', 'urgency'].forEach(group => {
-    const activeChip = document.querySelector(`.filter-chip[data-filter="${group}"].active`);
-    if (activeChip) {
-      activeFilters[group] = activeChip.dataset.value;
+    const activeChips = document.querySelectorAll(`.filter-chip[data-filter="${group}"].active`);
+    if (activeChips.length > 0) {
+      const values = Array.from(activeChips).map(c => c.dataset.value);
+      activeFilters[group] = values.join(',');
       filterCount++;
     }
   });
