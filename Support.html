@@ -1615,6 +1615,11 @@ const emojiPicker = document.getElementById("emojiPicker");
 
 // ==================== RENDER FUNCTIONS ====================
 function renderUsers(filterVids) {
+  // If no filterVids passed but filter is active, use stored filter results
+  if (filterVids === undefined && filterActive && currentFilterVids) {
+    filterVids = currentFilterVids;
+  }
+
   // Update conversation count
   const totalCount = Object.keys(users).length;
   const isFiltering = filterVids !== undefined && filterVids !== null;
@@ -4845,6 +4850,7 @@ if (document.readyState === 'loading') {
 
 let activeFilters = {};
 let filterActive = false;
+let currentFilterVids = null; // Stores current filter results so renderUsers can use them
 
 function toggleFilterPanel() {
   openFilterDrawer();
@@ -4891,6 +4897,7 @@ function clearAllFilters() {
   document.getElementById('filterIntent').value = '';
   activeFilters = {};
   filterActive = false;
+  currentFilterVids = null; // Clear stored filter results
   const badge = document.getElementById('filterBadge');
   badge.style.display = 'none';
   renderUsers();
@@ -4995,6 +5002,7 @@ async function loadFilteredConversations() {
 
     const items = result.data.items || [];
     const filterVids = new Set(items.map(c => c.visitorId));
+    currentFilterVids = filterVids; // Store for subsequent renderUsers calls
     console.log('[Filter] Matching visitorIds:', filterVids.size, [...filterVids]);
     renderUsers(filterVids);
   } catch (err) {

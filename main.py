@@ -2279,14 +2279,13 @@ async def websocket_endpoint(ws: WebSocket):
                 print(f"Closing conversation for visitor: {target_visitor}, status: {close_status}")
 
                 # Update conversation status in database via API
-                if conversation_id:
-                    agent_token = auth.get("token", "")
+                if conversation_id and token:
                     try:
                         async with httpx.AsyncClient() as client:
                             response = await client.post(
                                 f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}/close",
                                 json={"resolutionStatus": close_status, "note": close_note},
-                                headers={"Authorization": f"Bearer {agent_token}"},
+                                headers={"Authorization": f"Bearer {token}"},
                                 timeout=10.0
                             )
                             if response.status_code == 200:
