@@ -1551,6 +1551,24 @@ async function loadHistoricalConversations() {
     console.log("Users after loading:", Object.keys(users).length);
     renderUsers();
 
+    // Update CSAT badge if a user is currently selected (data may have loaded after selectUser was called)
+    if (currentVisitor && users[currentVisitor]) {
+      const user = users[currentVisitor];
+      const csatBadge = document.getElementById('csatBadge');
+      const csatStars = document.getElementById('csatStars');
+      const csatValue = document.getElementById('csatValue');
+      if (user.csatRating && csatBadge && csatStars && csatValue) {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+          starsHtml += i <= user.csatRating ? '★' : '☆';
+        }
+        csatStars.textContent = starsHtml;
+        csatValue.textContent = `${user.csatRating}/5`;
+        csatBadge.style.display = 'flex';
+        csatBadge.className = `csat-badge csat-${user.csatRating <= 2 ? 'low' : user.csatRating <= 3 ? 'medium' : 'high'}`;
+      }
+    }
+
     // Auto-select first conversation if any
     const firstVid = Object.keys(users)[0];
     if (firstVid && !currentVisitor) {
