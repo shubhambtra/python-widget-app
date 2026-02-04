@@ -208,12 +208,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==================== ANALYTICS ====================
 async function loadAnalytics() {
   try {
-    const stats = await apiGet(`/sites/${siteId}/analytics/dashboard`);
+    const [statsResponse, agentsResponse] = await Promise.all([
+      apiGet(`/sites/${siteId}/analytics/dashboard`),
+      apiGet(`/sites/${siteId}/analytics/agents`).catch(() => null)
+    ]);
+
+    // Extract data from API response wrapper
+    const stats = statsResponse?.data || statsResponse || {};
+    const agents = agentsResponse?.data || agentsResponse || [];
+
     renderStats(stats);
-    renderAgentPerformance(stats.agentPerformance || []);
+    renderAgentPerformance(Array.isArray(agents) ? agents : []);
   } catch (err) {
     console.error('Analytics error:', err);
     renderStats({});
+    renderAgentPerformance([]);
   }
 }
 
@@ -264,20 +273,27 @@ function renderAgentPerformance(agentPerf) {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">No agent data available</td></tr>';
     return;
   }
-  tbody.innerHTML = agentPerf.map(agent => `
-    <tr>
-      <td><strong>${escapeHtml(agent.agentName || 'Unknown')}</strong></td>
-      <td>${agent.conversationsHandled || 0}</td>
-      <td>${formatTime(agent.averageResponseTime)}</td>
-      <td>${agent.averageRating ? agent.averageRating.toFixed(1) : 'N/A'}</td>
-      <td>
-        <span class="status-badge ${agent.isOnline ? 'online' : 'offline'}">
-          <span class="status-dot"></span>
-          ${agent.isOnline ? 'Online' : 'Offline'}
-        </span>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = agentPerf.map(agent => {
+    // Handle both camelCase and PascalCase field names from API
+    const name = agent.fullName || agent.FullName || agent.username || agent.Username || 'Unknown';
+    const convs = agent.totalConversations || agent.TotalConversations || 0;
+    const respTime = agent.averageResponseTime || agent.AverageResponseTime || 0;
+    const rating = agent.averageRating || agent.AverageRating;
+    return `
+      <tr>
+        <td><strong>${escapeHtml(name)}</strong></td>
+        <td>${convs}</td>
+        <td>${formatTime(respTime)}</td>
+        <td>${rating ? rating.toFixed(1) : 'N/A'}</td>
+        <td>
+          <span class="status-badge resolved">
+            <span class="status-dot"></span>
+            ${(agent.resolutionRate || agent.ResolutionRate || 0).toFixed(0)}% resolved
+          </span>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 </script>
