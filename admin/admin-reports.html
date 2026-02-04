@@ -380,10 +380,10 @@
   <div class="loading-spinner"></div>
 </div>
 
+<script src="/config.js"></script>
+<script src="/branding.js"></script>
+<script src="/admin/js/admin-shared.js"></script>
 <script>
-const API_URL = window.location.origin;
-let token = localStorage.getItem('adminToken');
-
 // Chart instances
 let siteConvsChart, intentChart, timelineChart, planChart, siteStatusChart, revenueChart, registrationsChart, topSitesChart;
 
@@ -393,23 +393,14 @@ const chartColors = [
   '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#84cc16'
 ];
 
-// Check auth
-if (!token) {
-  window.location.href = '/admin/admin-login.html';
+// Check auth on load
+if (!checkAuth()) {
+  // checkAuth will redirect
 }
 
 async function apiGet(endpoint) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (response.status === 401) {
-    localStorage.removeItem('adminToken');
-    window.location.href = '/admin/admin-login.html';
-    return;
-  }
-  if (!response.ok) throw new Error(`API error: ${response.status}`);
-  const result = await response.json();
-  return result.data || result;
+  const response = await apiFetch(`${API_BASE}${endpoint}`);
+  return await handleApiResponse(response, 'API request failed');
 }
 
 function showLoading() {
@@ -420,12 +411,7 @@ function hideLoading() {
   document.getElementById('loadingOverlay').style.display = 'none';
 }
 
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.className = `toast ${type} show`;
-  setTimeout(() => toast.classList.remove('show'), 3000);
-}
+// showToast is provided by admin-shared.js
 
 function handleDateRangeChange() {
   const dateRange = document.getElementById('dateRange').value;
@@ -863,17 +849,14 @@ function renderTopSitesChart(conversations, sites) {
   });
 }
 
-function logout() {
-  localStorage.removeItem('adminToken');
-  window.location.href = '/admin/admin-login.html';
-}
+// logout is provided by admin-shared.js
 
 // Navigation
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', (e) => {
     e.preventDefault();
     const page = item.dataset.page;
-    if (page) window.location.href = '/admin/' + page;
+    if (page) window.location.href = buildAdminUrl('/admin/' + page);
   });
 });
 
