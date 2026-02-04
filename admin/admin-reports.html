@@ -974,7 +974,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', (e) => {
     e.preventDefault();
     const page = item.dataset.page;
-    if (page) window.location.href = buildAdminUrl('/admin/' + page);
+    if (page) window.location.href = buildAdminUrl(page);
   });
 });
 
