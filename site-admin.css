@@ -1146,6 +1146,41 @@ input:checked + .toggle-slider:before {
   color: var(--text-muted, #64748b);
 }
 
+/* ==================== FILTERS ==================== */
+.filters-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  background: var(--bg-tertiary, #1e293b);
+  border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary, #f8fafc);
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent-color, #6366f1);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg-tertiary, #1e293b);
+  color: var(--text-secondary, #94a3b8);
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
   .sidebar {
