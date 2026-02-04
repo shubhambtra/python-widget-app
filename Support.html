@@ -1552,11 +1552,13 @@ async function loadHistoricalConversations() {
     renderUsers();
 
     // Update CSAT badge if a user is currently selected (data may have loaded after selectUser was called)
+    console.log("After load - currentVisitor:", currentVisitor, "csatRating:", currentVisitor ? users[currentVisitor]?.csatRating : "N/A");
     if (currentVisitor && users[currentVisitor]) {
       const user = users[currentVisitor];
       const csatBadge = document.getElementById('csatBadge');
       const csatStars = document.getElementById('csatStars');
       const csatValue = document.getElementById('csatValue');
+      console.log("Updating CSAT badge - rating:", user.csatRating, "badge:", !!csatBadge, "stars:", !!csatStars, "value:", !!csatValue);
       if (user.csatRating && csatBadge && csatStars && csatValue) {
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
