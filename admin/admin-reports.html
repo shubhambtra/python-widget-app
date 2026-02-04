@@ -474,12 +474,21 @@ async function loadReports() {
       apiGet('/conversations').catch(() => [])
     ]);
 
-    // Handle different API response structures
-    const sites = Array.isArray(sitesData) ? sitesData : (sitesData?.items || sitesData?.sites || []);
-    const users = Array.isArray(usersData) ? usersData : (usersData?.items || usersData?.users || []);
-    const conversations = Array.isArray(convsData) ? convsData : (convsData?.items || convsData?.conversations || []);
+    // Handle API response structure: { success: true, data: { items: [...] } } or { success: true, data: [...] }
+    const extractData = (response) => {
+      if (Array.isArray(response)) return response;
+      if (response?.data?.items) return response.data.items;
+      if (Array.isArray(response?.data)) return response.data;
+      if (response?.items) return response.items;
+      return [];
+    };
 
-    console.log('Loaded data:', { sites: sites.length, users: users.length, conversations: conversations.length });
+    const sites = extractData(sitesData);
+    const users = extractData(usersData);
+    const conversations = extractData(convsData);
+
+    console.log('Raw API responses:', { sitesData, usersData, convsData });
+    console.log('Extracted data:', { sites: sites.length, users: users.length, conversations: conversations.length });
 
     const dateRange = getDateRange();
 
