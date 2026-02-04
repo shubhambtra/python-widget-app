@@ -242,12 +242,12 @@
       <div class="summary-label">Total Conversations</div>
     </div>
     <div class="summary-card">
-      <div class="summary-value" id="activeSubscriptions">-</div>
-      <div class="summary-label">Active Subscriptions</div>
+      <div class="summary-value" id="activeSites">-</div>
+      <div class="summary-label">Active Sites</div>
     </div>
     <div class="summary-card">
-      <div class="summary-value" id="totalRevenue">-</div>
-      <div class="summary-label">Total Revenue</div>
+      <div class="summary-value" id="avgConvsPerSite">-</div>
+      <div class="summary-label">Avg Convs/Site</div>
     </div>
   </div>
 
@@ -328,18 +328,18 @@
       </div>
     </div>
 
-    <!-- Revenue Over Time -->
+    <!-- Conversations by Status -->
     <div class="chart-card full-width">
       <div class="chart-header">
         <div class="chart-title">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
-          Revenue Over Time
+          Conversations by Status
         </div>
       </div>
       <div class="chart-container">
-        <canvas id="revenueChart"></canvas>
+        <canvas id="convStatusChart"></canvas>
       </div>
     </div>
 
@@ -385,7 +385,7 @@
 <script src="/js/admin-shared.js"></script>
 <script>
 // Chart instances
-let siteConvsChart, intentChart, timelineChart, planChart, siteStatusChart, revenueChart, registrationsChart, topSitesChart;
+let siteConvsChart, intentChart, timelineChart, planChart, siteStatusChart, convStatusChart, registrationsChart, topSitesChart;
 
 // Chart colors
 const chartColors = [
@@ -445,12 +445,10 @@ async function loadReports() {
   showLoading();
   try {
     // Load all data
-    const [sitesData, usersData, convsData, subscriptions, payments] = await Promise.all([
+    const [sitesData, usersData, convsData] = await Promise.all([
       apiGet('/sites'),
       apiGet('/users'),
-      apiGet('/conversations').catch(() => []),
-      apiGet('/subscriptions').catch(() => []),
-      apiGet('/payments').catch(() => [])
+      apiGet('/conversations').catch(() => [])
     ]);
 
     // Handle different API response structures
@@ -467,7 +465,7 @@ async function loadReports() {
     });
 
     // Update summary
-    updateSummary(sites, users, filteredConvs, subscriptions, payments);
+    updateSummary(sites, users, filteredConvs);
 
     // Render charts
     renderSiteConvsChart(filteredConvs, sites);
@@ -475,7 +473,7 @@ async function loadReports() {
     renderTimelineChart(filteredConvs, dateRange);
     renderPlanChart(sites);
     renderSiteStatusChart(sites);
-    renderRevenueChart(payments, dateRange);
+    renderConvStatusChart(filteredConvs);
     renderRegistrationsChart(users, dateRange);
     renderTopSitesChart(filteredConvs, sites);
 
@@ -487,18 +485,16 @@ async function loadReports() {
   }
 }
 
-function updateSummary(sites, users, conversations, subscriptions, payments) {
+function updateSummary(sites, users, conversations) {
   document.getElementById('totalSites').textContent = sites?.length || 0;
   document.getElementById('totalUsers').textContent = users?.length || 0;
   document.getElementById('totalConvs').textContent = conversations?.length || 0;
 
-  const activeSubsCount = (subscriptions || []).filter(s => s.status === 'active').length;
-  document.getElementById('activeSubscriptions').textContent = activeSubsCount;
+  const activeSitesCount = (sites || []).filter(s => s.status === 'active' || !s.status).length;
+  document.getElementById('activeSites').textContent = activeSitesCount;
 
-  const totalRev = (payments || [])
-    .filter(p => p.status === 'success' || p.status === 'completed')
-    .reduce((sum, p) => sum + (p.amount || 0), 0);
-  document.getElementById('totalRevenue').textContent = '$' + totalRev.toLocaleString();
+  const avgConvs = sites?.length > 0 ? (conversations?.length / sites.length).toFixed(1) : 0;
+  document.getElementById('avgConvsPerSite').textContent = avgConvs;
 }
 
 function renderSiteConvsChart(conversations, sites) {
@@ -708,42 +704,29 @@ function renderSiteStatusChart(sites) {
   });
 }
 
-function renderRevenueChart(payments, dateRange) {
-  const ctx = document.getElementById('revenueChart').getContext('2d');
+function renderConvStatusChart(conversations) {
+  const ctx = document.getElementById('convStatusChart').getContext('2d');
 
-  const dateCounts = {};
-  const currentDate = new Date(dateRange.start);
-  while (currentDate <= dateRange.end) {
-    const dateKey = currentDate.toISOString().split('T')[0];
-    dateCounts[dateKey] = 0;
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  (payments || []).forEach(p => {
-    if (p.status === 'success' || p.status === 'completed') {
-      const date = new Date(p.createdAt || p.paidAt).toISOString().split('T')[0];
-      if (dateCounts.hasOwnProperty(date)) {
-        dateCounts[date] += (p.amount || 0);
-      }
+  const statusCounts = { open: 0, resolved: 0, pending: 0, closed: 0 };
+  (conversations || []).forEach(c => {
+    const status = (c.status || 'open').toLowerCase();
+    if (statusCounts.hasOwnProperty(status)) {
+      statusCounts[status]++;
+    } else {
+      statusCounts['open']++;
     }
   });
 
-  const labels = Object.keys(dateCounts).map(d => {
-    const date = new Date(d);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  });
-  const data = Object.values(dateCounts);
+  if (convStatusChart) convStatusChart.destroy();
 
-  if (revenueChart) revenueChart.destroy();
-
-  revenueChart = new Chart(ctx, {
+  convStatusChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: labels,
+      labels: ['Open', 'Resolved', 'Pending', 'Closed'],
       datasets: [{
-        label: 'Revenue ($)',
-        data: data,
-        backgroundColor: '#22c55e',
+        label: 'Conversations',
+        data: [statusCounts.open, statusCounts.resolved, statusCounts.pending, statusCounts.closed],
+        backgroundColor: ['#6366f1', '#22c55e', '#f59e0b', '#64748b'],
         borderRadius: 4
       }]
     },
@@ -752,8 +735,8 @@ function renderRevenueChart(payments, dateRange) {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } },
-        y: { beginAtZero: true, grid: { color: 'rgba(100, 116, 139, 0.1)' }, ticks: { color: '#94a3b8' } }
+        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+        y: { beginAtZero: true, grid: { color: 'rgba(100, 116, 139, 0.1)' }, ticks: { color: '#94a3b8', stepSize: 1 } }
       }
     }
   });
