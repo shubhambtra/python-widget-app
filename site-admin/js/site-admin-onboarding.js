@@ -1,8 +1,11 @@
 // Site Admin Onboarding Wizard
 // Guides new users through setting up agents and installing the widget
 
+console.log('[Onboarding] Script loaded');
+
 // ==================== STATE MANAGEMENT ====================
 const ONBOARDING_KEY = `assistica_onboarding_${siteId}`;
+console.log('[Onboarding] Key:', ONBOARDING_KEY);
 
 function getOnboardingState() {
   try {
@@ -44,10 +47,13 @@ function resetOnboardingState() {
 
 // ==================== WIZARD LIFECYCLE ====================
 function checkOnboarding() {
+  console.log('[Onboarding] checkOnboarding called');
   const state = getOnboardingState();
+  console.log('[Onboarding] Current state:', state);
 
   // Don't show if already completed
   if (state.completed) {
+    console.log('[Onboarding] Already completed, not showing');
     return;
   }
 
@@ -56,21 +62,30 @@ function checkOnboarding() {
     const dismissed = new Date(state.dismissedAt);
     const now = new Date();
     const hoursSinceDismiss = (now - dismissed) / (1000 * 60 * 60);
+    console.log('[Onboarding] Dismissed', hoursSinceDismiss.toFixed(1), 'hours ago');
     if (hoursSinceDismiss < 24) {
+      console.log('[Onboarding] Dismissed recently, not showing');
       return;
     }
   }
 
   // Show wizard
+  console.log('[Onboarding] Opening wizard...');
   openOnboardingWizard();
 }
 
 function openOnboardingWizard() {
+  console.log('[Onboarding] openOnboardingWizard called');
+
   // Remove existing wizard if present
   const existing = document.getElementById('onboardingWizard');
-  if (existing) existing.remove();
+  if (existing) {
+    console.log('[Onboarding] Removing existing wizard');
+    existing.remove();
+  }
 
   const state = getOnboardingState();
+  console.log('[Onboarding] Creating wizard with state:', state);
 
   const wizardHtml = `
     <div class="onboarding-overlay show" id="onboardingWizard">
@@ -659,22 +674,28 @@ function injectSetupGuideButton() {
 let onboardingInitialized = false;
 
 function initOnboarding() {
+  console.log('[Onboarding] initOnboarding called, initialized:', onboardingInitialized);
   if (onboardingInitialized) return;
   onboardingInitialized = true;
 
   // Inject the setup guide button
+  console.log('[Onboarding] Injecting setup guide button...');
   injectSetupGuideButton();
 
   // Check if we should show the wizard
   // Delay slightly to ensure siteData is loaded
+  console.log('[Onboarding] Will check onboarding in 500ms...');
   setTimeout(() => {
     checkOnboarding();
   }, 500);
 }
 
 // Initialize when DOM is ready
+console.log('[Onboarding] Document readyState:', document.readyState);
 if (document.readyState === 'loading') {
+  console.log('[Onboarding] Adding DOMContentLoaded listener');
   document.addEventListener('DOMContentLoaded', initOnboarding);
 } else {
+  console.log('[Onboarding] DOM already ready, calling initOnboarding');
   initOnboarding();
 }
