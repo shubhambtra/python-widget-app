@@ -2893,6 +2893,13 @@ body {
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.csat-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .csat-badge.csat-high {
@@ -2917,6 +2924,108 @@ body {
 .csat-value {
   font-size: 12px;
   opacity: 0.8;
+}
+
+/* ==================== CSAT FEEDBACK MODAL ==================== */
+.csat-feedback-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.csat-feedback-modal {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.csat-feedback-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.csat-feedback-modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.csat-feedback-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.csat-feedback-modal-close:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.csat-feedback-modal-body {
+  padding: 24px;
+}
+
+.csat-feedback-rating {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.csat-feedback-stars {
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: #f59e0b;
+}
+
+.csat-feedback-score {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.csat-feedback-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.csat-feedback-text {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 60px;
+}
+
+.csat-feedback-empty {
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* ==================== CLOSED CONVERSATION BADGE ==================== */

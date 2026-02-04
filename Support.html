@@ -258,7 +258,7 @@
       <!-- Tags displayed in header -->
       <div class="chat-header-tags" id="chatHeaderTags"></div>
       <div class="chat-header-actions">
-        <div class="csat-badge" id="csatBadge" style="display: none;" title="Customer Satisfaction Rating">
+        <div class="csat-badge" id="csatBadge" style="display: none;" title="Click to view feedback" onclick="openCsatFeedbackModal()">
           <span class="csat-stars" id="csatStars"></span>
           <span class="csat-value" id="csatValue"></span>
         </div>
@@ -1043,6 +1043,24 @@
   </div>
 </div>
 
+<!-- CSAT Feedback Modal -->
+<div id="csatFeedbackModal" class="csat-feedback-modal-overlay" style="display: none;" onclick="if(event.target === this) closeCsatFeedbackModal()">
+  <div class="csat-feedback-modal">
+    <div class="csat-feedback-modal-header">
+      <h3>Customer Feedback</h3>
+      <button class="csat-feedback-modal-close" onclick="closeCsatFeedbackModal()">&times;</button>
+    </div>
+    <div class="csat-feedback-modal-body">
+      <div class="csat-feedback-rating">
+        <span class="csat-feedback-stars" id="csatFeedbackStars"></span>
+        <span class="csat-feedback-score" id="csatFeedbackScore"></span>
+      </div>
+      <div class="csat-feedback-label">Customer Comment</div>
+      <div class="csat-feedback-text" id="csatFeedbackText"></div>
+    </div>
+  </div>
+</div>
+
 <script src="/config.js"></script>
 <script src="/branding.js"></script>
 <script>
@@ -1346,7 +1364,8 @@ ws.onmessage = (e) => {
   if (data.type === "csat_received") {
     const vid = data.visitorId;
     const rating = data.rating;
-    displayCsatRating(vid, rating);
+    const feedback = data.feedback;
+    displayCsatRating(vid, rating, feedback);
   }
 
   // Conversation closed confirmation
@@ -1490,7 +1509,6 @@ async function loadHistoricalConversations() {
 
     for (const conv of conversations) {
       const vid = conv.visitorId;
-      console.log("Adding conversation:", conv.visitorName, "vid:", vid, "rating:", conv.rating);
       // Build analysis summary from API fields
       const analysisSummary = (conv.sentiment || conv.intent || conv.urgencyScore != null) ? {
         sentiment: conv.sentiment,
@@ -1516,6 +1534,7 @@ async function loadHistoricalConversations() {
           assignedUserId: conv.assignedUserId,
           tags: conv.tags,
           csatRating: conv.rating,
+          csatFeedback: conv.ratingFeedback,
           resolutionStatus: conv.resolutionStatus
         };
       } else {
@@ -1539,6 +1558,7 @@ async function loadHistoricalConversations() {
         users[vid].assignedUserId = conv.assignedUserId;
         users[vid].tags = conv.tags;
         users[vid].csatRating = conv.rating;
+        users[vid].csatFeedback = conv.ratingFeedback;
         users[vid].resolutionStatus = conv.resolutionStatus;
 
         // If this is the currently selected user and messages weren't loaded yet, load them now
@@ -1552,13 +1572,11 @@ async function loadHistoricalConversations() {
     renderUsers();
 
     // Update CSAT badge if a user is currently selected (data may have loaded after selectUser was called)
-    console.log("After load - currentVisitor:", currentVisitor, "csatRating:", currentVisitor ? users[currentVisitor]?.csatRating : "N/A");
     if (currentVisitor && users[currentVisitor]) {
       const user = users[currentVisitor];
       const csatBadge = document.getElementById('csatBadge');
       const csatStars = document.getElementById('csatStars');
       const csatValue = document.getElementById('csatValue');
-      console.log("Updating CSAT badge - rating:", user.csatRating, "badge:", !!csatBadge, "stars:", !!csatStars, "value:", !!csatValue);
       if (user.csatRating && csatBadge && csatStars && csatValue) {
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
@@ -1821,7 +1839,6 @@ function selectUser(vid) {
   const csatBadge = document.getElementById('csatBadge');
   const csatStars = document.getElementById('csatStars');
   const csatValue = document.getElementById('csatValue');
-  console.log("selectUser csatRating for", vid, ":", user.csatRating);
 
   if (user.csatRating) {
     let starsHtml = '';
@@ -4014,6 +4031,40 @@ function closeTransferModal() {
   selectedTransferAgent = null;
 }
 
+function openCsatFeedbackModal() {
+  if (!currentVisitor || !users[currentVisitor]) return;
+
+  const user = users[currentVisitor];
+  const rating = user.csatRating;
+  const feedback = user.csatFeedback;
+
+  if (!rating) return;
+
+  // Build stars
+  let starsHtml = '';
+  for (let i = 1; i <= 5; i++) {
+    starsHtml += i <= rating ? '\u2605' : '\u2606';
+  }
+
+  document.getElementById('csatFeedbackStars').textContent = starsHtml;
+  document.getElementById('csatFeedbackScore').textContent = `${rating}/5`;
+
+  const feedbackText = document.getElementById('csatFeedbackText');
+  if (feedback && feedback.trim()) {
+    feedbackText.textContent = feedback;
+    feedbackText.classList.remove('csat-feedback-empty');
+  } else {
+    feedbackText.textContent = 'No comment provided';
+    feedbackText.classList.add('csat-feedback-empty');
+  }
+
+  document.getElementById('csatFeedbackModal').style.display = 'flex';
+}
+
+function closeCsatFeedbackModal() {
+  document.getElementById('csatFeedbackModal').style.display = 'none';
+}
+
 function selectTransferAgent(agentId, agentName) {
   selectedTransferAgent = { id: agentId, name: agentName };
 
@@ -4148,10 +4199,11 @@ function updateChatHeaderForClosedConversation() {
   }
 }
 
-function displayCsatRating(visitorId, rating) {
+function displayCsatRating(visitorId, rating, feedback) {
   if (!users[visitorId]) return;
 
   users[visitorId].csatRating = rating;
+  users[visitorId].csatFeedback = feedback;
 
   // If this is the current conversation, update the CSAT badge
   if (currentVisitor === visitorId) {
