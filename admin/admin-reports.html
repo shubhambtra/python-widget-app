@@ -411,6 +411,29 @@ function hideLoading() {
   document.getElementById('loadingOverlay').style.display = 'none';
 }
 
+function showNoData(canvasId, message = 'No data available') {
+  const canvas = document.getElementById(canvasId);
+  const container = canvas.parentElement;
+  canvas.style.display = 'none';
+  let noDataEl = container.querySelector('.no-data-message');
+  if (!noDataEl) {
+    noDataEl = document.createElement('div');
+    noDataEl.className = 'no-data-message';
+    noDataEl.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;font-size:0.875rem;';
+    container.appendChild(noDataEl);
+  }
+  noDataEl.textContent = message;
+  noDataEl.style.display = 'flex';
+}
+
+function hideNoData(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  const container = canvas.parentElement;
+  canvas.style.display = 'block';
+  const noDataEl = container.querySelector('.no-data-message');
+  if (noDataEl) noDataEl.style.display = 'none';
+}
+
 // showToast is provided by admin-shared.js
 
 function handleDateRangeChange() {
@@ -456,26 +479,33 @@ async function loadReports() {
     const users = Array.isArray(usersData) ? usersData : (usersData?.items || usersData?.users || []);
     const conversations = Array.isArray(convsData) ? convsData : (convsData?.items || convsData?.conversations || []);
 
+    console.log('Loaded data:', { sites: sites.length, users: users.length, conversations: conversations.length });
+
     const dateRange = getDateRange();
 
-    // Filter conversations by date
+    // Filter conversations and users by date for timeline charts
     const filteredConvs = conversations.filter(c => {
       const convDate = new Date(c.startedAt || c.createdAt);
       return convDate >= dateRange.start && convDate <= dateRange.end;
     });
 
-    // Update summary
-    updateSummary(sites, users, filteredConvs);
+    const filteredUsers = users.filter(u => {
+      const userDate = new Date(u.createdAt || u.registeredAt);
+      return userDate >= dateRange.start && userDate <= dateRange.end;
+    });
 
-    // Render charts
-    renderSiteConvsChart(filteredConvs, sites);
-    renderIntentChart(filteredConvs);
-    renderTimelineChart(filteredConvs, dateRange);
-    renderPlanChart(sites);
-    renderSiteStatusChart(sites);
-    renderConvStatusChart(filteredConvs);
-    renderRegistrationsChart(users, dateRange);
-    renderTopSitesChart(filteredConvs, sites);
+    // Update summary with ALL data (not filtered)
+    updateSummary(sites, users, conversations);
+
+    // Render charts - use ALL data for overview charts, filtered for timeline charts
+    renderSiteConvsChart(conversations, sites);  // All-time
+    renderIntentChart(conversations);  // All-time
+    renderTimelineChart(filteredConvs, dateRange);  // Filtered by date
+    renderPlanChart(sites);  // All sites
+    renderSiteStatusChart(sites);  // All sites
+    renderConvStatusChart(conversations);  // All-time
+    renderRegistrationsChart(filteredUsers, dateRange);  // Filtered by date
+    renderTopSitesChart(conversations, sites);  // All-time
 
   } catch (err) {
     console.error('Error loading reports:', err);
@@ -513,6 +543,12 @@ function renderSiteConvsChart(conversations, sites) {
   const data = labels.map(l => siteCounts[l]);
 
   if (siteConvsChart) siteConvsChart.destroy();
+
+  if (labels.length === 0) {
+    showNoData('siteConvsChart', 'No conversation data');
+    return;
+  }
+  hideNoData('siteConvsChart');
 
   siteConvsChart = new Chart(ctx, {
     type: 'doughnut',
@@ -556,6 +592,12 @@ function renderIntentChart(conversations) {
   const data = Object.values(intentCounts);
 
   if (intentChart) intentChart.destroy();
+
+  if (labels.length === 0) {
+    showNoData('intentChart', 'No intent data');
+    return;
+  }
+  hideNoData('intentChart');
 
   intentChart = new Chart(ctx, {
     type: 'doughnut',
@@ -647,6 +689,12 @@ function renderPlanChart(sites) {
 
   if (planChart) planChart.destroy();
 
+  if (labels.length === 0) {
+    showNoData('planChart', 'No sites data');
+    return;
+  }
+  hideNoData('planChart');
+
   planChart = new Chart(ctx, {
     type: 'pie',
     data: {
@@ -680,6 +728,12 @@ function renderSiteStatusChart(sites) {
   });
 
   if (siteStatusChart) siteStatusChart.destroy();
+
+  if (!sites || sites.length === 0) {
+    showNoData('siteStatusChart', 'No sites data');
+    return;
+  }
+  hideNoData('siteStatusChart');
 
   siteStatusChart = new Chart(ctx, {
     type: 'doughnut',
@@ -718,6 +772,12 @@ function renderConvStatusChart(conversations) {
   });
 
   if (convStatusChart) convStatusChart.destroy();
+
+  if (!conversations || conversations.length === 0) {
+    showNoData('convStatusChart', 'No conversation data');
+    return;
+  }
+  hideNoData('convStatusChart');
 
   convStatusChart = new Chart(ctx, {
     type: 'bar',
@@ -812,6 +872,12 @@ function renderTopSitesChart(conversations, sites) {
   const data = sorted.map(s => s[1]);
 
   if (topSitesChart) topSitesChart.destroy();
+
+  if (labels.length === 0) {
+    showNoData('topSitesChart', 'No conversation data');
+    return;
+  }
+  hideNoData('topSitesChart');
 
   topSitesChart = new Chart(ctx, {
     type: 'bar',
