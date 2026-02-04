@@ -488,6 +488,11 @@ def site_admin_reports():
 def serve_site_admin_shared_js():
     return FileResponse(BASE_DIR / "site-admin" / "js" / "site-admin-shared.js", media_type="application/javascript")
 
+# Serve site admin onboarding JS
+@app.get("/js/site-admin-onboarding.js")
+def serve_site_admin_onboarding_js():
+    return FileResponse(BASE_DIR / "site-admin" / "js" / "site-admin-onboarding.js", media_type="application/javascript")
+
 
 @app.get("/knowledge-base.html")
 def knowledge_base_page():
