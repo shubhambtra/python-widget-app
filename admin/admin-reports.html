@@ -445,7 +445,7 @@ async function loadReports() {
   showLoading();
   try {
     // Load all data
-    const [sites, users, conversations, subscriptions, payments] = await Promise.all([
+    const [sitesData, usersData, convsData, subscriptions, payments] = await Promise.all([
       apiGet('/sites'),
       apiGet('/users'),
       apiGet('/conversations').catch(() => []),
@@ -453,10 +453,15 @@ async function loadReports() {
       apiGet('/payments').catch(() => [])
     ]);
 
+    // Handle different API response structures
+    const sites = Array.isArray(sitesData) ? sitesData : (sitesData?.items || sitesData?.sites || []);
+    const users = Array.isArray(usersData) ? usersData : (usersData?.items || usersData?.users || []);
+    const conversations = Array.isArray(convsData) ? convsData : (convsData?.items || convsData?.conversations || []);
+
     const dateRange = getDateRange();
 
     // Filter conversations by date
-    const filteredConvs = (conversations || []).filter(c => {
+    const filteredConvs = conversations.filter(c => {
       const convDate = new Date(c.startedAt || c.createdAt);
       return convDate >= dateRange.start && convDate <= dateRange.end;
     });
