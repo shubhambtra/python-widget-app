@@ -462,15 +462,6 @@ const resolutionColors = {
   'spam': '#64748b'
 };
 
-async function apiGet(endpoint) {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (!response.ok) throw new Error(`API error: ${response.status}`);
-  const result = await response.json();
-  return result.data || result;
-}
-
 function showLoading() {
   document.getElementById('loadingOverlay').style.display = 'flex';
 }
@@ -514,7 +505,7 @@ async function loadReports() {
   showLoading();
   try {
     // Load conversations
-    const conversations = await apiGet(`/api/sites/${siteId}/conversations`);
+    const conversations = await apiGet(`/sites/${siteId}/conversations`);
     const dateRange = getDateRange();
 
     // Filter by date range
