@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reports - Site Admin</title>
-  <link rel="stylesheet" href="css/site-admin-shared.css" />
+  <link rel="stylesheet" href="/site-admin.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .reports-grid {
@@ -435,13 +435,10 @@
   <div class="loading-spinner"></div>
 </div>
 
-<script src="js/site-admin-shared.js"></script>
+<script src="/config.js"></script>
+<script src="/branding.js"></script>
+<script src="/js/site-admin-shared.js"></script>
 <script>
-const API_URL = window.location.origin;
-const urlParams = new URLSearchParams(window.location.search);
-const siteId = urlParams.get('siteId');
-const token = urlParams.get('token');
-
 // Chart instances
 let intentChart, statusChart, timelineChart, csatChart, peakHoursChart, resolutionChart, agentChart;
 
@@ -465,12 +462,8 @@ const resolutionColors = {
   'spam': '#64748b'
 };
 
-if (!siteId || !token) {
-  window.location.href = '/site-login';
-}
-
 async function apiGet(endpoint) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -984,6 +977,8 @@ function showNoData(ctx, message = 'No data available') {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  setupNavigation();
+
   try {
     const siteData = await apiGet(`/sites/${siteId}`);
     document.getElementById('siteName').textContent = siteData.name || 'My Site';
