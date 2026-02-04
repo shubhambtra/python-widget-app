@@ -467,9 +467,9 @@ function getDateRange() {
 async function loadReports() {
   showLoading();
   try {
-    // Load all data
+    // Load all data (use /sites/all for super admin to get all sites)
     const [sitesData, usersData, convsData] = await Promise.all([
-      apiGet('/sites'),
+      apiGet('/sites/all'),
       apiGet('/users'),
       apiGet('/conversations').catch(() => [])
     ]);
