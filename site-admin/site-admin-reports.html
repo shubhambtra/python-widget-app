@@ -92,15 +92,44 @@
     }
     .summary-card {
       background: var(--card-bg);
-      border-radius: 10px;
-      padding: 1.25rem;
+      border-radius: 12px;
+      padding: 1.5rem;
       border: 1px solid var(--border-color);
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .summary-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .summary-icon svg {
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
+    .summary-icon.blue { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+    .summary-icon.green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .summary-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .summary-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .summary-content {
+      flex: 1;
     }
     .summary-value {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
-      color: var(--primary-color);
+      color: var(--text-primary);
+      line-height: 1.2;
     }
     .summary-label {
       font-size: 0.875rem;
@@ -110,6 +139,9 @@
     .summary-change {
       font-size: 0.75rem;
       margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
     }
     .summary-change.positive {
       color: #22c55e;
@@ -315,20 +347,48 @@
     <!-- Summary Stats -->
     <div class="stats-summary" id="statsSummary">
       <div class="summary-card">
-        <div class="summary-value" id="totalConvs">-</div>
-        <div class="summary-label">Total Conversations</div>
+        <div class="summary-icon blue">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <div class="summary-content">
+          <div class="summary-value" id="totalConvs">-</div>
+          <div class="summary-label">Total Conversations</div>
+        </div>
       </div>
       <div class="summary-card">
-        <div class="summary-value" id="resolvedConvs">-</div>
-        <div class="summary-label">Resolved</div>
+        <div class="summary-icon green">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="summary-content">
+          <div class="summary-value" id="resolvedConvs">-</div>
+          <div class="summary-label">Resolved</div>
+        </div>
       </div>
       <div class="summary-card">
-        <div class="summary-value" id="avgRating">-</div>
-        <div class="summary-label">Avg. CSAT Rating</div>
+        <div class="summary-icon orange">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+        <div class="summary-content">
+          <div class="summary-value" id="avgRating">-</div>
+          <div class="summary-label">Avg. CSAT Rating</div>
+        </div>
       </div>
       <div class="summary-card">
-        <div class="summary-value" id="avgResponseTime">-</div>
-        <div class="summary-label">Avg. Response Time</div>
+        <div class="summary-icon purple">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="summary-content">
+          <div class="summary-value" id="avgResponseTime">-</div>
+          <div class="summary-label">Avg. Response Time</div>
+        </div>
       </div>
     </div>
 
@@ -517,20 +577,33 @@ function getDateRange() {
 async function loadReports() {
   showLoading();
   try {
-    // Load conversations
-    const convData = await apiGet(`/sites/${siteId}/conversations`);
-    // Handle different response structures
-    const conversations = Array.isArray(convData) ? convData : (convData?.items || convData?.conversations || []);
+    // Load all data in parallel
+    const [convResponse, statsResponse, agentsResponse] = await Promise.all([
+      apiGet(`/sites/${siteId}/conversations`),
+      apiGet(`/sites/${siteId}/analytics/dashboard`),
+      apiGet(`/sites/${siteId}/analytics/agents`).catch(() => null)
+    ]);
+
+    // Extract data from API response wrapper
+    const extractData = (response) => {
+      if (Array.isArray(response)) return response;
+      if (response?.data?.items) return response.data.items;
+      if (Array.isArray(response?.data)) return response.data;
+      if (response?.items) return response.items;
+      return response || [];
+    };
+
+    const conversations = extractData(convResponse);
+    const stats = statsResponse?.data || statsResponse || {};
+    const agents = extractData(agentsResponse);
+
     const dateRange = getDateRange();
 
     // Filter by date range
-    const filteredConvs = conversations.filter(c => {
+    const filteredConvs = Array.isArray(conversations) ? conversations.filter(c => {
       const convDate = new Date(c.startedAt || c.createdAt);
       return convDate >= dateRange.start && convDate <= dateRange.end;
-    });
-
-    // Load dashboard stats
-    const stats = await apiGet(`/sites/${siteId}/analytics/dashboard`) || {};
+    }) : [];
 
     // Update summary
     updateSummary(filteredConvs, stats);
@@ -542,7 +615,7 @@ async function loadReports() {
     renderCsatChart(filteredConvs);
     renderPeakHoursChart(filteredConvs);
     renderResolutionChart(filteredConvs);
-    renderAgentChart(stats.agentPerformance || []);
+    renderAgentChart(Array.isArray(agents) ? agents : []);
 
   } catch (err) {
     console.error('Error loading reports:', err);
@@ -910,13 +983,16 @@ function renderResolutionChart(conversations) {
 function renderAgentChart(agentPerformance) {
   const ctx = document.getElementById('agentChart').getContext('2d');
 
-  if (!agentPerformance.length) {
+  if (!agentPerformance || !agentPerformance.length) {
     if (agentChart) agentChart.destroy();
     showNoData(ctx, 'No agent data available');
     return;
   }
 
-  const labels = agentPerformance.map(a => a.agentName || 'Unknown');
+  // Handle both camelCase and PascalCase field names from API
+  const labels = agentPerformance.map(a =>
+    a.fullName || a.FullName || a.username || a.Username || 'Unknown'
+  );
 
   if (agentChart) agentChart.destroy();
 
@@ -926,16 +1002,16 @@ function renderAgentChart(agentPerformance) {
       labels: labels,
       datasets: [
         {
-          label: 'Conversations Handled',
-          data: agentPerformance.map(a => a.conversationsHandled || 0),
+          label: 'Conversations',
+          data: agentPerformance.map(a => a.totalConversations || a.TotalConversations || 0),
           backgroundColor: '#6366f1',
-          borderRadius: 4
+          borderRadius: 6
         },
         {
-          label: 'Avg Rating (x10)',
-          data: agentPerformance.map(a => (a.averageRating || 0) * 10),
+          label: 'Resolution Rate (%)',
+          data: agentPerformance.map(a => (a.resolutionRate || a.ResolutionRate || 0)),
           backgroundColor: '#22c55e',
-          borderRadius: 4
+          borderRadius: 6
         }
       ]
     },
@@ -947,7 +1023,8 @@ function renderAgentChart(agentPerformance) {
           position: 'top',
           labels: {
             color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-            usePointStyle: true
+            usePointStyle: true,
+            padding: 20
           }
         }
       },
