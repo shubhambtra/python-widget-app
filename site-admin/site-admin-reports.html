@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports - Site Admin</title>
+  <link rel="stylesheet" href="css/site-admin-shared.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 1200px) {
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .chart-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+    .chart-card.full-width {
+      grid-column: 1 / -1;
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .chart-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--primary-color);
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+    .chart-container.small {
+      height: 250px;
+    }
+    .date-filter {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .date-filter select,
+    .date-filter input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .filter-btn:hover {
+      background: var(--primary-hover);
+    }
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .stats-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .summary-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .summary-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    .summary-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+    .summary-change {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .summary-change.positive {
+      color: #22c55e;
+    }
+    .summary-change.negative {
+      color: #ef4444;
+    }
+    .no-data {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-secondary);
+    }
+    .no-data svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    .legend-custom {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    .export-btn {
+      padding: 0.5rem 1rem;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .export-btn:hover {
+      background: var(--hover-bg);
+    }
+    .export-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon" data-brand="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <div class="sidebar-logo-text" data-brand="name">Assistica AI</div>
+      </div>
+      <div class="site-selector" id="siteSelector">
+        <span class="site-name" id="siteName">Loading...</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Dashboard</div>
+        <div class="nav-item" data-page="site-admin-overview.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          Overview
+        </div>
+        <div class="nav-item" data-page="site-admin-conversations.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          Conversations
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <div class="nav-item" data-page="site-admin-agents.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Agents
+        </div>
+        <!-- Live Monitor hidden
+        <div class="nav-item" id="liveMonitorLink" onclick="openLiveMonitor()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          Live Monitor
+        </div>
+        -->
+        <div class="nav-item" data-page="site-admin-messages.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          Welcome Messages
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Configuration</div>
+        <div class="nav-item" data-page="site-admin-settings.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Settings
+        </div>
+        <div class="nav-item" data-page="site-admin-widget.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+          Widget
+        </div>
+        <div class="nav-item active" data-page="site-admin-reports.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Reports
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Billing</div>
+        <div class="nav-item" data-page="site-admin-subscription.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+          </svg>
+          Subscription
+        </div>
+        <div class="nav-item" data-page="site-admin-billing.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          Billing
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logout()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Reports & Analytics</h1>
+      <div class="date-filter">
+        <select id="dateRange" onchange="handleDateRangeChange()">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="custom">Custom Range</option>
+        </select>
+        <input type="date" id="startDate" style="display: none;" />
+        <input type="date" id="endDate" style="display: none;" />
+        <button class="filter-btn" onclick="loadReports()">Apply</button>
+      </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-summary" id="statsSummary">
+      <div class="summary-card">
+        <div class="summary-value" id="totalConvs">-</div>
+        <div class="summary-label">Total Conversations</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value" id="resolvedConvs">-</div>
+        <div class="summary-label">Resolved</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value" id="avgRating">-</div>
+        <div class="summary-label">Avg. CSAT Rating</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value" id="avgResponseTime">-</div>
+        <div class="summary-label">Avg. Response Time</div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="reports-grid">
+      <!-- Conversations by Intent -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            Conversations by Intent
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="intentChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Conversations by Status -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Conversations by Status
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Conversations Over Time -->
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Conversations Over Time
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="timelineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- CSAT Distribution -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            CSAT Rating Distribution
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="csatChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Peak Hours -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Peak Conversation Hours
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="peakHoursChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Resolution Status -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            Resolution Status
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="resolutionChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Agent Performance -->
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Agent Performance Comparison
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="agentChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-spinner"></div>
+</div>
+
+<script src="js/site-admin-shared.js"></script>
+<script>
+const API_URL = window.location.origin;
+const urlParams = new URLSearchParams(window.location.search);
+const siteId = urlParams.get('siteId');
+const token = urlParams.get('token');
+
+// Chart instances
+let intentChart, statusChart, timelineChart, csatChart, peakHoursChart, resolutionChart, agentChart;
+
+// Chart colors
+const chartColors = [
+  '#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6',
+  '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#84cc16'
+];
+
+const statusColors = {
+  'active': '#22c55e',
+  'pending': '#f59e0b',
+  'closed': '#64748b',
+  'resolved': '#6366f1'
+};
+
+const resolutionColors = {
+  'resolved': '#22c55e',
+  'unresolved': '#ef4444',
+  'escalated': '#f59e0b',
+  'spam': '#64748b'
+};
+
+if (!siteId || !token) {
+  window.location.href = '/site-login';
+}
+
+async function apiGet(endpoint) {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+  const result = await response.json();
+  return result.data || result;
+}
+
+function showLoading() {
+  document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+function handleDateRangeChange() {
+  const dateRange = document.getElementById('dateRange').value;
+  const startDate = document.getElementById('startDate');
+  const endDate = document.getElementById('endDate');
+
+  if (dateRange === 'custom') {
+    startDate.style.display = 'block';
+    endDate.style.display = 'block';
+  } else {
+    startDate.style.display = 'none';
+    endDate.style.display = 'none';
+  }
+}
+
+function getDateRange() {
+  const rangeValue = document.getElementById('dateRange').value;
+  const endDate = new Date();
+  let startDate = new Date();
+
+  if (rangeValue === 'custom') {
+    const customStart = document.getElementById('startDate').value;
+    const customEnd = document.getElementById('endDate').value;
+    if (customStart && customEnd) {
+      return { start: new Date(customStart), end: new Date(customEnd) };
+    }
+  }
+
+  startDate.setDate(endDate.getDate() - parseInt(rangeValue));
+  return { start: startDate, end: endDate };
+}
+
+async function loadReports() {
+  showLoading();
+  try {
+    // Load conversations
+    const conversations = await apiGet(`/api/sites/${siteId}/conversations`);
+    const dateRange = getDateRange();
+
+    // Filter by date range
+    const filteredConvs = conversations.filter(c => {
+      const convDate = new Date(c.startedAt || c.createdAt);
+      return convDate >= dateRange.start && convDate <= dateRange.end;
+    });
+
+    // Load dashboard stats
+    const stats = await apiGet(`/sites/${siteId}/analytics/dashboard`);
+
+    // Update summary
+    updateSummary(filteredConvs, stats);
+
+    // Generate charts
+    renderIntentChart(filteredConvs);
+    renderStatusChart(filteredConvs);
+    renderTimelineChart(filteredConvs, dateRange);
+    renderCsatChart(filteredConvs);
+    renderPeakHoursChart(filteredConvs);
+    renderResolutionChart(filteredConvs);
+    renderAgentChart(stats.agentPerformance || []);
+
+  } catch (err) {
+    console.error('Error loading reports:', err);
+  } finally {
+    hideLoading();
+  }
+}
+
+function updateSummary(conversations, stats) {
+  document.getElementById('totalConvs').textContent = conversations.length;
+
+  const resolved = conversations.filter(c =>
+    c.status === 'closed' || c.resolutionStatus === 'resolved'
+  ).length;
+  document.getElementById('resolvedConvs').textContent = resolved;
+
+  document.getElementById('avgRating').textContent =
+    stats.averageRating ? stats.averageRating.toFixed(1) : 'N/A';
+
+  document.getElementById('avgResponseTime').textContent =
+    formatTime(stats.averageResponseTime);
+}
+
+function formatTime(seconds) {
+  if (!seconds) return 'N/A';
+  if (seconds < 60) return `${Math.round(seconds)}s`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
+  return `${Math.round(seconds / 3600)}h`;
+}
+
+function renderIntentChart(conversations) {
+  const ctx = document.getElementById('intentChart').getContext('2d');
+
+  // Aggregate by tags/intents
+  const intentCounts = {};
+  conversations.forEach(c => {
+    const tags = c.tags || [];
+    if (tags.length === 0) {
+      intentCounts['No Intent'] = (intentCounts['No Intent'] || 0) + 1;
+    } else {
+      tags.forEach(tag => {
+        intentCounts[tag] = (intentCounts[tag] || 0) + 1;
+      });
+    }
+  });
+
+  const labels = Object.keys(intentCounts);
+  const data = Object.values(intentCounts);
+
+  if (intentChart) intentChart.destroy();
+
+  if (labels.length === 0) {
+    showNoData(ctx);
+    return;
+  }
+
+  intentChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: chartColors.slice(0, labels.length),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
+            padding: 15,
+            usePointStyle: true
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderStatusChart(conversations) {
+  const ctx = document.getElementById('statusChart').getContext('2d');
+
+  const statusCounts = {};
+  conversations.forEach(c => {
+    const status = c.status || 'unknown';
+    statusCounts[status] = (statusCounts[status] || 0) + 1;
+  });
+
+  const labels = Object.keys(statusCounts);
+  const data = Object.values(statusCounts);
+  const colors = labels.map(l => statusColors[l] || '#64748b');
+
+  if (statusChart) statusChart.destroy();
+
+  statusChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+      datasets: [{
+        data: data,
+        backgroundColor: colors,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
+            padding: 15,
+            usePointStyle: true
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderTimelineChart(conversations, dateRange) {
+  const ctx = document.getElementById('timelineChart').getContext('2d');
+
+  // Group by date
+  const dateCounts = {};
+  const currentDate = new Date(dateRange.start);
+
+  while (currentDate <= dateRange.end) {
+    const dateKey = currentDate.toISOString().split('T')[0];
+    dateCounts[dateKey] = 0;
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  conversations.forEach(c => {
+    const date = new Date(c.startedAt || c.createdAt).toISOString().split('T')[0];
+    if (dateCounts.hasOwnProperty(date)) {
+      dateCounts[date]++;
+    }
+  });
+
+  const labels = Object.keys(dateCounts).map(d => {
+    const date = new Date(d);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+  const data = Object.values(dateCounts);
+
+  if (timelineChart) timelineChart.destroy();
+
+  timelineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Conversations',
+        data: data,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+        pointBackgroundColor: '#6366f1'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+            maxRotation: 45
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(100, 116, 139, 0.1)'
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderCsatChart(conversations) {
+  const ctx = document.getElementById('csatChart').getContext('2d');
+
+  // Count ratings
+  const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  conversations.forEach(c => {
+    if (c.csatRating && c.csatRating >= 1 && c.csatRating <= 5) {
+      ratingCounts[c.csatRating]++;
+    }
+  });
+
+  if (csatChart) csatChart.destroy();
+
+  csatChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+      datasets: [{
+        label: 'Ratings',
+        data: Object.values(ratingCounts),
+        backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(100, 116, 139, 0.1)'
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderPeakHoursChart(conversations) {
+  const ctx = document.getElementById('peakHoursChart').getContext('2d');
+
+  // Count by hour
+  const hourCounts = Array(24).fill(0);
+  conversations.forEach(c => {
+    const hour = new Date(c.startedAt || c.createdAt).getHours();
+    hourCounts[hour]++;
+  });
+
+  const labels = Array.from({ length: 24 }, (_, i) => {
+    const hour = i % 12 || 12;
+    const ampm = i < 12 ? 'AM' : 'PM';
+    return `${hour}${ampm}`;
+  });
+
+  if (peakHoursChart) peakHoursChart.destroy();
+
+  peakHoursChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Conversations',
+        data: hourCounts,
+        backgroundColor: '#6366f1',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+            maxRotation: 45,
+            callback: function(value, index) {
+              return index % 3 === 0 ? this.getLabelForValue(value) : '';
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(100, 116, 139, 0.1)'
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderResolutionChart(conversations) {
+  const ctx = document.getElementById('resolutionChart').getContext('2d');
+
+  const resolutionCounts = {};
+  conversations.forEach(c => {
+    const status = c.resolutionStatus || 'pending';
+    resolutionCounts[status] = (resolutionCounts[status] || 0) + 1;
+  });
+
+  const labels = Object.keys(resolutionCounts);
+  const data = Object.values(resolutionCounts);
+  const colors = labels.map(l => resolutionColors[l] || '#64748b');
+
+  if (resolutionChart) resolutionChart.destroy();
+
+  resolutionChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+      datasets: [{
+        data: data,
+        backgroundColor: colors,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
+            padding: 15,
+            usePointStyle: true
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderAgentChart(agentPerformance) {
+  const ctx = document.getElementById('agentChart').getContext('2d');
+
+  if (!agentPerformance.length) {
+    if (agentChart) agentChart.destroy();
+    showNoData(ctx, 'No agent data available');
+    return;
+  }
+
+  const labels = agentPerformance.map(a => a.agentName || 'Unknown');
+
+  if (agentChart) agentChart.destroy();
+
+  agentChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Conversations Handled',
+          data: agentPerformance.map(a => a.conversationsHandled || 0),
+          backgroundColor: '#6366f1',
+          borderRadius: 4
+        },
+        {
+          label: 'Avg Rating (x10)',
+          data: agentPerformance.map(a => (a.averageRating || 0) * 10),
+          backgroundColor: '#22c55e',
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
+            usePointStyle: true
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(100, 116, 139, 0.1)'
+          },
+          ticks: {
+            color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+          }
+        }
+      }
+    }
+  });
+}
+
+function showNoData(ctx, message = 'No data available') {
+  ctx.font = '14px sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.textAlign = 'center';
+  ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const siteData = await apiGet(`/sites/${siteId}`);
+    document.getElementById('siteName').textContent = siteData.name || 'My Site';
+  } catch (err) {
+    console.error('Error loading site:', err);
+  }
+
+  loadReports();
+  hideLoading();
+});
+</script>
+</body>
+</html>
