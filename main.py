@@ -273,6 +273,16 @@ def admin_conversations_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-conversations.html")
 
 
+@app.get("/admin-reports")
+def admin_reports_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-reports.html")
+
+
+@app.get("/admin-reports.html")
+def admin_reports_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-reports.html")
+
+
 @app.get("/admin-plans")
 def admin_plans_page():
     return FileResponse(BASE_DIR / "admin" / "admin-plans.html")
