@@ -900,6 +900,252 @@ input:checked + .toggle-slider:before {
   to { transform: rotate(360deg); }
 }
 
+/* ==================== RATING BADGES ==================== */
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.rating-badge.rating-high {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.rating-badge.rating-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.rating-badge.rating-low {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.rating-value {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* ==================== CONVERSATION MODAL ==================== */
+.conversation-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-tertiary, #1e293b);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.conversation-info-item label {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.conversation-info-item .value {
+  font-size: 14px;
+  color: var(--text-primary, #f8fafc);
+}
+
+.feedback-text {
+  background: var(--bg-secondary, #0f172a);
+  padding: 12px;
+  border-radius: 8px;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+.messages-list {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-tertiary, #1e293b);
+}
+
+.message-item.visitor {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.message-item.agent {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.message-item.bot {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-color, #6366f1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.message-sender {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary, #f8fafc);
+}
+
+.message-time {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+}
+
+.message-text {
+  font-size: 14px;
+  color: var(--text-secondary, #cbd5e1);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ==================== USER CELL ==================== */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.user-email {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+}
+
+.text-muted {
+  color: var(--text-muted, #64748b);
+}
+
+/* ==================== CARD ACTIONS ==================== */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-tertiary, #1e293b);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.search-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted, #64748b);
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  color: var(--text-primary, #f8fafc);
+  font-size: 13px;
+  outline: none;
+  width: 150px;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted, #64748b);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--bg-tertiary, #1e293b);
+  border-radius: 8px;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: var(--accent-color, #6366f1);
+  color: white;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.loading-placeholder {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #64748b);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #64748b);
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
   .sidebar {
