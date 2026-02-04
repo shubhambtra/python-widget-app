@@ -186,8 +186,8 @@
         <div class="sidebar-logo-text" data-brand="name">Assistica AI</div>
       </div>
       <div class="site-selector" id="siteSelector">
-        <span class="site-name" id="siteName">Loading...</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        <div class="site-selector-name" id="siteName">Loading...</div>
+        <div class="site-selector-domain" id="siteDomain">---</div>
       </div>
     </div>
 
@@ -274,32 +274,44 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" onclick="logout()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        Logout
-      </button>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="userName">Admin</div>
+          <div class="user-role">Site Owner</div>
+        </div>
+      </div>
+      <div class="sidebar-actions">
+        <button class="logout-btn" onclick="logout()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   </aside>
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="page-header">
-      <h1>Reports & Analytics</h1>
-      <div class="date-filter">
-        <select id="dateRange" onchange="handleDateRangeChange()">
-          <option value="7">Last 7 days</option>
-          <option value="30" selected>Last 30 days</option>
-          <option value="90">Last 90 days</option>
-          <option value="custom">Custom Range</option>
-        </select>
-        <input type="date" id="startDate" style="display: none;" />
-        <input type="date" id="endDate" style="display: none;" />
-        <button class="filter-btn" onclick="loadReports()">Apply</button>
+    <div class="topbar">
+      <h1 class="topbar-title">Reports & Analytics</h1>
+      <div class="topbar-actions">
+        <div class="date-filter">
+          <select id="dateRange" onchange="handleDateRangeChange()">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="custom">Custom Range</option>
+          </select>
+          <input type="date" id="startDate" style="display: none;" />
+          <input type="date" id="endDate" style="display: none;" />
+          <button class="btn btn-primary" onclick="loadReports()">Apply</button>
+        </div>
       </div>
     </div>
 
+    <div class="content-area">
     <!-- Summary Stats -->
     <div class="stats-summary" id="statsSummary">
       <div class="summary-card">
@@ -426,6 +438,7 @@
           <canvas id="agentChart"></canvas>
         </div>
       </div>
+    </div>
     </div>
   </main>
 </div>
@@ -975,6 +988,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const siteData = await apiGet(`/sites/${siteId}`);
     document.getElementById('siteName').textContent = siteData.name || 'My Site';
+    document.getElementById('siteDomain').textContent = siteData.domain || '---';
   } catch (err) {
     console.error('Error loading site:', err);
   }
