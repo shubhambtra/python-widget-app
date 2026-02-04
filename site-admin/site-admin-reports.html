@@ -26,19 +26,61 @@
       margin-bottom: 1.5rem;
     }
     .chart-card {
-      background: var(--sidebar-bg);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(99, 102, 241, 0.01));
       border-radius: 12px;
       padding: 1.25rem;
-      border: 1px solid var(--border-color);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
       transition: all 0.2s;
     }
     .chart-card:hover {
       border-color: rgba(99, 102, 241, 0.3);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+      transform: translateY(-2px);
     }
     .chart-card.full-width {
       grid-column: 1 / -1;
     }
+    .chart-card.green-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.03), rgba(34, 197, 94, 0.01));
+      border-color: rgba(34, 197, 94, 0.15);
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.06);
+    }
+    .chart-card.green-card:hover {
+      border-color: rgba(34, 197, 94, 0.3);
+      box-shadow: 0 8px 24px rgba(34, 197, 94, 0.12);
+    }
+    .chart-card.green-card .chart-title svg { color: #22c55e; }
+    .chart-card.orange-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.03), rgba(245, 158, 11, 0.01));
+      border-color: rgba(245, 158, 11, 0.15);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.06);
+    }
+    .chart-card.orange-card:hover {
+      border-color: rgba(245, 158, 11, 0.3);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.12);
+    }
+    .chart-card.orange-card .chart-title svg { color: #f59e0b; }
+    .chart-card.purple-card {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.03), rgba(139, 92, 246, 0.01));
+      border-color: rgba(139, 92, 246, 0.15);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.06);
+    }
+    .chart-card.purple-card:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+    }
+    .chart-card.purple-card .chart-title svg { color: #8b5cf6; }
+    .chart-card.cyan-card {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(6, 182, 212, 0.01));
+      border-color: rgba(6, 182, 212, 0.15);
+      box-shadow: 0 2px 8px rgba(6, 182, 212, 0.06);
+    }
+    .chart-card.cyan-card:hover {
+      border-color: rgba(6, 182, 212, 0.3);
+      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.12);
+    }
+    .chart-card.cyan-card .chart-title svg { color: #06b6d4; }
     .chart-header {
       display: flex;
       justify-content: space-between;
@@ -469,7 +511,7 @@
       </div>
       <div class="reports-grid">
       <!-- Conversations by Intent -->
-      <div class="chart-card">
+      <div class="chart-card purple-card">
         <div class="chart-header">
           <div class="chart-title">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -477,6 +519,7 @@
             </svg>
             Conversations by Intent
           </div>
+          <span class="chart-badge" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">By Tags</span>
         </div>
         <div class="chart-container">
           <canvas id="intentChart"></canvas>
@@ -484,7 +527,7 @@
       </div>
 
       <!-- Conversations by Status -->
-      <div class="chart-card">
+      <div class="chart-card green-card">
         <div class="chart-header">
           <div class="chart-title">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -492,6 +535,7 @@
             </svg>
             Conversations by Status
           </div>
+          <span class="chart-badge" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">Status</span>
         </div>
         <div class="chart-container">
           <canvas id="statusChart"></canvas>
@@ -507,6 +551,7 @@
             </svg>
             Conversations Over Time
           </div>
+          <span class="chart-badge">Trend</span>
         </div>
         <div class="chart-container">
           <canvas id="timelineChart"></canvas>
@@ -514,7 +559,7 @@
       </div>
 
       <!-- CSAT Distribution -->
-      <div class="chart-card">
+      <div class="chart-card orange-card">
         <div class="chart-header">
           <div class="chart-title">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -522,6 +567,7 @@
             </svg>
             CSAT Rating Distribution
           </div>
+          <span class="chart-badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">Ratings</span>
         </div>
         <div class="chart-container">
           <canvas id="csatChart"></canvas>
@@ -529,7 +575,7 @@
       </div>
 
       <!-- Peak Hours -->
-      <div class="chart-card">
+      <div class="chart-card cyan-card">
         <div class="chart-header">
           <div class="chart-title">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -537,6 +583,7 @@
             </svg>
             Peak Conversation Hours
           </div>
+          <span class="chart-badge" style="background: rgba(6, 182, 212, 0.1); color: #06b6d4;">24 Hours</span>
         </div>
         <div class="chart-container">
           <canvas id="peakHoursChart"></canvas>
@@ -544,7 +591,7 @@
       </div>
 
       <!-- Resolution Status -->
-      <div class="chart-card">
+      <div class="chart-card green-card">
         <div class="chart-header">
           <div class="chart-title">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -552,6 +599,7 @@
             </svg>
             Resolution Status
           </div>
+          <span class="chart-badge" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">Resolution</span>
         </div>
         <div class="chart-container">
           <canvas id="resolutionChart"></canvas>
@@ -568,7 +616,7 @@
         </svg>
         Agent Performance
       </div>
-      <div class="chart-card">
+      <div class="chart-card purple-card">
         <div class="chart-header">
           <div class="chart-title">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -576,7 +624,7 @@
             </svg>
             Performance Comparison
           </div>
-          <span class="chart-badge">All Agents</span>
+          <span class="chart-badge" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">All Agents</span>
         </div>
         <div class="chart-container" style="height: 320px;">
           <canvas id="agentChart"></canvas>
