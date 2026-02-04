@@ -505,7 +505,9 @@ async function loadReports() {
   showLoading();
   try {
     // Load conversations
-    const conversations = await apiGet(`/sites/${siteId}/conversations`);
+    const convData = await apiGet(`/sites/${siteId}/conversations`);
+    // Handle different response structures
+    const conversations = Array.isArray(convData) ? convData : (convData?.items || convData?.conversations || []);
     const dateRange = getDateRange();
 
     // Filter by date range
@@ -515,7 +517,7 @@ async function loadReports() {
     });
 
     // Load dashboard stats
-    const stats = await apiGet(`/sites/${siteId}/analytics/dashboard`);
+    const stats = await apiGet(`/sites/${siteId}/analytics/dashboard`) || {};
 
     // Update summary
     updateSummary(filteredConvs, stats);
