@@ -464,6 +464,10 @@ def site_admin_subscription():
 def site_admin_billing():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-billing.html")
 
+@app.get("/site-admin-conversations.html")
+def site_admin_conversations():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-conversations.html")
+
 
 # Serve site admin shared JS
 @app.get("/js/site-admin-shared.js")
