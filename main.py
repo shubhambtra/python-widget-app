@@ -2381,15 +2381,26 @@ async def websocket_endpoint(ws: WebSocket):
                         print(f"Failed to send CSAT request: {e}")
 
                 # Notify customer that conversation is closed
+                close_message = "This conversation has been closed. Thank you for chatting with us!"
                 if target_visitor in site["customers"]:
                     try:
                         await site["customers"][target_visitor].send_json({
                             "type": "conversation_closed",
                             "status": close_status,
-                            "message": "This conversation has been closed. Thank you for chatting with us!"
+                            "message": close_message
                         })
                     except Exception as e:
                         print(f"Failed to send close notification: {e}")
+
+                # Save closed message to database
+                if conversation_id:
+                    await save_message_to_api(
+                        conversation_id=conversation_id,
+                        sender_id="system",
+                        sender_type="system",
+                        content=close_message,
+                        message_type="system"
+                    )
 
                 # Confirm to support
                 await ws.send_json({
@@ -2433,6 +2444,16 @@ async def websocket_endpoint(ws: WebSocket):
                                     print(f"Failed to save CSAT rating: {response.status_code} - {response.text}")
                         except Exception as e:
                             print(f"Error saving CSAT rating: {e}")
+
+                    # Save the thank you message to database
+                    thank_you_message = "Thank you for your feedback! We appreciate you taking the time to rate your experience."
+                    await save_message_to_api(
+                        conversation_id=conversation_id,
+                        sender_id="system",
+                        sender_type="system",
+                        content=thank_you_message,
+                        message_type="system"
+                    )
 
                 # Notify all agents of the rating
                 await broadcast_to_agents(site, {
