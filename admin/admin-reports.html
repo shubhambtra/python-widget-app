@@ -446,11 +446,11 @@ async function loadReports() {
   try {
     // Load all data
     const [sites, users, conversations, subscriptions, payments] = await Promise.all([
-      apiGet('/api/sites'),
-      apiGet('/api/users'),
-      apiGet('/api/conversations').catch(() => []),
-      apiGet('/api/subscriptions').catch(() => []),
-      apiGet('/api/payments').catch(() => [])
+      apiGet('/sites'),
+      apiGet('/users'),
+      apiGet('/conversations').catch(() => []),
+      apiGet('/subscriptions').catch(() => []),
+      apiGet('/payments').catch(() => [])
     ]);
 
     const dateRange = getDateRange();
