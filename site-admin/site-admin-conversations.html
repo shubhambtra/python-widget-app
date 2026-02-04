@@ -452,18 +452,6 @@ function renderConversationMessages(conversation, messages) {
 function closeConversationModal() {
   document.getElementById('conversationModal').style.display = 'none';
 }
-
-function formatDate(dateStr) {
-  if (!dateStr) return '-';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString();
-}
-
-function formatDateTime(dateStr) {
-  if (!dateStr) return '-';
-  const date = new Date(dateStr);
-  return date.toLocaleString();
-}
 </script>
 </body>
 </html>

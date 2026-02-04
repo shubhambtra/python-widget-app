@@ -330,6 +330,18 @@ function formatTime(seconds) {
   return `${Math.round(seconds / 3600)}h`;
 }
 
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString();
+}
+
+function formatDateTime(dateStr) {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleString();
+}
+
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div');
