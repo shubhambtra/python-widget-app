@@ -194,38 +194,36 @@ function renderStep(step) {
 function renderStep1() {
   return `
     <div class="wizard-step active" data-step="1">
-      <div class="wizard-illustration blue">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h2 class="wizard-step-title">Get Your Support Chat Running</h2>
+        <p class="wizard-step-desc" style="margin-bottom: 0;">
+          In just 2 simple steps, you'll have a fully functional support chat on your website.
+        </p>
       </div>
-      <h2 class="wizard-step-title" style="text-align: center;">Get Your Support Chat Running</h2>
-      <p class="wizard-step-desc" style="text-align: center;">
-        In just 2 simple steps, you'll have a fully functional support chat on your website.
-        Add your team members and install the widget - it only takes a few minutes.
-      </p>
-      <div style="background: #f0f9ff; border-radius: 12px; padding: 20px; margin-top: 24px;">
-        <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
-          <div style="width: 32px; height: 32px; background: #0ea5e9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 16px; padding: 24px; border: 1px solid rgba(59, 130, 246, 0.2); transition: all 0.3s ease; cursor: default;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(59, 130, 246, 0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <span style="background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;">STEP 1</span>
           </div>
-          <div>
-            <div style="font-weight: 600; color: #0369a1; margin-bottom: 4px;">Step 1: Add Support Agents</div>
-            <div style="font-size: 13px; color: #64748b;">Invite your team members to help manage conversations</div>
-          </div>
+          <div style="font-weight: 700; color: #1e40af; font-size: 18px; margin-bottom: 8px;">Add Support Agents</div>
+          <div style="font-size: 14px; color: #64748b; line-height: 1.5;">Invite team members to help manage customer conversations</div>
         </div>
-        <div style="display: flex; align-items: flex-start; gap: 16px;">
-          <div style="width: 32px; height: 32px; background: #0ea5e9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 16px; padding: 24px; border: 1px solid rgba(34, 197, 94, 0.2); transition: all 0.3s ease; cursor: default;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(34, 197, 94, 0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #22c55e 0%, #10b981 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 6px 16px rgba(34, 197, 94, 0.3);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </div>
+            <span style="background: linear-gradient(135deg, #22c55e, #10b981); color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;">STEP 2</span>
           </div>
-          <div>
-            <div style="font-weight: 600; color: #0369a1; margin-bottom: 4px;">Step 2: Install the Widget</div>
-            <div style="font-size: 13px; color: #64748b;">Add a simple code snippet to your website</div>
-          </div>
+          <div style="font-weight: 700; color: #166534; font-size: 18px; margin-bottom: 8px;">Install the Widget</div>
+          <div style="font-size: 14px; color: #64748b; line-height: 1.5;">Add a simple code snippet to your website</div>
         </div>
       </div>
     </div>
@@ -249,68 +247,62 @@ function renderStep2() {
 
   return `
     <div class="wizard-step active" data-step="2">
-      <div class="wizard-illustration purple">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 class="wizard-step-title">Add Support Agents</h2>
+        <p class="wizard-step-desc" style="margin-bottom: 0;">
+          Agents are team members who can view and respond to customer conversations.
+        </p>
       </div>
-      <h2 class="wizard-step-title" style="text-align: center;">Add Support Agents</h2>
-      <p class="wizard-step-desc" style="text-align: center;">
-        Agents are team members who can view and respond to customer conversations.
-        You can add more agents later from the Agents page.
-      </p>
 
       ${agentsAddedHtml}
 
       <form id="wizardAddAgentForm" onsubmit="wizardAddAgent(event)">
-        <div class="wizard-form-group">
-          <label class="wizard-form-label">Agent Email Address</label>
-          <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required>
-          <div class="form-help" style="margin-top: 6px;">The agent must already have a registered account</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div>
+            <div class="wizard-form-group" style="margin-bottom: 16px;">
+              <label class="wizard-form-label">Agent Email Address</label>
+              <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required>
+              <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">The agent must already have an account</div>
+            </div>
+            <button type="submit" class="wizard-btn wizard-btn-primary" style="width: 100%;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add Agent
+            </button>
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Permissions</div>
+            <div class="wizard-toggle-group">
+              <div class="wizard-toggle-label">Can View Conversations</div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="wizardCanView" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="wizard-toggle-group">
+              <div class="wizard-toggle-label">Can Respond to Messages</div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="wizardCanRespond" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="wizard-toggle-group">
+              <div class="wizard-toggle-label">Can Close Conversations</div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="wizardCanClose" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="wizard-toggle-group">
+              <div class="wizard-toggle-label">Admin Access</div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="wizardCanManage">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
         </div>
-
-        <div style="margin-top: 20px;">
-          <div style="font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 12px;">Permissions</div>
-
-          <div class="wizard-toggle-group">
-            <div class="wizard-toggle-label">Can View Conversations</div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="wizardCanView" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="wizard-toggle-group">
-            <div class="wizard-toggle-label">Can Respond to Messages</div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="wizardCanRespond" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="wizard-toggle-group">
-            <div class="wizard-toggle-label">Can Close Conversations</div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="wizardCanClose" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="wizard-toggle-group">
-            <div class="wizard-toggle-label">Can Manage Settings (Admin)</div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="wizardCanManage">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <button type="submit" class="wizard-btn wizard-btn-secondary" style="margin-top: 16px; width: 100%;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Add Agent
-        </button>
       </form>
     </div>
   `;
@@ -321,45 +313,45 @@ function renderStep3() {
 
   return `
     <div class="wizard-step active" data-step="3">
-      <div class="wizard-illustration blue">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-        </svg>
-      </div>
-      <h2 class="wizard-step-title" style="text-align: center;">Install the Widget</h2>
-      <p class="wizard-step-desc" style="text-align: center;">
-        Copy the code snippet below and add it to your website to enable the chat widget.
-      </p>
-
-      <div class="wizard-instructions">
-        <div class="wizard-instruction-item">
-          <div class="wizard-instruction-number">1</div>
-          <div class="wizard-instruction-text">
-            Copy the code snippet below by clicking the <strong>Copy Code</strong> button
-          </div>
-        </div>
-        <div class="wizard-instruction-item">
-          <div class="wizard-instruction-number">2</div>
-          <div class="wizard-instruction-text">
-            Open your website's HTML file (or template)
-          </div>
-        </div>
-        <div class="wizard-instruction-item">
-          <div class="wizard-instruction-number">3</div>
-          <div class="wizard-instruction-text">
-            Paste the code just before the closing <code>&lt;/body&gt;</code> tag
-          </div>
-        </div>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 class="wizard-step-title">Install the Widget</h2>
+        <p class="wizard-step-desc" style="margin-bottom: 0;">
+          Copy the code snippet and add it to your website to enable the chat widget.
+        </p>
       </div>
 
-      <div class="wizard-code-block">
-        <button type="button" class="wizard-code-copy" id="wizardCopyBtn" onclick="wizardCopyCode()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <span id="wizardCopyBtnText">Copy Code</span>
-        </button>
-        <pre id="wizardCodeSnippet">${escapeHtmlForDisplay(widgetCode)}</pre>
+      <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px;">How to Install</div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #0ea5e9, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;">1</div>
+              <div style="font-size: 13px; color: #475569; line-height: 1.5; padding-top: 4px;">Click <strong>Copy Code</strong> button</div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #0ea5e9, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;">2</div>
+              <div style="font-size: 13px; color: #475569; line-height: 1.5; padding-top: 4px;">Open your website's HTML file</div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #0ea5e9, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;">3</div>
+              <div style="font-size: 13px; color: #475569; line-height: 1.5; padding-top: 4px;">Paste before <code style="background: #dbeafe; padding: 2px 6px; border-radius: 4px; color: #2563eb;">&lt;/body&gt;</code></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="font-size: 13px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.5px;">Widget Code</div>
+            <button type="button" class="wizard-btn wizard-btn-primary" id="wizardCopyBtn" onclick="wizardCopyCode()" style="padding: 10px 20px; font-size: 13px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span id="wizardCopyBtnText">Copy Code</span>
+            </button>
+          </div>
+          <div class="wizard-code-block" style="margin: 0; max-height: 220px; overflow-y: auto;">
+            <pre id="wizardCodeSnippet" style="font-size: 12px;">${escapeHtmlForDisplay(widgetCode)}</pre>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -370,42 +362,52 @@ function renderStep4() {
 
   return `
     <div class="wizard-step active" data-step="4">
-      <div class="wizard-success-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-      </div>
-      <h2 class="wizard-step-title" style="text-align: center;">You're All Set!</h2>
-      <p class="wizard-step-desc" style="text-align: center;">
-        Your support chat is ready to go. Here's a summary of what you've set up:
-      </p>
-
-      <div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin: 20px 0;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-          <div style="width: 24px; height: 24px; background: ${state.agentsAdded > 0 ? '#22c55e' : '#94a3b8'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <span style="font-size: 14px; color: ${state.agentsAdded > 0 ? '#166534' : '#64748b'};">
-            ${state.agentsAdded > 0 ? `${state.agentsAdded} agent${state.agentsAdded > 1 ? 's' : ''} added` : 'No agents added yet'}
-          </span>
+      <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px;">
+        <div class="wizard-success-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
         </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 24px; height: 24px; background: ${state.widgetCodeCopied ? '#22c55e' : '#94a3b8'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <span style="font-size: 14px; color: ${state.widgetCodeCopied ? '#166534' : '#64748b'};">
-            ${state.widgetCodeCopied ? 'Widget code copied' : 'Widget code not copied yet'}
-          </span>
+        <div>
+          <h2 class="wizard-step-title" style="margin-bottom: 4px;">You're All Set!</h2>
+          <p class="wizard-step-desc" style="margin-bottom: 0;">
+            Your support chat is ready to help your customers.
+          </p>
         </div>
       </div>
 
-      <p style="font-size: 14px; color: #64748b; text-align: center; margin-bottom: 8px;">
-        What would you like to do next?
-      </p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: ${state.agentsAdded > 0 ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)' : 'linear-gradient(135deg, #fff7ed, #ffedd5)'}; border-radius: 14px; border: 1px solid ${state.agentsAdded > 0 ? '#86efac' : '#fed7aa'};">
+          <div style="width: 36px; height: 36px; background: ${state.agentsAdded > 0 ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'linear-gradient(135deg, #f97316, #ea580c)'}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="${state.agentsAdded > 0 ? 'M5 13l4 4L19 7' : 'M12 6v6m0 0v6m0-6h6m-6 0H6'}" />
+            </svg>
+          </div>
+          <div>
+            <div style="font-size: 15px; font-weight: 700; color: ${state.agentsAdded > 0 ? '#166534' : '#9a3412'};">
+              ${state.agentsAdded > 0 ? `${state.agentsAdded} Agent${state.agentsAdded > 1 ? 's' : ''} Added` : 'No Agents Added'}
+            </div>
+            <div style="font-size: 12px; color: #64748b;">${state.agentsAdded > 0 ? 'Ready to handle chats' : 'Add agents later'}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: ${state.widgetCodeCopied ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)' : 'linear-gradient(135deg, #fff7ed, #ffedd5)'}; border-radius: 14px; border: 1px solid ${state.widgetCodeCopied ? '#86efac' : '#fed7aa'};">
+          <div style="width: 36px; height: 36px; background: ${state.widgetCodeCopied ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'linear-gradient(135deg, #f97316, #ea580c)'}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="${state.widgetCodeCopied ? 'M5 13l4 4L19 7' : 'M12 6v6m0 0v6m0-6h6m-6 0H6'}" />
+            </svg>
+          </div>
+          <div>
+            <div style="font-size: 15px; font-weight: 700; color: ${state.widgetCodeCopied ? '#166534' : '#9a3412'};">
+              ${state.widgetCodeCopied ? 'Widget Code Copied' : 'Widget Pending'}
+            </div>
+            <div style="font-size: 12px; color: #64748b;">${state.widgetCodeCopied ? 'Paste on your site' : 'Get code from Settings'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 16px;">
+        <span style="font-size: 14px; color: #64748b; font-weight: 500;">What would you like to do next?</span>
+      </div>
 
       <div class="wizard-actions-grid">
         <a href="${buildSiteAdminUrl('site-admin-overview.html')}" class="wizard-action-btn" onclick="completeOnboarding()">
@@ -418,13 +420,13 @@ function renderStep4() {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
           </svg>
-          <span>Customize Widget</span>
+          <span>Customize</span>
         </a>
         <a href="${buildSiteAdminUrl('site-admin-agents.html')}" class="wizard-action-btn" onclick="completeOnboarding()">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <span>View Agents</span>
+          <span>Agents</span>
         </a>
       </div>
     </div>
