@@ -183,7 +183,15 @@ async function apiPost(endpoint, body) {
     if (!res.ok) {
       const text = await res.text();
       console.error('API POST error:', text);
-      throw new Error(`API error: ${res.status}`);
+      try {
+        const errorData = JSON.parse(text);
+        throw new Error(errorData.message || `API error: ${res.status}`);
+      } catch (parseErr) {
+        if (parseErr.message && !parseErr.message.startsWith('API error')) {
+          throw parseErr;
+        }
+        throw new Error(`API error: ${res.status}`);
+      }
     }
     const text = await res.text();
     if (!text) return null;
