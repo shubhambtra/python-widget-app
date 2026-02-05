@@ -262,7 +262,11 @@ function renderStep2() {
             <div class="wizard-form-group" style="margin-bottom: 16px;">
               <label class="wizard-form-label">Agent Email Address</label>
               <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required>
-              <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">The agent must already have an account</div>
+            </div>
+            <div class="wizard-form-group" style="margin-bottom: 16px;">
+              <label class="wizard-form-label">Set Password</label>
+              <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Enter password for agent" required minlength="6">
+              <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">Agent will receive login credentials via email</div>
             </div>
             <button type="submit" class="wizard-btn wizard-btn-primary" style="width: 100%;">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -555,7 +559,8 @@ async function wizardAddAgent(e) {
   e.preventDefault();
 
   const email = document.getElementById('wizardAgentEmail').value.trim();
-  if (!email) return;
+  const password = document.getElementById('wizardAgentPassword').value;
+  if (!email || !password) return;
 
   const canView = document.getElementById('wizardCanView').checked;
   const canRespond = document.getElementById('wizardCanRespond').checked;
@@ -565,6 +570,7 @@ async function wizardAddAgent(e) {
   try {
     await apiPost(`/sites/${siteId}/agents`, {
       email: email,
+      password: password,
       canView: canView,
       canRespond: canRespond,
       canCloseConversations: canClose,
@@ -577,13 +583,14 @@ async function wizardAddAgent(e) {
     saveOnboardingState(state);
 
     // Show success and refresh step
-    showToast('Agent added successfully!', 'success');
+    showToast('Agent added successfully! Login credentials sent via email.', 'success');
     document.getElementById('wizardAgentEmail').value = '';
+    document.getElementById('wizardAgentPassword').value = '';
     document.getElementById('wizardContent').innerHTML = renderStep(2);
 
   } catch (err) {
     console.error('Error adding agent:', err);
-    showToast('Failed to add agent. Make sure the user exists.', 'error');
+    showToast(err.message || 'Failed to add agent.', 'error');
   }
 }
 
