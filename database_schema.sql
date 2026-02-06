@@ -99,6 +99,9 @@ CREATE TABLE dbo.sites (
         "show_branding": true
     }',
 
+    -- Onboarding state (stored as JSON string)
+    onboarding_state NVARCHAR(MAX) DEFAULT N'{"completed":false,"currentStep":1,"agentsAdded":0,"widgetCodeCopied":false,"dismissedAt":null}',
+
     -- Settings
     status NVARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
     timezone NVARCHAR(50) DEFAULT 'UTC',

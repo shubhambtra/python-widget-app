@@ -4,51 +4,68 @@
 console.log('[Onboarding] Script loaded');
 
 // ==================== STATE MANAGEMENT ====================
-const ONBOARDING_KEY = `assistica_onboarding_${siteId}`;
-console.log('[Onboarding] Key:', ONBOARDING_KEY);
+// In-memory cache to avoid repeated API calls per page load
+let _onboardingState = null;
 
-function getOnboardingState() {
-  try {
-    const stored = localStorage.getItem(ONBOARDING_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (e) {
-    console.warn('Error reading onboarding state:', e);
+const DEFAULT_ONBOARDING_STATE = {
+  completed: false,
+  currentStep: 1,
+  agentsAdded: 0,
+  widgetCodeCopied: false,
+  dismissedAt: null
+};
+
+async function getOnboardingState() {
+  if (_onboardingState) {
+    return _onboardingState;
   }
-  return {
-    completed: false,
-    currentStep: 1,
-    agentsAdded: 0,
-    widgetCodeCopied: false,
-    dismissedAt: null
-  };
-}
-
-function saveOnboardingState(state) {
   try {
-    localStorage.setItem(ONBOARDING_KEY, JSON.stringify(state));
+    const data = await apiGet(`/sites/${siteId}/onboarding`);
+    _onboardingState = data.data || { ...DEFAULT_ONBOARDING_STATE };
+    return _onboardingState;
   } catch (e) {
-    console.warn('Error saving onboarding state:', e);
+    console.warn('Error reading onboarding state from API, using default:', e);
+    _onboardingState = { ...DEFAULT_ONBOARDING_STATE };
+    return _onboardingState;
   }
 }
 
-function resetOnboardingState() {
-  const state = {
-    completed: false,
-    currentStep: 1,
-    agentsAdded: 0,
-    widgetCodeCopied: false,
-    dismissedAt: null
-  };
-  saveOnboardingState(state);
+async function saveOnboardingState(state) {
+  _onboardingState = state;
+  try {
+    await apiPut(`/sites/${siteId}/onboarding`, state);
+  } catch (e) {
+    console.warn('Error saving onboarding state to API:', e);
+  }
+}
+
+async function resetOnboardingState() {
+  const state = { ...DEFAULT_ONBOARDING_STATE };
+  await saveOnboardingState(state);
   return state;
 }
 
+// ==================== LOCALSTORAGE MIGRATION ====================
+async function migrateLocalStorageOnboarding() {
+  const localKey = `assistica_onboarding_${siteId}`;
+  try {
+    const stored = localStorage.getItem(localKey);
+    if (stored) {
+      const localState = JSON.parse(stored);
+      console.log('[Onboarding] Migrating localStorage state to DB:', localState);
+      await saveOnboardingState(localState);
+      localStorage.removeItem(localKey);
+      console.log('[Onboarding] Migration complete, localStorage key removed');
+    }
+  } catch (e) {
+    console.warn('Error migrating localStorage onboarding state:', e);
+  }
+}
+
 // ==================== WIZARD LIFECYCLE ====================
-function checkOnboarding() {
+async function checkOnboarding() {
   console.log('[Onboarding] checkOnboarding called');
-  const state = getOnboardingState();
+  const state = await getOnboardingState();
   console.log('[Onboarding] Current state:', state);
 
   // Don't show if already completed
@@ -71,10 +88,10 @@ function checkOnboarding() {
 
   // Show wizard
   console.log('[Onboarding] Opening wizard...');
-  openOnboardingWizard();
+  await openOnboardingWizard();
 }
 
-function openOnboardingWizard() {
+async function openOnboardingWizard() {
   console.log('[Onboarding] openOnboardingWizard called');
 
   // Remove existing wizard if present
@@ -84,7 +101,7 @@ function openOnboardingWizard() {
     existing.remove();
   }
 
-  const state = getOnboardingState();
+  const state = await getOnboardingState();
   console.log('[Onboarding] Creating wizard with state:', state);
 
   const wizardHtml = `
@@ -110,7 +127,7 @@ function openOnboardingWizard() {
         </div>
 
         <div class="wizard-content" id="wizardContent">
-          ${renderStep(state.currentStep)}
+          ${await renderStep(state.currentStep)}
         </div>
 
         <div class="wizard-footer" id="wizardFooter">
@@ -131,17 +148,17 @@ function closeOnboardingWizard() {
   }
 }
 
-function dismissOnboarding() {
-  const state = getOnboardingState();
+async function dismissOnboarding() {
+  const state = await getOnboardingState();
   state.dismissedAt = new Date().toISOString();
-  saveOnboardingState(state);
+  await saveOnboardingState(state);
   closeOnboardingWizard();
 }
 
-function completeOnboarding() {
-  const state = getOnboardingState();
+async function completeOnboarding() {
+  const state = await getOnboardingState();
   state.completed = true;
-  saveOnboardingState(state);
+  await saveOnboardingState(state);
   closeOnboardingWizard();
 }
 
@@ -181,12 +198,12 @@ function updateProgress(step) {
 }
 
 // ==================== STEP RENDERING ====================
-function renderStep(step) {
+async function renderStep(step) {
   switch (step) {
     case 1: return renderStep1();
-    case 2: return renderStep2();
+    case 2: return await renderStep2();
     case 3: return renderStep3();
-    case 4: return renderStep4();
+    case 4: return await renderStep4();
     default: return renderStep1();
   }
 }
@@ -230,8 +247,8 @@ function renderStep1() {
   `;
 }
 
-function renderStep2() {
-  const state = getOnboardingState();
+async function renderStep2() {
+  const state = await getOnboardingState();
   const agentsAddedHtml = state.agentsAdded > 0 ? `
     <div class="wizard-agent-added">
       <div class="wizard-agent-added-icon">
@@ -361,8 +378,8 @@ function renderStep3() {
   `;
 }
 
-function renderStep4() {
-  const state = getOnboardingState();
+async function renderStep4() {
+  const state = await getOnboardingState();
 
   return `
     <div class="wizard-step active" data-step="4">
@@ -517,14 +534,14 @@ function renderFooter(step) {
 }
 
 // ==================== NAVIGATION ====================
-function goToStep(step) {
-  const state = getOnboardingState();
+async function goToStep(step) {
+  const state = await getOnboardingState();
   state.currentStep = step;
-  saveOnboardingState(state);
+  await saveOnboardingState(state);
 
   // Update UI
   updateProgress(step);
-  document.getElementById('wizardContent').innerHTML = renderStep(step);
+  document.getElementById('wizardContent').innerHTML = await renderStep(step);
   document.getElementById('wizardFooter').innerHTML = renderFooter(step);
 
   // Update header titles based on step
@@ -543,13 +560,13 @@ function goToStep(step) {
   }
 }
 
-function finishOnboarding() {
+async function finishOnboarding() {
   const showAgain = document.getElementById('wizardShowAgain');
   if (showAgain && showAgain.checked) {
     // Reset state to show again
-    resetOnboardingState();
+    await resetOnboardingState();
   } else {
-    completeOnboarding();
+    await completeOnboarding();
   }
   closeOnboardingWizard();
 }
@@ -578,15 +595,15 @@ async function wizardAddAgent(e) {
     });
 
     // Update state
-    const state = getOnboardingState();
+    const state = await getOnboardingState();
     state.agentsAdded = (state.agentsAdded || 0) + 1;
-    saveOnboardingState(state);
+    await saveOnboardingState(state);
 
     // Show success and refresh step
     showToast('Agent added successfully! Login credentials sent via email.', 'success');
     document.getElementById('wizardAgentEmail').value = '';
     document.getElementById('wizardAgentPassword').value = '';
-    document.getElementById('wizardContent').innerHTML = renderStep(2);
+    document.getElementById('wizardContent').innerHTML = await renderStep(2);
 
   } catch (err) {
     console.error('Error adding agent:', err);
@@ -624,14 +641,14 @@ function escapeHtmlForDisplay(html) {
     .replace(/'/g, '&#039;');
 }
 
-function wizardCopyCode() {
+async function wizardCopyCode() {
   const code = generateWidgetCode();
 
-  navigator.clipboard.writeText(code).then(() => {
+  navigator.clipboard.writeText(code).then(async () => {
     // Update state
-    const state = getOnboardingState();
+    const state = await getOnboardingState();
     state.widgetCodeCopied = true;
-    saveOnboardingState(state);
+    await saveOnboardingState(state);
 
     // Update button
     const btn = document.getElementById('wizardCopyBtn');
@@ -682,10 +699,13 @@ function injectSetupGuideButton() {
 // Wait for siteData to be loaded before checking onboarding
 let onboardingInitialized = false;
 
-function initOnboarding() {
+async function initOnboarding() {
   console.log('[Onboarding] initOnboarding called, initialized:', onboardingInitialized);
   if (onboardingInitialized) return;
   onboardingInitialized = true;
+
+  // Migrate any existing localStorage state to the database
+  await migrateLocalStorageOnboarding();
 
   // Inject the setup guide button
   console.log('[Onboarding] Injecting setup guide button...');
@@ -694,8 +714,8 @@ function initOnboarding() {
   // Check if we should show the wizard
   // Delay slightly to ensure siteData is loaded
   console.log('[Onboarding] Will check onboarding in 500ms...');
-  setTimeout(() => {
-    checkOnboarding();
+  setTimeout(async () => {
+    await checkOnboarding();
   }, 500);
 }
 

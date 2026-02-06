@@ -1497,6 +1497,77 @@ async def update_site_toggle(site_id: str, token: str, auto_reply_enabled: bool 
     return False
 
 
+DEFAULT_ONBOARDING_STATE = {
+    "completed": False,
+    "currentStep": 1,
+    "agentsAdded": 0,
+    "widgetCodeCopied": False,
+    "dismissedAt": None
+}
+
+@app.get("/api/sites/{site_id}/onboarding")
+async def get_onboarding_state(site_id: str, authorization: str = Header(None)):
+    """Get onboarding state for a site"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    token = authorization.replace("Bearer ", "")
+    claims = validate_jwt_token(token)
+    if not claims:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.get(
+                f"{API_BASE_URL}/sites/{site_id}",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0
+            )
+            if response.status_code == 200:
+                data = response.json()
+                site_data = data.get("data", {})
+                onboarding = site_data.get("onboardingState")
+                if onboarding is None:
+                    return {"success": True, "data": DEFAULT_ONBOARDING_STATE}
+                if isinstance(onboarding, str):
+                    onboarding = json.loads(onboarding)
+                return {"success": True, "data": onboarding}
+            else:
+                raise HTTPException(status_code=response.status_code, detail="Failed to fetch site data")
+        except HTTPException:
+            raise
+        except Exception as e:
+            print(f"Error loading onboarding state: {e}")
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.put("/api/sites/{site_id}/onboarding")
+async def update_onboarding_state(site_id: str, body: dict, authorization: str = Header(None)):
+    """Update onboarding state for a site"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    token = authorization.replace("Bearer ", "")
+    claims = validate_jwt_token(token)
+    if not claims:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    async with httpx.AsyncClient(verify=False) as client:
+        try:
+            response = await client.put(
+                f"{API_BASE_URL}/sites/{site_id}",
+                json={"onboardingState": json.dumps(body) if isinstance(body, dict) else body},
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0
+            )
+            if response.status_code == 200:
+                return {"success": True, "message": "Onboarding state updated"}
+            else:
+                raise HTTPException(status_code=response.status_code, detail="Failed to update onboarding state")
+        except HTTPException:
+            raise
+        except Exception as e:
+            print(f"Error saving onboarding state: {e}")
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+
 async def load_site_toggle_state(site_id: str, token: str):
     """Load toggle state from database via .NET API"""
     async with httpx.AsyncClient(verify=False) as client:
