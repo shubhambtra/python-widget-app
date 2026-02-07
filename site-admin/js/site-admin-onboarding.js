@@ -74,16 +74,10 @@ async function checkOnboarding() {
     return;
   }
 
-  // Don't show if dismissed within last 24 hours
+  // Don't show if previously dismissed
   if (state.dismissedAt) {
-    const dismissed = new Date(state.dismissedAt);
-    const now = new Date();
-    const hoursSinceDismiss = (now - dismissed) / (1000 * 60 * 60);
-    console.log('[Onboarding] Dismissed', hoursSinceDismiss.toFixed(1), 'hours ago');
-    if (hoursSinceDismiss < 24) {
-      console.log('[Onboarding] Dismissed recently, not showing');
-      return;
-    }
+    console.log('[Onboarding] Previously dismissed, not showing automatically');
+    return;
   }
 
   // Show wizard
@@ -482,8 +476,8 @@ function renderFooter(step) {
           </button>
         </div>
         <div class="wizard-footer-right">
-          <span class="wizard-skip-link" onclick="goToStep(3)">Skip this step</span>
-          <button class="wizard-btn wizard-btn-primary" onclick="goToStep(3)">
+          <span class="wizard-skip-link" onclick="skipAgentStep()">Skip this step</span>
+          <button class="wizard-btn wizard-btn-primary" onclick="continueFromAgentStep()">
             Continue
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -534,6 +528,30 @@ function renderFooter(step) {
 }
 
 // ==================== NAVIGATION ====================
+function hasUnsavedAgentData() {
+  const email = document.getElementById('wizardAgentEmail');
+  const password = document.getElementById('wizardAgentPassword');
+  if (!email || !password) return false;
+  return email.value.trim() !== '' || password.value.trim() !== '';
+}
+
+function continueFromAgentStep() {
+  if (hasUnsavedAgentData()) {
+    showToast('Please click "Add Agent" to save the agent before continuing, or clear the form to skip.', 'error');
+    return;
+  }
+  goToStep(3);
+}
+
+function skipAgentStep() {
+  // Clear form fields so unsaved data doesn't linger
+  const email = document.getElementById('wizardAgentEmail');
+  const password = document.getElementById('wizardAgentPassword');
+  if (email) email.value = '';
+  if (password) password.value = '';
+  goToStep(3);
+}
+
 async function goToStep(step) {
   const state = await getOnboardingState();
   state.currentStep = step;
