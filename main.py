@@ -323,6 +323,16 @@ def admin_email_logs_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-email-logs.html")
 
 
+@app.get("/admin-error-logs")
+def admin_error_logs_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-error-logs.html")
+
+
+@app.get("/admin-error-logs.html")
+def admin_error_logs_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-error-logs.html")
+
+
 @app.get("/admin-smtp-settings")
 def admin_smtp_settings_page():
     return FileResponse(BASE_DIR / "admin" / "admin-smtp-settings.html")
