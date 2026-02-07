@@ -20,53 +20,53 @@
     <div class="topbar-brand"><span data-brand="name">Assistica AI</span> <span>Support</span></div>
   </div>
 
-  <div class="topbar-center">
+  <div class="topbar-center" role="search">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
-    <input type="text" placeholder="Search conversations..." id="searchInput" />
+    <input type="text" placeholder="Search conversations..." id="searchInput" aria-label="Search conversations" />
   </div>
 
   <div class="topbar-right">
-    <button class="topbar-btn" title="Notifications" id="notificationsBtn">
+    <button class="topbar-btn" title="Notifications" id="notificationsBtn" aria-label="Notifications">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
       </svg>
       <span class="badge" id="notificationBadge" style="display:none;"></span>
     </button>
 
-    <button class="topbar-btn" title="Team Chat" id="btnTeamChat" onclick="toggleAgentsPanel()">
+    <button class="topbar-btn" title="Team Chat" id="btnTeamChat" onclick="toggleAgentsPanel()" aria-label="Team Chat">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     </button>
 
-    <button class="topbar-btn supervisor-btn" title="Supervisor View" id="supervisorBtn" onclick="openSupervisorModal()" style="display:none;">
+    <button class="topbar-btn supervisor-btn" title="Supervisor View" id="supervisorBtn" onclick="openSupervisorModal()" style="display:none;" aria-label="Supervisor View">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
       </svg>
     </button>
 
-    <button class="topbar-btn" title="Workflows" onclick="openWorkflowsModal()">
+    <button class="topbar-btn" title="Workflows" onclick="openWorkflowsModal()" aria-label="Workflows">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
       </svg>
     </button>
 
-    <button class="topbar-btn" title="Settings" onclick="openSettings()">
+    <button class="topbar-btn" title="Settings" onclick="openSettings()" aria-label="Settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     </button>
 
-    <button class="topbar-btn" title="Help">
+    <button class="topbar-btn" title="Help" id="btnHelp" onclick="openShortcutsModal()" aria-label="Help & Keyboard Shortcuts">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     </button>
 
-    <button class="topbar-btn" title="Report Issue" id="reportIssueBtn" onclick="openReportIssue()">
+    <button class="topbar-btn" title="Report Issue" id="reportIssueBtn" onclick="openReportIssue()" aria-label="Report Issue">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
@@ -168,17 +168,17 @@
 <div class="sidebar">
   <div class="sidebar-header">
     <h2>Conversations</h2>
-    <span class="conversation-count" id="conversationCount">0</span>
-    <button class="btn-bulk-select" id="btnBulkSelect" onclick="toggleBulkSelectMode()" title="Select Multiple">
+    <span class="conversation-count" id="conversationCount" data-tooltip="Total conversations">0</span>
+    <button class="btn-bulk-select" id="btnBulkSelect" onclick="toggleBulkSelectMode()" title="Select Multiple" aria-label="Select Multiple Conversations">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
       </svg>
     </button>
-    <button class="btn-filter" id="btnFilter" onclick="toggleFilterPanel()" title="Filter Conversations">
+    <button class="btn-filter" id="btnFilter" onclick="toggleFilterPanel()" title="Filter Conversations" aria-label="Filter Conversations">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
       </svg>
-      <span class="filter-badge" id="filterBadge" style="display:none;">0</span>
+      <span class="filter-badge" id="filterBadge" style="display:none;" data-tooltip="Active filters">0</span>
     </button>
   </div>
 
@@ -237,7 +237,7 @@
 </div>
 
 <!-- MAIN CONTENT -->
-<div class="main-content">
+<div class="main-content" role="main">
 
   <!-- CHAT PANEL -->
   <div class="chat-panel" id="chatPanel">
@@ -246,7 +246,12 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
       <h3>Select a conversation</h3>
-      <p>Choose a customer from the list to start chatting</p>
+      <p>Choose a customer from the sidebar to start chatting</p>
+      <div class="empty-state-shortcuts">
+        <span><kbd>Ctrl</kbd><kbd>K</kbd> Search conversations</span>
+        <span><kbd>Ctrl</kbd><kbd>Enter</kbd> Send message</span>
+        <span><kbd>?</kbd> View all shortcuts</span>
+      </div>
     </div>
 
     <div class="chat-header" id="chatHeader" style="display: none;">
@@ -262,19 +267,19 @@
           <span class="csat-stars" id="csatStars"></span>
           <span class="csat-value" id="csatValue"></span>
         </div>
-        <button class="btn-send-email" id="btnSendEmail" style="display: none;" title="Send Email">
+        <button class="btn-send-email" id="btnSendEmail" style="display: none;" title="Send Email" aria-label="Send Email">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </button>
-        <button class="btn-search-messages" id="btnSearchMessages" onclick="toggleMessageSearch()" title="Search Messages">
+        <button class="btn-search-messages" id="btnSearchMessages" onclick="toggleMessageSearch()" title="Search Messages" aria-label="Search Messages">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
         <!-- More Actions Menu -->
         <div class="conv-actions-wrapper">
-          <button class="btn-more-actions" id="btnMoreActions" onclick="toggleConvActionsMenu()" title="More Actions">
+          <button class="btn-more-actions" id="btnMoreActions" onclick="toggleConvActionsMenu()" title="More Actions" aria-label="More Actions">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
@@ -345,17 +350,17 @@
         </svg>
         <input type="text" id="messageSearchInput" placeholder="Search in conversation..." oninput="searchMessages(this.value)" />
         <span class="search-results-count" id="searchResultsCount"></span>
-        <button class="search-nav-btn" onclick="navigateSearchResult(-1)" title="Previous">
+        <button class="search-nav-btn" onclick="navigateSearchResult(-1)" title="Previous" aria-label="Previous search result">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
           </svg>
         </button>
-        <button class="search-nav-btn" onclick="navigateSearchResult(1)" title="Next">
+        <button class="search-nav-btn" onclick="navigateSearchResult(1)" title="Next" aria-label="Next search result">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        <button class="search-close-btn" onclick="closeMessageSearch()">
+        <button class="search-close-btn" onclick="closeMessageSearch()" aria-label="Close search">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -364,6 +369,8 @@
     </div>
 
     <div class="messages-container" id="messagesContainer" style="display: none;"></div>
+
+    <div id="typingIndicatorContainer"></div>
 
     <div class="chat-input-area" id="chatInputArea" style="display: none; position: relative;">
       <!-- Quick Replies / Canned Responses -->
@@ -382,27 +389,7 @@
           </button>
         </div>
         <div class="quick-replies-list" id="quickRepliesList">
-          <button class="quick-reply-item" onclick="useQuickReply('Hello! How can I help you today?')">
-            <span class="quick-reply-text">Hello! How can I help you today?</span>
-          </button>
-          <button class="quick-reply-item" onclick="useQuickReply('Thank you for contacting us. Let me look into this for you.')">
-            <span class="quick-reply-text">Thank you for contacting us. Let me look into this for you.</span>
-          </button>
-          <button class="quick-reply-item" onclick="useQuickReply('I understand your concern. Let me help you resolve this.')">
-            <span class="quick-reply-text">I understand your concern. Let me help you resolve this.</span>
-          </button>
-          <button class="quick-reply-item" onclick="useQuickReply('Could you please provide more details about the issue?')">
-            <span class="quick-reply-text">Could you please provide more details about the issue?</span>
-          </button>
-          <button class="quick-reply-item" onclick="useQuickReply('Is there anything else I can help you with?')">
-            <span class="quick-reply-text">Is there anything else I can help you with?</span>
-          </button>
-          <button class="quick-reply-item" onclick="useQuickReply('Thank you for your patience. I am working on this now.')">
-            <span class="quick-reply-text">Thank you for your patience. I am working on this now.</span>
-          </button>
-          <button class="quick-reply-item" onclick="useQuickReply('Have a great day! Feel free to reach out if you need anything else.')">
-            <span class="quick-reply-text">Have a great day! Feel free to reach out if you need anything else.</span>
-          </button>
+          <!-- Rendered dynamically by renderQuickReplies() -->
         </div>
       </div>
       <div class="emoji-picker" id="emojiPicker">
@@ -418,22 +405,22 @@
         <textarea id="messageInput" placeholder="Type a message..." rows="1"></textarea>
         <div class="input-actions">
           <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx,.txt,.zip" style="display: none;" />
-          <button class="btn-quick-replies" id="btnQuickReplies" onclick="toggleQuickReplies()" title="Quick Replies">
+          <button class="btn-quick-replies" id="btnQuickReplies" onclick="toggleQuickReplies()" title="Quick Replies" aria-label="Quick Replies">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </button>
-          <button class="btn-attach" id="btnAttach" title="Attach file">
+          <button class="btn-attach" id="btnAttach" title="Attach file" aria-label="Attach file">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
           </button>
-          <button class="btn-emoji" id="btnEmoji" title="Emoji">
+          <button class="btn-emoji" id="btnEmoji" title="Emoji" aria-label="Emoji picker">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
-          <button class="btn-send" id="btnSend" title="Send">
+          <button class="btn-send" id="btnSend" title="Send" aria-label="Send message">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
@@ -445,7 +432,7 @@
 
   <!-- Image Modal -->
   <div class="image-modal" id="imageModal">
-    <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+    <button class="image-modal-close" onclick="closeImageModal()" aria-label="Close image">&times;</button>
     <img id="modalImage" src="" alt="Full size image" />
   </div>
 
@@ -530,7 +517,7 @@
         </svg>
         Settings
       </h2>
-      <button class="settings-modal-close" onclick="closeSettingsModal()">
+      <button class="settings-modal-close" onclick="closeSettingsModal()" aria-label="Close settings">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -538,6 +525,33 @@
     </div>
     <div class="settings-modal-body" id="settingsModalBody">
       <!-- Theme content will be rendered here -->
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div id="shortcutsModal" class="settings-modal-overlay" style="display: none;" onclick="if(event.target === this) closeShortcutsModal()">
+  <div class="settings-modal" style="max-width: 480px;">
+    <div class="settings-modal-header">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+        </svg>
+        Keyboard Shortcuts
+      </h2>
+      <button class="settings-modal-close" onclick="closeShortcutsModal()" aria-label="Close shortcuts">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="settings-modal-body">
+      <div class="shortcuts-grid">
+        <div class="shortcut-row"><span class="shortcut-label">Search conversations</span><div class="shortcut-keys"><kbd>Ctrl</kbd><span>+</span><kbd>K</kbd></div></div>
+        <div class="shortcut-row"><span class="shortcut-label">Send message</span><div class="shortcut-keys"><kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd></div></div>
+        <div class="shortcut-row"><span class="shortcut-label">Close modal / panel</span><div class="shortcut-keys"><kbd>Esc</kbd></div></div>
+        <div class="shortcut-row"><span class="shortcut-label">Show shortcuts</span><div class="shortcut-keys"><kbd>?</kbd></div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1293,6 +1307,11 @@ ws.onmessage = (e) => {
       hideTypingIndicator();
     }
 
+    // Play notification sound if tab is not focused
+    if (typeof playNotificationSound === 'function') {
+      playNotificationSound();
+    }
+
     // Note: Don't call analyzeConversation here - Python server already sends analysis via WebSocket
     // The analysis will arrive via data.type === "analysis" message
   }
@@ -1474,11 +1493,72 @@ const API_BASE = CONFIG.API_BASE;
   }
 })();
 
+function showConversationSkeletons() {
+  const ul = document.getElementById("usersList");
+  let skeletonHtml = '';
+  for (let i = 0; i < 6; i++) {
+    skeletonHtml += `<div class="skeleton-item"><div class="skeleton-avatar"></div><div class="skeleton-lines"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>`;
+  }
+  ul.innerHTML = skeletonHtml;
+}
+
+function showConversationError(message) {
+  const ul = document.getElementById("usersList");
+  ul.innerHTML = `<div class="error-state">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h4>Failed to load conversations</h4>
+    <p>${message || 'Something went wrong'}</p>
+    <button class="btn-retry" onclick="loadHistoricalConversations()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Retry
+    </button>
+  </div>`;
+}
+
+function showMessageSkeletons() {
+  messagesContainer.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const side = i % 2 === 0 ? 'left' : 'right';
+    const widths = side === 'left' ? ['80%', '60%'] : ['70%', '50%'];
+    messagesContainer.innerHTML += `<div class="skeleton-message ${side}"><div class="skeleton-line" style="width:${widths[0]}"></div><div class="skeleton-line" style="width:${widths[1]}"></div></div>`;
+  }
+}
+
+function showMessageError(visitorId, message) {
+  messagesContainer.innerHTML = `<div class="error-state">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h4>Failed to load messages</h4>
+    <p>${message || 'Something went wrong'}</p>
+    <button class="btn-retry" onclick="retryLoadMessages('${visitorId}')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Retry
+    </button>
+  </div>`;
+}
+
+function retryLoadMessages(visitorId) {
+  if (users[visitorId]) {
+    users[visitorId].messagesLoaded = false;
+  }
+  loadConversationMessages(visitorId);
+}
+
 async function loadHistoricalConversations() {
   console.log("Loading historical conversations...");
   console.log("API_BASE:", API_BASE);
   console.log("siteId:", siteId);
   console.log("token:", token ? token.substring(0, 50) + "..." : "null");
+
+  // Show loading skeletons
+  showConversationSkeletons();
 
   try {
     const url = `${API_BASE}/sites/${siteId}/conversations`;
@@ -1493,6 +1573,8 @@ async function loadHistoricalConversations() {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API error:", response.status, errorText);
+      showConversationError('Server returned an error. Please try again.');
+      showToast('Failed to load conversations', 'error');
       return;
     }
 
@@ -1501,6 +1583,8 @@ async function loadHistoricalConversations() {
 
     if (!result.success) {
       console.error("API returned failure:", result);
+      showConversationError('Could not load conversations.');
+      showToast('Failed to load conversations', 'error');
       return;
     }
 
@@ -1597,6 +1681,8 @@ async function loadHistoricalConversations() {
     }
   } catch (err) {
     console.error("Failed to load conversations:", err);
+    showConversationError('Network error. Check your connection.');
+    showToast('Failed to load conversations', 'error');
   }
 }
 
@@ -1615,6 +1701,11 @@ async function loadConversationMessages(visitorId) {
     return;
   }
 
+  // Show loading skeletons
+  if (currentVisitor === visitorId) {
+    showMessageSkeletons();
+  }
+
   try {
     const url = `${API_BASE}/conversations/${user.conversationId}/messages`;
     console.log("Fetching messages from:", url);
@@ -1628,6 +1719,11 @@ async function loadConversationMessages(visitorId) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Messages API error:", response.status, errorText);
+      user.messagesLoaded = false;
+      if (currentVisitor === visitorId) {
+        showMessageError(visitorId, 'Server returned an error.');
+        showToast('Failed to load messages', 'error');
+      }
       return;
     }
 
@@ -1636,6 +1732,11 @@ async function loadConversationMessages(visitorId) {
 
     if (!result.success) {
       console.error("Messages API returned failure:", result);
+      user.messagesLoaded = false;
+      if (currentVisitor === visitorId) {
+        showMessageError(visitorId, 'Could not load messages.');
+        showToast('Failed to load messages', 'error');
+      }
       return;
     }
 
@@ -1662,6 +1763,11 @@ async function loadConversationMessages(visitorId) {
     }
   } catch (err) {
     console.error("Failed to load messages:", err);
+    user.messagesLoaded = false;
+    if (currentVisitor === visitorId) {
+      showMessageError(visitorId, 'Network error. Check your connection.');
+      showToast('Failed to load messages', 'error');
+    }
   }
 }
 
@@ -1693,7 +1799,9 @@ function renderUsers(filterVids) {
     .filter(([vid]) => !isFiltering || filterVids.has(vid))
     .sort((a, b) => b[1].lastActivity - a[1].lastActivity);
   const displayCount = entries.length;
-  document.getElementById("conversationCount").textContent = isFiltering ? `${displayCount} / ${totalCount}` : totalCount;
+  const convCountEl = document.getElementById("conversationCount");
+  convCountEl.textContent = isFiltering ? `${displayCount} / ${totalCount}` : totalCount;
+  convCountEl.setAttribute('data-tooltip', isFiltering ? `${displayCount} of ${totalCount} conversations shown` : `${totalCount} total conversations`);
 
   if (displayCount === 0) {
     const isFilterEmpty = isFiltering && filterVids.size === 0;
@@ -2248,20 +2356,17 @@ function renderMessages() {
 
 function showTypingIndicator() {
   if (!platformFeatures.typingIndicators) return;
-  const existing = document.getElementById("typingIndicator");
-  if (existing) return;
-
-  const div = document.createElement("div");
-  div.id = "typingIndicator";
-  div.className = "typing-indicator";
-  div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-  messagesContainer.appendChild(div);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  const container = document.getElementById("typingIndicatorContainer");
+  if (!container) return;
+  container.classList.add("active");
+  container.innerHTML = '<div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
 }
 
 function hideTypingIndicator() {
-  const existing = document.getElementById("typingIndicator");
-  if (existing) existing.remove();
+  const container = document.getElementById("typingIndicatorContainer");
+  if (!container) return;
+  container.classList.remove("active");
+  container.innerHTML = '';
 }
 
 function renderAnalysis(a) {
@@ -2479,9 +2584,25 @@ const EMOJI_DATA = {
 
 let currentEmojiCategory = "Smileys";
 
+function getRecentEmojis() {
+  try {
+    return JSON.parse(localStorage.getItem('recentEmojis') || '[]');
+  } catch { return []; }
+}
+
+function addRecentEmoji(emoji) {
+  let recents = getRecentEmojis();
+  recents = recents.filter(e => e !== emoji);
+  recents.unshift(emoji);
+  if (recents.length > 20) recents = recents.slice(0, 20);
+  localStorage.setItem('recentEmojis', JSON.stringify(recents));
+}
+
 function initEmojiPicker() {
   const categoriesDiv = document.getElementById("emojiCategories");
+  const recents = getRecentEmojis();
   const categoryIcons = {
+    "Recent": "🕐",
     "Smileys": "😀",
     "Gestures": "👋",
     "Hearts": "❤️",
@@ -2489,10 +2610,17 @@ function initEmojiPicker() {
     "Symbols": "✅"
   };
 
-  categoriesDiv.innerHTML = Object.keys(EMOJI_DATA).map(cat => `
+  const categories = recents.length > 0 ? ["Recent", ...Object.keys(EMOJI_DATA)] : Object.keys(EMOJI_DATA);
+
+  // Default to Recent if available
+  if (recents.length > 0 && currentEmojiCategory === "Smileys") {
+    currentEmojiCategory = "Recent";
+  }
+
+  categoriesDiv.innerHTML = categories.map(cat => `
     <button class="emoji-category-btn ${cat === currentEmojiCategory ? 'active' : ''}"
             onclick="selectEmojiCategory('${cat}')" title="${cat}">
-      ${categoryIcons[cat]}
+      ${categoryIcons[cat] || '📦'}
     </button>
   `).join('');
 
@@ -2508,13 +2636,17 @@ function selectEmojiCategory(cat) {
 
 function renderEmojis(filter = "") {
   const grid = document.getElementById("emojiGrid");
-  let emojis = EMOJI_DATA[currentEmojiCategory];
+  let emojis;
 
   if (filter) {
     emojis = Object.values(EMOJI_DATA).flat().filter(e => e.includes(filter));
+  } else if (currentEmojiCategory === "Recent") {
+    emojis = getRecentEmojis();
+  } else {
+    emojis = EMOJI_DATA[currentEmojiCategory];
   }
 
-  grid.innerHTML = emojis.map(e => `
+  grid.innerHTML = (emojis || []).map(e => `
     <span class="emoji-item" onclick="insertEmoji('${e}')">${e}</span>
   `).join('');
 }
@@ -2529,6 +2661,7 @@ function insertEmoji(emoji) {
   input.selectionStart = input.selectionEnd = start + emoji.length;
   input.focus();
 
+  addRecentEmoji(emoji);
   emojiPicker.classList.remove("show");
 }
 
@@ -2564,9 +2697,21 @@ fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  // Check file type
+  const allowedTypes = ['image/jpeg','image/png','image/gif','image/webp','image/svg+xml',
+    'application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain','application/zip'];
+  const allowedExts = ['.jpg','.jpeg','.png','.gif','.webp','.svg','.pdf','.doc','.docx','.txt','.zip'];
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+    showToast(`Unsupported file type. Accepted: images, PDF, DOC, TXT, ZIP`, 'error');
+    fileInput.value = "";
+    return;
+  }
+
   // Check file size (10MB limit)
   if (file.size > 10 * 1024 * 1024) {
-    alert("File is too large. Maximum size is 10MB.");
+    showToast("File is too large. Maximum size is 10MB.", "error");
     fileInput.value = "";
     return;
   }
@@ -2739,6 +2884,11 @@ function openProfile() {
 // ==================== SETTINGS & THEMES ====================
 const themes = [
   {
+    id: 'auto',
+    name: 'Auto (System)',
+    colors: { bg: '#e2e8f0', sidebar: '#f1f5f9', accent: '#6366f1', text: '#475569' }
+  },
+  {
     id: 'light',
     name: 'Light',
     colors: { bg: '#f1f5f9', sidebar: '#ffffff', accent: '#2563eb', text: '#1e293b' }
@@ -2813,8 +2963,10 @@ function setTheme(themeId) {
   const theme = themes.find(t => t.id === themeId);
   if (!theme) return;
 
-  if (themeId === 'light') {
+  if (themeId === 'auto') {
     document.documentElement.removeAttribute('data-theme');
+  } else if (themeId === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
   } else {
     document.documentElement.setAttribute('data-theme', themeId);
   }
@@ -2909,8 +3061,12 @@ function closeSettingsModal() {
 // Initialize theme on page load
 (function initTheme() {
   const savedTheme = getCurrentTheme();
-  if (savedTheme && savedTheme !== 'light') {
+  if (savedTheme === 'auto') {
+    document.documentElement.removeAttribute('data-theme');
+  } else if (savedTheme && savedTheme !== 'light') {
     document.documentElement.setAttribute('data-theme', savedTheme);
+  } else if (savedTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
   }
 })();
 
@@ -3083,6 +3239,9 @@ function closeMessageSearch() {
   clearSearchHighlights();
   messageSearchResults = [];
   currentSearchIndex = -1;
+  // Clean up search empty state
+  const noResults = messagesContainer.querySelector('.search-no-results');
+  if (noResults) noResults.remove();
 }
 
 function searchMessages(query) {
@@ -3108,9 +3267,28 @@ function searchMessages(query) {
   const count = messageSearchResults.length;
   document.getElementById('searchResultsCount').textContent = count > 0 ? `${count} found` : 'No results';
 
+  // Remove any previous search-no-results element
+  const existingNoResults = messagesContainer.querySelector('.search-no-results');
+  if (existingNoResults) existingNoResults.remove();
+
   if (count > 0) {
     currentSearchIndex = 0;
     highlightSearchResult();
+  } else if (query.length >= 2) {
+    const noResultsDiv = document.createElement('div');
+    noResultsDiv.className = 'search-no-results';
+    noResultsDiv.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <h4>No results found</h4>
+      <ul>
+        <li>Try different keywords</li>
+        <li>Check your spelling</li>
+        <li>Search is limited to this conversation</li>
+      </ul>
+    `;
+    messagesContainer.appendChild(noResultsDiv);
   }
 }
 
@@ -3154,10 +3332,75 @@ function clearSearchHighlights() {
 }
 
 // ==================== QUICK REPLIES FUNCTIONS ====================
+const DEFAULT_QUICK_REPLIES = [
+  "Hello! How can I help you today?",
+  "Thank you for contacting us. Let me look into this for you.",
+  "I understand your concern. Let me help you resolve this.",
+  "Could you please provide more details about the issue?",
+  "Is there anything else I can help you with?",
+  "Thank you for your patience. I am working on this now.",
+  "Have a great day! Feel free to reach out if you need anything else."
+];
+
+function getQuickReplies() {
+  try {
+    const stored = localStorage.getItem('customQuickReplies');
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return DEFAULT_QUICK_REPLIES;
+}
+
+function saveQuickReplies(replies) {
+  localStorage.setItem('customQuickReplies', JSON.stringify(replies));
+}
+
+function renderQuickReplies() {
+  const list = document.getElementById('quickRepliesList');
+  const replies = getQuickReplies();
+
+  let html = replies.map((text, idx) => `
+    <button class="quick-reply-item" onclick="useQuickReply(this.querySelector('.quick-reply-text').textContent)">
+      <span class="quick-reply-text">${escapeHtml(text)}</span>
+      <span class="quick-reply-delete" onclick="event.stopPropagation(); deleteQuickReply(${idx})" title="Remove">&times;</span>
+    </button>
+  `).join('');
+
+  html += `
+    <div class="quick-reply-add-wrapper">
+      <input type="text" class="quick-reply-add-input" id="quickReplyAddInput" placeholder="Add a custom quick reply..." onkeydown="if(event.key==='Enter'){addQuickReply(); event.preventDefault();}" />
+      <button class="quick-reply-add-btn" onclick="addQuickReply()">Add</button>
+    </div>
+  `;
+
+  list.innerHTML = html;
+}
+
+function addQuickReply() {
+  const input = document.getElementById('quickReplyAddInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  const replies = getQuickReplies();
+  replies.push(text);
+  saveQuickReplies(replies);
+  renderQuickReplies();
+  showToast('Quick reply added', 'success');
+}
+
+function deleteQuickReply(index) {
+  const replies = getQuickReplies();
+  replies.splice(index, 1);
+  saveQuickReplies(replies);
+  renderQuickReplies();
+  showToast('Quick reply removed', 'info');
+}
+
 function toggleQuickReplies() {
   const panel = document.getElementById('quickRepliesPanel');
   const isVisible = panel.style.display !== 'none';
   panel.style.display = isVisible ? 'none' : 'block';
+  if (!isVisible) renderQuickReplies();
 }
 
 function useQuickReply(text) {
@@ -3995,40 +4238,82 @@ function applyFeatureFlags() {
   console.log('Platform features applied:', platformFeatures);
 }
 
+let transferModalTimeout = null;
+
 function openTransferModal() {
   if (!currentVisitor) return;
 
   const modal = document.getElementById('transferModal');
   const transferAgentsList = document.getElementById('transferAgentsList');
 
-  // Render agents list
-  if (siteAgents.length === 0) {
-    transferAgentsList.innerHTML = '<div class="no-agents">No other agents available</div>';
-  } else {
-    transferAgentsList.innerHTML = siteAgents.map(agent => `
-      <div class="agent-option ${selectedTransferAgent === agent.userId ? 'selected' : ''}"
-           onclick="selectTransferAgent('${agent.userId}', '${escapeHtml(agent.name || agent.email)}')">
-        <div class="agent-option-avatar">${getInitials(agent.name || agent.email)}</div>
-        <div class="agent-option-info">
-          <div class="agent-option-name">${escapeHtml(agent.name || 'Agent')}</div>
-          <div class="agent-option-email">${escapeHtml(agent.email || '')}</div>
-        </div>
-        <div class="agent-option-status">
-          <span class="agent-status-dot online"></span>
-        </div>
-      </div>
-    `).join('');
-  }
-
   selectedTransferAgent = null;
   document.getElementById('btnTransferConfirm').disabled = true;
   document.getElementById('transferNote').value = '';
   modal.style.display = 'flex';
+
+  // Show loading state if no agents loaded yet
+  if (siteAgents.length === 0) {
+    transferAgentsList.innerHTML = '<div class="no-agents" style="text-align:center;padding:20px;"><div class="skeleton-line" style="width:60%;margin:0 auto 8px"></div><div class="skeleton-line" style="width:40%;margin:0 auto"></div><p style="margin-top:12px;color:var(--text-muted);font-size:13px;">Loading available agents...</p></div>';
+
+    // Set timeout for agent loading
+    transferModalTimeout = setTimeout(() => {
+      if (siteAgents.length === 0) {
+        transferAgentsList.innerHTML = `<div class="error-state" style="padding:20px;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:36px;height:36px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <h4>Could not load agents</h4>
+          <p>No agents available or request timed out.</p>
+          <button class="btn-retry" onclick="retryLoadTransferAgents()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Retry
+          </button>
+        </div>`;
+      }
+    }, 5000);
+  } else {
+    renderTransferAgentsList();
+  }
+}
+
+function renderTransferAgentsList() {
+  const transferAgentsList = document.getElementById('transferAgentsList');
+  transferAgentsList.innerHTML = siteAgents.map(agent => `
+    <div class="agent-option ${selectedTransferAgent === agent.userId ? 'selected' : ''}"
+         onclick="selectTransferAgent('${agent.userId}', '${escapeHtml(agent.name || agent.email)}')">
+      <div class="agent-option-avatar">${getInitials(agent.name || agent.email)}</div>
+      <div class="agent-option-info">
+        <div class="agent-option-name">${escapeHtml(agent.name || 'Agent')}</div>
+        <div class="agent-option-email">${escapeHtml(agent.email || '')}</div>
+      </div>
+      <div class="agent-option-status">
+        <span class="agent-status-dot online"></span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function retryLoadTransferAgents() {
+  const transferAgentsList = document.getElementById('transferAgentsList');
+  transferAgentsList.innerHTML = '<div class="no-agents" style="text-align:center;padding:20px;"><p style="color:var(--text-muted);font-size:13px;">Loading available agents...</p></div>';
+  // Re-set timeout
+  if (transferModalTimeout) clearTimeout(transferModalTimeout);
+  transferModalTimeout = setTimeout(() => {
+    if (siteAgents.length === 0) {
+      transferAgentsList.innerHTML = '<div class="no-agents">No other agents available</div>';
+    }
+  }, 5000);
 }
 
 function closeTransferModal() {
   document.getElementById('transferModal').style.display = 'none';
   selectedTransferAgent = null;
+  if (transferModalTimeout) {
+    clearTimeout(transferModalTimeout);
+    transferModalTimeout = null;
+  }
 }
 
 function openCsatFeedbackModal() {
@@ -5071,6 +5356,7 @@ function applyFilters() {
   if (filterCount > 0) {
     badge.textContent = filterCount;
     badge.style.display = 'inline-flex';
+    badge.setAttribute('data-tooltip', `${filterCount} active filter${filterCount > 1 ? 's' : ''}`);
     filterActive = true;
   } else {
     badge.style.display = 'none';
@@ -5398,6 +5684,168 @@ window.closeFilterDrawer = closeFilterDrawer;
 window.toggleFilterChip = toggleFilterChip;
 window.clearAllFilters = clearAllFilters;
 window.applyFilters = applyFilters;
+// ==================== KEYBOARD SHORTCUTS (Feature 13) ====================
+function openShortcutsModal() {
+  document.getElementById('shortcutsModal').style.display = 'flex';
+}
+
+function closeShortcutsModal() {
+  document.getElementById('shortcutsModal').style.display = 'none';
+}
+
+document.addEventListener('keydown', (e) => {
+  // Don't trigger shortcuts when typing in inputs/textareas
+  const tag = document.activeElement?.tagName;
+  const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+
+  // Ctrl+K: Focus search
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.focus();
+    return;
+  }
+
+  // Ctrl+Enter: Send message
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    if (typeof send === 'function') send();
+    return;
+  }
+
+  // Escape: Close modals/panels
+  if (e.key === 'Escape') {
+    const shortcutsModal = document.getElementById('shortcutsModal');
+    if (shortcutsModal && shortcutsModal.style.display !== 'none') {
+      closeShortcutsModal();
+      return;
+    }
+    const settingsModal = document.getElementById('settingsModal');
+    if (settingsModal && settingsModal.style.display !== 'none') {
+      closeSettingsModal();
+      return;
+    }
+    const transferModal = document.getElementById('transferModal');
+    if (transferModal && transferModal.style.display !== 'none') {
+      closeTransferModal();
+      return;
+    }
+    const searchBar = document.getElementById('messageSearchBar');
+    if (searchBar && searchBar.style.display !== 'none') {
+      closeMessageSearch();
+      return;
+    }
+    if (emojiPicker && emojiPicker.classList.contains('show')) {
+      emojiPicker.classList.remove('show');
+      return;
+    }
+    return;
+  }
+
+  // ? : Show shortcuts help (only when not in input)
+  if (e.key === '?' && !isInput) {
+    e.preventDefault();
+    openShortcutsModal();
+    return;
+  }
+});
+
+// ==================== NOTIFICATION SOUND (Feature 15) ====================
+let isTabFocused = true;
+let notificationSoundMuted = localStorage.getItem('notificationSoundMuted') === 'true';
+
+document.addEventListener('visibilitychange', () => {
+  isTabFocused = !document.hidden;
+});
+
+function playNotificationSound() {
+  if (notificationSoundMuted || isTabFocused) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {
+    console.warn('Could not play notification sound:', e);
+  }
+}
+
+function toggleNotificationSound() {
+  notificationSoundMuted = !notificationSoundMuted;
+  localStorage.setItem('notificationSoundMuted', notificationSoundMuted);
+  showToast(notificationSoundMuted ? 'Notification sound muted' : 'Notification sound enabled', 'info');
+  // Re-render settings if open
+  const settingsBody = document.getElementById('settingsModalBody');
+  if (settingsBody && settingsBody.innerHTML.includes('notification-toggle')) {
+    renderThemeSettings();
+  }
+}
+
+// ==================== ENHANCED SETTINGS (Features 6, 15) ====================
+const _originalRenderThemeSettings = renderThemeSettings;
+
+// Override renderThemeSettings to add notification setting
+renderThemeSettings = function() {
+  _originalRenderThemeSettings();
+  const body = document.getElementById('settingsModalBody');
+  if (!body) return;
+
+  // Add notification sound toggle section
+  const notifSection = document.createElement('div');
+  notifSection.className = 'settings-section';
+  notifSection.innerHTML = `
+    <h3>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+      Notifications
+    </h3>
+    <div class="notification-toggle">
+      <span class="toggle-label">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${notificationSoundMuted ? 'M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2' : 'M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z'}" />
+        </svg>
+        Notification Sound
+      </span>
+      <label class="toggle-switch">
+        <input type="checkbox" ${!notificationSoundMuted ? 'checked' : ''} onchange="toggleNotificationSound()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  `;
+
+  // Insert before the About section
+  const aboutSection = body.querySelector('.settings-section:last-child');
+  if (aboutSection) {
+    body.insertBefore(notifSection, aboutSection);
+  } else {
+    body.appendChild(notifSection);
+  }
+};
+
+// ==================== TOOLTIP DYNAMIC UPDATES (Feature 4) ====================
+// Update tooltip text when conversation count changes
+const _origRenderUsers = typeof renderUsers === 'function' ? renderUsers : null;
+
+// ==================== GLOBAL FUNCTION EXPORTS ====================
+window.openShortcutsModal = openShortcutsModal;
+window.closeShortcutsModal = closeShortcutsModal;
+window.toggleNotificationSound = toggleNotificationSound;
+window.playNotificationSound = playNotificationSound;
+window.retryLoadMessages = retryLoadMessages;
+window.retryLoadTransferAgents = retryLoadTransferAgents;
+window.renderTransferAgentsList = renderTransferAgentsList;
+window.addQuickReply = addQuickReply;
+window.deleteQuickReply = deleteQuickReply;
+window.renderQuickReplies = renderQuickReplies;
+
 window.openWorkflowsModal = openWorkflowsModal;
 window.closeWorkflowsModal = closeWorkflowsModal;
 window.showWorkflowEditor = showWorkflowEditor;
