@@ -716,7 +716,7 @@ input:checked + .toggle-slider:before {
   position: fixed;
   top: 80px;
   right: 24px;
-  z-index: 1000;
+  z-index: 2100;
 }
 
 .toast {
