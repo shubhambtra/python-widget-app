@@ -2229,6 +2229,41 @@ async def websocket_endpoint(ws: WebSocket):
                         "type": "support_typing_stop"
                     })
 
+            # ----- READ RECEIPTS -----
+            elif data.get("type") == "message_delivered" and role == SUPPORT:
+                to = data.get("to")
+                if to in site["customers"]:
+                    await site["customers"][to].send_json({
+                        "type": "message_delivered",
+                        "from": "support",
+                        "timestamp": data.get("timestamp")
+                    })
+
+            elif data.get("type") == "message_delivered" and role == CUSTOMER:
+                await broadcast_to_agents(site, {
+                    "type": "message_delivered",
+                    "from": visitor_id,
+                    "visitorId": visitor_id,
+                    "timestamp": data.get("timestamp")
+                })
+
+            elif data.get("type") in ("messages_read", "message_read") and role == SUPPORT:
+                to = data.get("to")
+                if to in site["customers"]:
+                    await site["customers"][to].send_json({
+                        "type": "messages_read",
+                        "from": "support",
+                        "timestamp": data.get("timestamp")
+                    })
+
+            elif data.get("type") in ("messages_read", "message_read") and role == CUSTOMER:
+                await broadcast_to_agents(site, {
+                    "type": "messages_read",
+                    "from": visitor_id,
+                    "visitorId": visitor_id,
+                    "timestamp": data.get("timestamp")
+                })
+
             # ----- TOGGLE ANALYSIS -----
             elif data.get("type") == "toggle_analysis" and role == SUPPORT:
                 site["analysis_enabled"] = data.get("enabled", False)
