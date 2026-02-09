@@ -293,11 +293,11 @@ async function renderStep2() {
         </div>
         <div class="wizard-form-group" style="margin-bottom: 16px;">
           <label class="wizard-form-label">Agent Email Address</label>
-          <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required>
+          <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required autocomplete="off">
         </div>
         <div class="wizard-form-group" style="margin-bottom: 16px;">
           <label class="wizard-form-label">Set Password</label>
-          <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Enter password for agent" required minlength="6">
+          <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Enter password for agent" required minlength="6" autocomplete="new-password">
           <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">Agent will receive login credentials via email</div>
         </div>
         <button type="submit" class="wizard-btn wizard-btn-primary" style="width: 100%;">
