@@ -501,6 +501,81 @@
 
 </div> <!-- Close main-layout -->
 
+<!-- Profile Slide Panel -->
+<div class="profile-slide-overlay" id="profileSlideOverlay" onclick="if(event.target===this)closeProfile()">
+  <div class="profile-slide-panel">
+    <div class="profile-panel-header">
+      <h2>Profile Settings</h2>
+      <button class="profile-panel-close" onclick="closeProfile()" aria-label="Close profile">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="profile-panel-body">
+      <div class="profile-panel-avatar-section">
+        <div class="profile-panel-avatar" id="profilePanelAvatar">
+          <span id="profilePanelInitials">--</span>
+        </div>
+        <div class="profile-panel-user-info">
+          <h3 id="profilePanelName">Loading...</h3>
+          <p id="profilePanelEmail">loading@example.com</p>
+          <span class="profile-panel-role" id="profilePanelRole">Agent</span>
+        </div>
+      </div>
+      <form id="profilePanelForm" onsubmit="saveProfilePanel(event)">
+        <div class="profile-panel-grid">
+          <div class="profile-panel-field">
+            <label>First Name</label>
+            <input type="text" id="profileFirstName" placeholder="First name">
+          </div>
+          <div class="profile-panel-field">
+            <label>Last Name</label>
+            <input type="text" id="profileLastName" placeholder="Last name">
+          </div>
+          <div class="profile-panel-field">
+            <label>Username</label>
+            <input type="text" id="profileUsername" disabled>
+          </div>
+          <div class="profile-panel-field">
+            <label>Email</label>
+            <input type="email" id="profileEmailField" disabled>
+          </div>
+          <div class="profile-panel-field profile-panel-full">
+            <label>Avatar URL</label>
+            <input type="url" id="profileAvatarUrl" placeholder="https://example.com/avatar.jpg">
+          </div>
+        </div>
+        <div class="profile-panel-actions">
+          <button type="button" class="profile-panel-btn secondary" onclick="closeProfile()">Cancel</button>
+          <button type="submit" class="profile-panel-btn primary" id="profileSaveBtn">Save Changes</button>
+        </div>
+      </form>
+      <div class="profile-panel-divider"></div>
+      <h3 class="profile-panel-section-title">Change Password</h3>
+      <form id="profilePasswordForm" onsubmit="changeProfilePassword(event)">
+        <div class="profile-panel-grid">
+          <div class="profile-panel-field profile-panel-full">
+            <label>Current Password</label>
+            <input type="password" id="profileCurrentPassword" placeholder="Current password">
+          </div>
+          <div class="profile-panel-field">
+            <label>New Password</label>
+            <input type="password" id="profileNewPassword" placeholder="New password">
+          </div>
+          <div class="profile-panel-field">
+            <label>Confirm Password</label>
+            <input type="password" id="profileConfirmPassword" placeholder="Confirm password">
+          </div>
+        </div>
+        <div class="profile-panel-actions">
+          <button type="submit" class="profile-panel-btn primary" id="profilePasswordBtn">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Settings Modal -->
 <div id="settingsModal" class="settings-modal-overlay" style="display: none;" onclick="if(event.target === this) closeSettingsModal()">
   <div class="settings-modal">
@@ -2896,7 +2971,107 @@ document.addEventListener("click", (e) => {
 
 function openProfile() {
   closeUserMenu();
-  window.location.href = `${window.location.origin}/profile.html?siteId=${siteId}&token=${token}`;
+  loadProfilePanel();
+  document.getElementById('profileSlideOverlay').classList.add('open');
+}
+
+function closeProfile() {
+  document.getElementById('profileSlideOverlay').classList.remove('open');
+}
+
+async function loadProfilePanel() {
+  try {
+    const response = await fetch(`${API_BASE}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to load profile');
+    const result = await response.json();
+    if (result.success) {
+      const u = result.data;
+      document.getElementById('profileFirstName').value = u.firstName || '';
+      document.getElementById('profileLastName').value = u.lastName || '';
+      document.getElementById('profileUsername').value = u.username || '';
+      document.getElementById('profileEmailField').value = u.email || '';
+      document.getElementById('profileAvatarUrl').value = u.avatarUrl || '';
+      const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username;
+      document.getElementById('profilePanelName').textContent = fullName;
+      document.getElementById('profilePanelEmail').textContent = u.email;
+      const roleMap = { support_agent: 'Support Agent', admin: 'Administrator', site_admin: 'Site Admin', owner: 'Owner' };
+      document.getElementById('profilePanelRole').textContent = roleMap[u.role] || u.role;
+      const avatarEl = document.getElementById('profilePanelAvatar');
+      if (u.avatarUrl) {
+        avatarEl.innerHTML = `<img src="${u.avatarUrl}" alt="Avatar">`;
+      } else {
+        const initials = u.firstName && u.lastName ? `${u.firstName[0]}${u.lastName[0]}`.toUpperCase() : (u.username || '??').substring(0, 2).toUpperCase();
+        avatarEl.innerHTML = `<span>${initials}</span>`;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load profile:', e);
+    showToast('Failed to load profile', 'error');
+  }
+}
+
+async function saveProfilePanel(e) {
+  e.preventDefault();
+  const btn = document.getElementById('profileSaveBtn');
+  const orig = btn.textContent;
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE}/auth/me`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({
+        firstName: document.getElementById('profileFirstName').value.trim() || null,
+        lastName: document.getElementById('profileLastName').value.trim() || null,
+        avatarUrl: document.getElementById('profileAvatarUrl').value.trim() || null
+      })
+    });
+    if (!response.ok) throw new Error('Failed to update profile');
+    const result = await response.json();
+    if (result.success) {
+      showToast('Profile updated successfully!', 'success');
+      loadProfilePanel();
+    }
+  } catch (e) {
+    showToast('Failed to update profile', 'error');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
+async function changeProfilePassword(e) {
+  e.preventDefault();
+  const curr = document.getElementById('profileCurrentPassword').value;
+  const newPw = document.getElementById('profileNewPassword').value;
+  const confirm = document.getElementById('profileConfirmPassword').value;
+  if (!curr || !newPw || !confirm) { showToast('Please fill in all password fields', 'error'); return; }
+  if (newPw !== confirm) { showToast('New passwords do not match', 'error'); return; }
+  if (newPw.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+  const btn = document.getElementById('profilePasswordBtn');
+  const orig = btn.textContent;
+  btn.textContent = 'Updating...';
+  btn.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE}/auth/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ currentPassword: curr, newPassword: newPw })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to change password');
+    showToast('Password changed successfully!', 'success');
+    document.getElementById('profileCurrentPassword').value = '';
+    document.getElementById('profileNewPassword').value = '';
+    document.getElementById('profileConfirmPassword').value = '';
+  } catch (e) {
+    showToast(e.message || 'Failed to change password', 'error');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
 }
 
 // ==================== SETTINGS & THEMES ====================
@@ -3619,6 +3794,9 @@ window.openSettings = openSettings;
 window.closeSettingsModal = closeSettingsModal;
 window.setTheme = setTheme;
 window.openProfile = openProfile;
+window.closeProfile = closeProfile;
+window.saveProfilePanel = saveProfilePanel;
+window.changeProfilePassword = changeProfilePassword;
 window.logout = logout;
 window.clearPendingFile = clearPendingFile;
 window.openImageModal = openImageModal;
