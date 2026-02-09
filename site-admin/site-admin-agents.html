@@ -170,11 +170,8 @@
                 <tr>
                   <th>Agent</th>
                   <th>Email</th>
+                  <th>Name</th>
                   <th>Status</th>
-                  <th>Can View</th>
-                  <th>Can Respond</th>
-                  <th>Can Close</th>
-                  <th>Admin</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -201,49 +198,26 @@
       </button>
     </div>
     <form onsubmit="addAgent(event)">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" id="newAgentFirstName" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" id="newAgentLastName" placeholder="Doe">
+        </div>
+      </div>
+
       <div class="form-group">
-        <label class="form-label">Email Address</label>
+        <label class="form-label">Email Address <span style="color: #ef4444;">*</span></label>
         <input type="email" class="form-input" id="newAgentEmail" placeholder="agent@company.com" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Set Password</label>
+        <label class="form-label">Set Password <span style="color: #ef4444;">*</span></label>
         <input type="password" class="form-input" id="newAgentPassword" placeholder="Enter password for agent" required minlength="6">
         <div class="form-help">Agent will receive login credentials via email</div>
-      </div>
-
-      <h4 style="margin: 20px 0 12px; font-size: 14px; font-weight: 600;">Permissions</h4>
-
-      <div class="toggle-group">
-        <div class="toggle-label">Can View Conversations</div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="newAgentCanView" checked>
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-group">
-        <div class="toggle-label">Can Respond to Messages</div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="newAgentCanRespond" checked>
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-group">
-        <div class="toggle-label">Can Close Conversations</div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="newAgentCanClose" checked>
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-group">
-        <div class="toggle-label">Can Manage Settings (Admin)</div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="newAgentCanManage">
-          <span class="toggle-slider"></span>
-        </label>
       </div>
 
       <div class="modal-footer">
@@ -362,28 +336,27 @@ async function loadAgents() {
 function renderAgents() {
   const tbody = document.getElementById('agentsTable');
   if (!agents.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No agents added yet</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">No agents added yet</td></tr>';
     return;
   }
-  tbody.innerHTML = agents.map(agent => `
+  tbody.innerHTML = agents.map(agent => {
+    const fullName = [agent.firstName, agent.lastName].filter(Boolean).join(' ');
+    return `
     <tr>
-      <td><strong>${escapeHtml(agent.username || agent.firstName || 'Unknown')}</strong></td>
+      <td><strong>${escapeHtml(agent.username || 'Unknown')}</strong></td>
       <td>${escapeHtml(agent.email || '')}</td>
+      <td>${escapeHtml(fullName || '-')}</td>
       <td>
         <span class="status-badge ${agent.status === 'online' ? 'online' : 'offline'}">
           <span class="status-dot"></span>
           ${agent.status === 'online' ? 'Online' : 'Offline'}
         </span>
       </td>
-      <td>${agent.canView ? 'Yes' : 'No'}</td>
-      <td>${agent.canRespond ? 'Yes' : 'No'}</td>
-      <td>${agent.canCloseConversations ? 'Yes' : 'No'}</td>
-      <td>${agent.canManageSettings ? 'Yes' : 'No'}</td>
       <td>
         <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="removeAgent('${agent.userId}')">Remove</button>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 }
 
 function showAddAgentModal() {
@@ -396,14 +369,14 @@ async function addAgent(e) {
     await apiPost(`/sites/${siteId}/agents`, {
       email: document.getElementById('newAgentEmail').value,
       password: document.getElementById('newAgentPassword').value,
-      canView: document.getElementById('newAgentCanView').checked,
-      canRespond: document.getElementById('newAgentCanRespond').checked,
-      canCloseConversations: document.getElementById('newAgentCanClose').checked,
-      canManageSettings: document.getElementById('newAgentCanManage').checked
+      firstName: document.getElementById('newAgentFirstName').value.trim() || null,
+      lastName: document.getElementById('newAgentLastName').value.trim() || null
     });
     closeModal('addAgentModal');
     document.getElementById('newAgentEmail').value = '';
     document.getElementById('newAgentPassword').value = '';
+    document.getElementById('newAgentFirstName').value = '';
+    document.getElementById('newAgentLastName').value = '';
     showToast('Agent added! Login credentials sent via email.', 'success');
     loadAgents();
   } catch (err) {

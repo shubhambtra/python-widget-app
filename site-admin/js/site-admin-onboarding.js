@@ -281,56 +281,31 @@ async function renderStep2() {
       ${agentsAddedHtml}
 
       <form id="wizardAddAgentForm" onsubmit="wizardAddAgent(event)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-          <div>
-            <div class="wizard-form-group" style="margin-bottom: 16px;">
-              <label class="wizard-form-label">Agent Email Address</label>
-              <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required>
-            </div>
-            <div class="wizard-form-group" style="margin-bottom: 16px;">
-              <label class="wizard-form-label">Set Password</label>
-              <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Enter password for agent" required minlength="6">
-              <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">Agent will receive login credentials via email</div>
-            </div>
-            <button type="submit" class="wizard-btn wizard-btn-primary" style="width: 100%;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Add Agent
-            </button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div class="wizard-form-group">
+            <label class="wizard-form-label">First Name</label>
+            <input type="text" class="wizard-form-input" id="wizardAgentFirstName" placeholder="John">
           </div>
-          <div>
-            <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Permissions</div>
-            <div class="wizard-toggle-group">
-              <div class="wizard-toggle-label">Can View Conversations</div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="wizardCanView" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="wizard-toggle-group">
-              <div class="wizard-toggle-label">Can Respond to Messages</div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="wizardCanRespond" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="wizard-toggle-group">
-              <div class="wizard-toggle-label">Can Close Conversations</div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="wizardCanClose" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="wizard-toggle-group">
-              <div class="wizard-toggle-label">Admin Access</div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="wizardCanManage">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
+          <div class="wizard-form-group">
+            <label class="wizard-form-label">Last Name</label>
+            <input type="text" class="wizard-form-input" id="wizardAgentLastName" placeholder="Doe">
           </div>
         </div>
+        <div class="wizard-form-group" style="margin-bottom: 16px;">
+          <label class="wizard-form-label">Agent Email Address</label>
+          <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required>
+        </div>
+        <div class="wizard-form-group" style="margin-bottom: 16px;">
+          <label class="wizard-form-label">Set Password</label>
+          <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Enter password for agent" required minlength="6">
+          <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">Agent will receive login credentials via email</div>
+        </div>
+        <button type="submit" class="wizard-btn wizard-btn-primary" style="width: 100%;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add Agent
+        </button>
       </form>
     </div>
   `;
@@ -545,7 +520,10 @@ function hasUnsavedAgentData() {
   const email = document.getElementById('wizardAgentEmail');
   const password = document.getElementById('wizardAgentPassword');
   if (!email || !password) return false;
-  return email.value.trim() !== '' || password.value.trim() !== '';
+  const firstName = document.getElementById('wizardAgentFirstName');
+  const lastName = document.getElementById('wizardAgentLastName');
+  return email.value.trim() !== '' || password.value.trim() !== '' ||
+    (firstName && firstName.value.trim() !== '') || (lastName && lastName.value.trim() !== '');
 }
 
 function continueFromAgentStep() {
@@ -610,19 +588,15 @@ async function wizardAddAgent(e) {
   const password = document.getElementById('wizardAgentPassword').value;
   if (!email || !password) return;
 
-  const canView = document.getElementById('wizardCanView').checked;
-  const canRespond = document.getElementById('wizardCanRespond').checked;
-  const canClose = document.getElementById('wizardCanClose').checked;
-  const canManage = document.getElementById('wizardCanManage').checked;
+  const firstName = (document.getElementById('wizardAgentFirstName')?.value || '').trim();
+  const lastName = (document.getElementById('wizardAgentLastName')?.value || '').trim();
 
   try {
     await apiPost(`/sites/${siteId}/agents`, {
       email: email,
       password: password,
-      canView: canView,
-      canRespond: canRespond,
-      canCloseConversations: canClose,
-      canManageSettings: canManage
+      firstName: firstName || null,
+      lastName: lastName || null
     });
 
     // Update state
@@ -634,6 +608,8 @@ async function wizardAddAgent(e) {
     showToast('Agent added successfully! Login credentials sent via email.', 'success');
     document.getElementById('wizardAgentEmail').value = '';
     document.getElementById('wizardAgentPassword').value = '';
+    if (document.getElementById('wizardAgentFirstName')) document.getElementById('wizardAgentFirstName').value = '';
+    if (document.getElementById('wizardAgentLastName')) document.getElementById('wizardAgentLastName').value = '';
     document.getElementById('wizardContent').innerHTML = await renderStep(2);
 
   } catch (err) {
