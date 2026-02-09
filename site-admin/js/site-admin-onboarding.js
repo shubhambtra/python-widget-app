@@ -293,7 +293,7 @@ async function renderStep2() {
       ${agentsAddedHtml}
 
       <form id="wizardAddAgentForm" onsubmit="wizardAddAgent(event)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
           <div class="wizard-form-group">
             <label class="wizard-form-label">First Name</label>
             <input type="text" class="wizard-form-input" id="wizardAgentFirstName" placeholder="John">
@@ -303,15 +303,17 @@ async function renderStep2() {
             <input type="text" class="wizard-form-input" id="wizardAgentLastName" placeholder="Doe">
           </div>
         </div>
-        <div class="wizard-form-group" style="margin-bottom: 16px;">
-          <label class="wizard-form-label">Agent Email Address</label>
-          <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required autocomplete="off">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="wizard-form-group">
+            <label class="wizard-form-label">Email Address</label>
+            <input type="email" class="wizard-form-input" id="wizardAgentEmail" placeholder="agent@company.com" required autocomplete="off">
+          </div>
+          <div class="wizard-form-group">
+            <label class="wizard-form-label">Password</label>
+            <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Min 6 characters" required minlength="6" autocomplete="new-password">
+          </div>
         </div>
-        <div class="wizard-form-group" style="margin-bottom: 16px;">
-          <label class="wizard-form-label">Set Password</label>
-          <input type="password" class="wizard-form-input" id="wizardAgentPassword" placeholder="Enter password for agent" required minlength="6" autocomplete="new-password">
-          <div class="form-help" style="margin-top: 6px; font-size: 12px; color: #64748b;">Agent will receive login credentials via email</div>
-        </div>
+        <div class="form-help" style="margin-bottom: 12px; font-size: 12px; color: #64748b;">Agent will receive login credentials via email</div>
         <button type="submit" class="wizard-btn wizard-btn-primary" style="width: 100%;">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
