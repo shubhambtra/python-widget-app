@@ -42,6 +42,7 @@ async function saveOnboardingState(state) {
 async function resetOnboardingState() {
   const state = { ...DEFAULT_ONBOARDING_STATE };
   await saveOnboardingState(state);
+  localStorage.removeItem(`assistica_onboarding_done_${siteId}`);
   return state;
 }
 
@@ -65,18 +66,28 @@ async function migrateLocalStorageOnboarding() {
 // ==================== WIZARD LIFECYCLE ====================
 async function checkOnboarding() {
   console.log('[Onboarding] checkOnboarding called');
+
+  // Fast local check first — avoids API round-trip on every page navigation
+  const localDismissKey = `assistica_onboarding_done_${siteId}`;
+  if (localStorage.getItem(localDismissKey)) {
+    console.log('[Onboarding] Already dismissed/completed (localStorage), not showing');
+    return;
+  }
+
   const state = await getOnboardingState();
   console.log('[Onboarding] Current state:', state);
 
   // Don't show if already completed
   if (state.completed) {
     console.log('[Onboarding] Already completed, not showing');
+    localStorage.setItem(localDismissKey, '1');
     return;
   }
 
   // Don't show if previously dismissed
   if (state.dismissedAt) {
     console.log('[Onboarding] Previously dismissed, not showing automatically');
+    localStorage.setItem(localDismissKey, '1');
     return;
   }
 
@@ -146,6 +157,7 @@ async function dismissOnboarding() {
   const state = await getOnboardingState();
   state.dismissedAt = new Date().toISOString();
   await saveOnboardingState(state);
+  localStorage.setItem(`assistica_onboarding_done_${siteId}`, '1');
   closeOnboardingWizard();
 }
 
@@ -153,6 +165,7 @@ async function completeOnboarding() {
   const state = await getOnboardingState();
   state.completed = true;
   await saveOnboardingState(state);
+  localStorage.setItem(`assistica_onboarding_done_${siteId}`, '1');
   closeOnboardingWizard();
 }
 
