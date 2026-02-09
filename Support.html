@@ -2896,8 +2896,7 @@ document.addEventListener("click", (e) => {
 
 function openProfile() {
   closeUserMenu();
-  // Use port 8000 for static HTML pages
-  window.location.href = `http://${location.hostname}:8000/profile.html?siteId=${siteId}&token=${token}`;
+  window.location.href = `${window.location.origin}/profile.html?siteId=${siteId}&token=${token}`;
 }
 
 // ==================== SETTINGS & THEMES ====================

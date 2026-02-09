@@ -154,19 +154,31 @@ function closeOnboardingWizard() {
 }
 
 async function dismissOnboarding() {
-  const state = await getOnboardingState();
-  state.dismissedAt = new Date().toISOString();
-  await saveOnboardingState(state);
+  // Set localStorage FIRST (synchronous) so it persists even if API fails
   localStorage.setItem(`assistica_onboarding_done_${siteId}`, '1');
   closeOnboardingWizard();
+  // Then persist to API in background
+  try {
+    const state = await getOnboardingState();
+    state.dismissedAt = new Date().toISOString();
+    await saveOnboardingState(state);
+  } catch (e) {
+    console.warn('[Onboarding] Failed to save dismiss state to API:', e);
+  }
 }
 
 async function completeOnboarding() {
-  const state = await getOnboardingState();
-  state.completed = true;
-  await saveOnboardingState(state);
+  // Set localStorage FIRST (synchronous) so it persists even if API fails
   localStorage.setItem(`assistica_onboarding_done_${siteId}`, '1');
   closeOnboardingWizard();
+  // Then persist to API in background
+  try {
+    const state = await getOnboardingState();
+    state.completed = true;
+    await saveOnboardingState(state);
+  } catch (e) {
+    console.warn('[Onboarding] Failed to save complete state to API:', e);
+  }
 }
 
 // ==================== PROGRESS RENDERING ====================
