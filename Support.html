@@ -234,6 +234,7 @@
       <div class="no-agents">No other agents online</div>
     </div>
   </div>
+  <div class="sidebar-version" id="sidebarVersion"></div>
 </div>
 
 <!-- MAIN CONTENT -->
@@ -1512,6 +1513,10 @@ ws.onclose = () => {
 ws.onerror = () => {
   updateConnectionStatus('disconnected');
 };
+
+// ==================== VERSION ====================
+const APP_VERSION = '1.0.1';
+document.getElementById('sidebarVersion').textContent = `v${APP_VERSION}`;
 
 // ==================== LOAD HISTORICAL DATA ====================
 const API_BASE = CONFIG.API_BASE;
