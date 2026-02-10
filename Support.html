@@ -15,7 +15,9 @@
 <div class="topbar">
   <div class="topbar-left">
     <div class="topbar-logo" data-brand="icon">
-      C
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
     </div>
     <div class="topbar-brand"><span data-brand="name">Assistica AI</span> <span>Support</span></div>
   </div>
@@ -35,12 +37,6 @@
       <span class="badge" id="notificationBadge" style="display:none;"></span>
     </button>
 
-    <button class="topbar-btn" title="Team Chat" id="btnTeamChat" onclick="toggleAgentsPanel()" aria-label="Team Chat">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    </button>
-
     <button class="topbar-btn supervisor-btn" title="Supervisor View" id="supervisorBtn" onclick="openSupervisorModal()" style="display:none;" aria-label="Supervisor View">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -50,19 +46,6 @@
     <button class="topbar-btn" title="Workflows" onclick="openWorkflowsModal()" aria-label="Workflows">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-    </button>
-
-    <button class="topbar-btn" title="Settings" onclick="openSettings()" aria-label="Settings">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    </button>
-
-    <button class="topbar-btn" title="Help" id="btnHelp" onclick="openShortcutsModal()" aria-label="Help & Keyboard Shortcuts">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     </button>
 
@@ -161,8 +144,46 @@
 <!-- Free Trial Banner (injected by JS) -->
 <div id="freeTrialBanner" style="display: none;"></div>
 
+<!-- Nav Rail Tooltip -->
+<div class="nav-rail-tooltip" id="navRailTooltip"></div>
+
 <!-- MAIN LAYOUT -->
 <div class="main-layout">
+
+<!-- LEFT NAV RAIL -->
+<nav class="nav-rail" aria-label="Main navigation">
+  <div class="nav-rail-top">
+    <button class="nav-rail-btn active" id="navInbox" data-nav-tip="Inbox" onclick="switchNavRail('inbox')" aria-label="Inbox">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navTeam" data-nav-tip="Team" onclick="switchNavRail('team')" aria-label="Team Chat">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navReviews" data-nav-tip="Reviews" onclick="switchNavRail('reviews')" aria-label="Reviews">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navSettings" data-nav-tip="Settings" onclick="switchNavRail('settings')" aria-label="Settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navHelp" data-nav-tip="Help" onclick="switchNavRail('help')" aria-label="Help & Shortcuts">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
+  </div>
+  <div class="nav-rail-bottom">
+    <div class="nav-rail-avatar" id="navRailAvatar" onclick="toggleUserMenu()" title="Profile">A</div>
+  </div>
+</nav>
 
 <!-- LEFT SIDEBAR -->
 <div class="sidebar">
@@ -500,79 +521,331 @@
 
 </div>
 
+<!-- TEAM CHAT SCREEN -->
+<div class="team-chat-screen" id="teamChatScreen" style="display:none">
+  <!-- Team members sidebar -->
+  <div class="team-sidebar">
+    <div class="team-sidebar-header">
+      <h2>Team Chat</h2>
+      <span class="agents-count" id="teamAgentsCount">0</span>
+    </div>
+    <div class="team-members-list" id="teamMembersList">
+      <div class="no-agents">No other agents online</div>
+    </div>
+  </div>
+  <!-- Team chat area -->
+  <div class="team-chat-area">
+    <div class="team-no-chat" id="teamNoChat">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <h3>Select a teammate to chat</h3>
+      <p>Choose a team member from the left to start a conversation</p>
+    </div>
+    <div class="team-active-chat" id="teamActiveChat" style="display:none">
+      <div class="team-chat-header" id="teamChatHeader">
+        <div class="team-chat-header-info">
+          <div class="team-chat-avatar" id="teamChatAvatar">A</div>
+          <div class="team-chat-details">
+            <span class="team-chat-name" id="teamChatName">Agent Name</span>
+            <span class="team-chat-status" id="teamChatStatus">Online</span>
+          </div>
+        </div>
+      </div>
+      <div class="team-chat-messages" id="teamChatMsgs">
+        <div class="agent-chat-empty">Start a conversation</div>
+      </div>
+      <div class="team-chat-typing" id="teamChatTyping" style="display: none;">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="team-chat-input-area">
+        <input type="text" id="teamChatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendTeamMessage()">
+        <button onclick="sendTeamMessage()" aria-label="Send message">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reviews Screen -->
+<div class="reviews-screen" id="reviewsScreen" style="display:none">
+  <div class="reviews-container">
+    <div class="reviews-header">
+      <div class="reviews-header-left">
+        <h2>Reviews</h2>
+        <p class="reviews-subtitle">Customer satisfaction ratings</p>
+      </div>
+      <div class="reviews-header-right">
+        <div class="reviews-filter-group">
+          <button class="reviews-filter-btn active" data-filter="all" onclick="filterReviews('all')">All</button>
+          <button class="reviews-filter-btn" data-filter="positive" onclick="filterReviews('positive')">Positive</button>
+          <button class="reviews-filter-btn" data-filter="neutral" onclick="filterReviews('neutral')">Neutral</button>
+          <button class="reviews-filter-btn" data-filter="negative" onclick="filterReviews('negative')">Negative</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards Row -->
+    <div class="reviews-summary-row" id="reviewsSummaryRow">
+      <div class="reviews-summary-card reviews-summary-score">
+        <div class="reviews-ring-wrap">
+          <svg class="reviews-ring" viewBox="0 0 120 120">
+            <circle class="reviews-ring-bg" cx="60" cy="60" r="52" />
+            <circle class="reviews-ring-fill" id="reviewsRingFill" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="reviews-ring-label">
+            <span class="reviews-ring-value" id="reviewsAvgRating">0.0</span>
+            <span class="reviews-ring-sub">out of 5</span>
+          </div>
+        </div>
+        <div class="reviews-score-meta">
+          <div class="reviews-avg-stars" id="reviewsAvgStars">☆☆☆☆☆</div>
+          <div class="reviews-total-count" id="reviewsTotalCount">0 reviews</div>
+        </div>
+      </div>
+      <div class="reviews-summary-card reviews-summary-dist">
+        <div class="reviews-dist-title">Rating Distribution</div>
+        <div class="reviews-stats-bars" id="reviewsStatsBars">
+          <div class="reviews-bar-row" data-star="5"><span class="reviews-bar-label">5</span><span class="reviews-bar-star-icon">★</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-5"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+          <div class="reviews-bar-row" data-star="4"><span class="reviews-bar-label">4</span><span class="reviews-bar-star-icon">★</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-4"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+          <div class="reviews-bar-row" data-star="3"><span class="reviews-bar-label">3</span><span class="reviews-bar-star-icon">★</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-3"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+          <div class="reviews-bar-row" data-star="2"><span class="reviews-bar-label">2</span><span class="reviews-bar-star-icon">★</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-2"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+          <div class="reviews-bar-row" data-star="1"><span class="reviews-bar-label">1</span><span class="reviews-bar-star-icon">★</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-1"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+        </div>
+      </div>
+      <div class="reviews-summary-card reviews-summary-sentiment">
+        <div class="reviews-sentiment-title">Sentiment Breakdown</div>
+        <div class="reviews-sentiment-items">
+          <div class="reviews-sentiment-item positive">
+            <div class="reviews-sentiment-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div class="reviews-sentiment-data">
+              <span class="reviews-sentiment-value" id="reviewsSentimentPositive">0</span>
+              <span class="reviews-sentiment-label">Positive</span>
+            </div>
+          </div>
+          <div class="reviews-sentiment-item neutral">
+            <div class="reviews-sentiment-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div class="reviews-sentiment-data">
+              <span class="reviews-sentiment-value" id="reviewsSentimentNeutral">0</span>
+              <span class="reviews-sentiment-label">Neutral</span>
+            </div>
+          </div>
+          <div class="reviews-sentiment-item negative">
+            <div class="reviews-sentiment-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div class="reviews-sentiment-data">
+              <span class="reviews-sentiment-value" id="reviewsSentimentNegative">0</span>
+              <span class="reviews-sentiment-label">Negative</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews List -->
+    <div class="reviews-list-section">
+      <div class="reviews-list-toolbar">
+        <h3 class="reviews-list-header">Recent Reviews</h3>
+        <span class="reviews-list-showing" id="reviewsShowing"></span>
+      </div>
+      <div class="reviews-list" id="reviewsList"></div>
+      <div class="reviews-empty" id="reviewsEmpty" style="display:none">
+        <div class="reviews-empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+        <h3>No reviews yet</h3>
+        <p>Customer ratings will appear here once conversations receive CSAT feedback.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div> <!-- Close main-layout -->
 
-<!-- Profile Slide Panel -->
-<div class="profile-slide-overlay" id="profileSlideOverlay" onclick="if(event.target===this)closeProfile()">
-  <div class="profile-slide-panel">
-    <div class="profile-panel-header">
-      <h2>Profile Settings</h2>
-      <button class="profile-panel-close" onclick="closeProfile()" aria-label="Close profile">
+<!-- Profile Modal -->
+<div class="profile-modal-overlay" id="profileSlideOverlay" onclick="if(event.target===this)closeProfile()">
+  <div class="profile-modal">
+    <div class="profile-modal-header">
+      <div class="profile-modal-header-left">
+        <div class="profile-modal-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <h2>Account Settings</h2>
+      </div>
+      <button class="profile-modal-close" onclick="closeProfile()" aria-label="Close profile">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
-    <div class="profile-panel-body">
-      <div class="profile-panel-avatar-section">
-        <div class="profile-panel-avatar" id="profilePanelAvatar">
-          <span id="profilePanelInitials">--</span>
+
+    <!-- Tabs -->
+    <div class="profile-modal-tabs">
+      <button class="profile-modal-tab active" data-tab="profile" onclick="switchProfileTab('profile')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Profile
+      </button>
+      <button class="profile-modal-tab" data-tab="password" onclick="switchProfileTab('password')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        Security
+      </button>
+    </div>
+
+    <div class="profile-modal-body">
+      <!-- Profile Tab -->
+      <div class="profile-tab-content active" id="profileTabProfile">
+        <div class="profile-modal-card">
+          <div class="profile-modal-avatar-section">
+            <div class="profile-modal-avatar" id="profilePanelAvatar">
+              <span id="profilePanelInitials">--</span>
+            </div>
+            <div class="profile-modal-user-info">
+              <h3 id="profilePanelName">Loading...</h3>
+              <p id="profilePanelEmail">loading@example.com</p>
+              <span class="profile-modal-role" id="profilePanelRole">Agent</span>
+            </div>
+          </div>
         </div>
-        <div class="profile-panel-user-info">
-          <h3 id="profilePanelName">Loading...</h3>
-          <p id="profilePanelEmail">loading@example.com</p>
-          <span class="profile-panel-role" id="profilePanelRole">Agent</span>
-        </div>
+
+        <form id="profilePanelForm" onsubmit="saveProfilePanel(event)">
+          <div class="profile-modal-section-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Personal Information
+          </div>
+          <div class="profile-panel-grid">
+            <div class="profile-panel-field">
+              <label>First Name</label>
+              <input type="text" id="profileFirstName" placeholder="First name">
+            </div>
+            <div class="profile-panel-field">
+              <label>Last Name</label>
+              <input type="text" id="profileLastName" placeholder="Last name">
+            </div>
+            <div class="profile-panel-field">
+              <label>Username</label>
+              <div class="profile-field-locked">
+                <input type="text" id="profileUsername" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            </div>
+            <div class="profile-panel-field">
+              <label>Email</label>
+              <div class="profile-field-locked">
+                <input type="email" id="profileEmailField" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            </div>
+            <div class="profile-panel-field profile-panel-full">
+              <label>Avatar URL</label>
+              <input type="url" id="profileAvatarUrl" placeholder="https://example.com/avatar.jpg">
+            </div>
+          </div>
+          <div class="profile-panel-actions">
+            <button type="button" class="profile-panel-btn secondary" onclick="closeProfile()">Cancel</button>
+            <button type="submit" class="profile-panel-btn primary" id="profileSaveBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Save Changes
+            </button>
+          </div>
+        </form>
       </div>
-      <form id="profilePanelForm" onsubmit="saveProfilePanel(event)">
-        <div class="profile-panel-grid">
-          <div class="profile-panel-field">
-            <label>First Name</label>
-            <input type="text" id="profileFirstName" placeholder="First name">
+
+      <!-- Password/Security Tab -->
+      <div class="profile-tab-content" id="profileTabPassword">
+        <div class="profile-modal-card security-card">
+          <div class="security-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
           </div>
-          <div class="profile-panel-field">
-            <label>Last Name</label>
-            <input type="text" id="profileLastName" placeholder="Last name">
-          </div>
-          <div class="profile-panel-field">
-            <label>Username</label>
-            <input type="text" id="profileUsername" disabled>
-          </div>
-          <div class="profile-panel-field">
-            <label>Email</label>
-            <input type="email" id="profileEmailField" disabled>
-          </div>
-          <div class="profile-panel-field profile-panel-full">
-            <label>Avatar URL</label>
-            <input type="url" id="profileAvatarUrl" placeholder="https://example.com/avatar.jpg">
-          </div>
+          <h4>Password & Security</h4>
+          <p>Keep your account secure by using a strong password that you don't use elsewhere.</p>
         </div>
-        <div class="profile-panel-actions">
-          <button type="button" class="profile-panel-btn secondary" onclick="closeProfile()">Cancel</button>
-          <button type="submit" class="profile-panel-btn primary" id="profileSaveBtn">Save Changes</button>
-        </div>
-      </form>
-      <div class="profile-panel-divider"></div>
-      <h3 class="profile-panel-section-title">Change Password</h3>
-      <form id="profilePasswordForm" onsubmit="changeProfilePassword(event)">
-        <div class="profile-panel-grid">
-          <div class="profile-panel-field profile-panel-full">
-            <label>Current Password</label>
-            <input type="password" id="profileCurrentPassword" placeholder="Current password">
+
+        <form id="profilePasswordForm" onsubmit="changeProfilePassword(event)">
+          <div class="profile-modal-section-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            Change Password
           </div>
-          <div class="profile-panel-field">
-            <label>New Password</label>
-            <input type="password" id="profileNewPassword" placeholder="New password">
+          <div class="profile-panel-grid">
+            <div class="profile-panel-field profile-panel-full">
+              <label>Current Password</label>
+              <div class="profile-password-field">
+                <input type="password" id="profileCurrentPassword" placeholder="Enter current password">
+                <button type="button" class="profile-password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="profile-panel-field">
+              <label>New Password</label>
+              <div class="profile-password-field">
+                <input type="password" id="profileNewPassword" placeholder="Enter new password" oninput="updatePasswordStrength(this.value)">
+                <button type="button" class="profile-password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+              <div class="profile-password-strength" id="passwordStrengthBar">
+                <div class="profile-password-strength-fill"></div>
+              </div>
+              <span class="profile-password-strength-text" id="passwordStrengthText"></span>
+            </div>
+            <div class="profile-panel-field">
+              <label>Confirm Password</label>
+              <div class="profile-password-field">
+                <input type="password" id="profileConfirmPassword" placeholder="Confirm new password">
+                <button type="button" class="profile-password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="profile-panel-field">
-            <label>Confirm Password</label>
-            <input type="password" id="profileConfirmPassword" placeholder="Confirm password">
+          <div class="profile-panel-actions">
+            <button type="button" class="profile-panel-btn secondary" onclick="closeProfile()">Cancel</button>
+            <button type="submit" class="profile-panel-btn primary" id="profilePasswordBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Update Password
+            </button>
           </div>
-        </div>
-        <div class="profile-panel-actions">
-          <button type="submit" class="profile-panel-btn primary" id="profilePasswordBtn">Update Password</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </div>
@@ -2977,11 +3250,51 @@ document.addEventListener("click", (e) => {
 function openProfile() {
   closeUserMenu();
   loadProfilePanel();
+  switchProfileTab('profile');
   document.getElementById('profileSlideOverlay').classList.add('open');
 }
 
 function closeProfile() {
   document.getElementById('profileSlideOverlay').classList.remove('open');
+}
+
+function switchProfileTab(tab) {
+  document.querySelectorAll('.profile-modal-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(tab === 'profile' ? 'profileTabProfile' : 'profileTabPassword').classList.add('active');
+}
+
+function togglePasswordVisibility(btn) {
+  const input = btn.parentElement.querySelector('input');
+  const isPassword = input.type === 'password';
+  input.type = isPassword ? 'text' : 'password';
+  btn.innerHTML = isPassword
+    ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>';
+}
+
+function updatePasswordStrength(pw) {
+  const bar = document.querySelector('#passwordStrengthBar .profile-password-strength-fill');
+  const text = document.getElementById('passwordStrengthText');
+  if (!pw) { bar.style.width = '0'; text.textContent = ''; return; }
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const levels = [
+    { width: '20%', color: '#ef4444', label: 'Very weak' },
+    { width: '40%', color: '#f97316', label: 'Weak' },
+    { width: '60%', color: '#eab308', label: 'Fair' },
+    { width: '80%', color: '#22c55e', label: 'Strong' },
+    { width: '100%', color: '#16a34a', label: 'Very strong' }
+  ];
+  const level = levels[Math.min(score, 4)];
+  bar.style.width = level.width;
+  bar.style.background = level.color;
+  text.textContent = level.label;
+  text.style.color = level.color;
 }
 
 async function loadProfilePanel() {
@@ -3802,6 +4115,9 @@ window.openProfile = openProfile;
 window.closeProfile = closeProfile;
 window.saveProfilePanel = saveProfilePanel;
 window.changeProfilePassword = changeProfilePassword;
+window.switchProfileTab = switchProfileTab;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.updatePasswordStrength = updatePasswordStrength;
 window.logout = logout;
 window.clearPendingFile = clearPendingFile;
 window.openImageModal = openImageModal;
@@ -4711,6 +5027,11 @@ function displayCsatRating(visitorId, rating, feedback) {
   }
 
   showToast(`Customer rated the conversation: ${rating}/5 stars`, rating >= 4 ? 'success' : 'info');
+
+  // Refresh reviews screen if currently active
+  if (currentNavView === 'reviews') {
+    renderReviewsScreen();
+  }
 }
 
 // ==================== TAB TITLE WITH UNREAD COUNT ====================
@@ -4781,6 +5102,9 @@ ws.onmessage = function(e) {
       renderOnlineAgents();
       if (currentAgentChat === data.agentId) {
         document.getElementById('agentChatStatus').textContent = 'Offline';
+        if (currentNavView === 'team') {
+          document.getElementById('teamChatStatus').textContent = 'Offline';
+        }
       }
       break;
 
@@ -4788,6 +5112,9 @@ ws.onmessage = function(e) {
       if (onlineAgents[data.agentId]) {
         onlineAgents[data.agentId].status = data.status;
         renderOnlineAgents();
+        if (currentAgentChat === data.agentId && currentNavView === 'team') {
+          document.getElementById('teamChatStatus').textContent = data.status;
+        }
       }
       break;
 
@@ -4802,12 +5129,18 @@ ws.onmessage = function(e) {
     case 'agent_typing_start':
       if (currentAgentChat === data.fromAgentId) {
         document.getElementById('agentChatTyping').style.display = 'flex';
+        if (currentNavView === 'team') {
+          document.getElementById('teamChatTyping').style.display = 'flex';
+        }
       }
       break;
 
     case 'agent_typing_stop':
       if (currentAgentChat === data.fromAgentId) {
         document.getElementById('agentChatTyping').style.display = 'none';
+        if (currentNavView === 'team') {
+          document.getElementById('teamChatTyping').style.display = 'none';
+        }
       }
       break;
 
@@ -4816,6 +5149,9 @@ ws.onmessage = function(e) {
         agentChats[data.withAgentId].messages = data.messages || [];
         if (currentAgentChat === data.withAgentId) {
           renderAgentChatMessages();
+          if (currentNavView === 'team') {
+            renderTeamChatMessages();
+          }
         }
       }
       break;
@@ -4911,6 +5247,11 @@ function renderOnlineAgents() {
 
   agentsList.innerHTML = html;
   agentsPanelList.innerHTML = html;
+
+  // Also refresh team members list if team view is active
+  if (currentNavView === 'team') {
+    renderTeamMembers();
+  }
 }
 
 function toggleAgentsSectionCollapse() {
@@ -5066,15 +5407,171 @@ function handleIncomingAgentMessage(data) {
   // If chat is open, render. Otherwise increment unread
   if (currentAgentChat === fromAgentId) {
     renderAgentChatMessages();
+    if (currentNavView === 'team') {
+      renderTeamChatMessages();
+    }
   } else {
     agentChats[fromAgentId].unread = (agentChats[fromAgentId].unread || 0) + 1;
     renderOnlineAgents();
+    if (currentNavView === 'team') {
+      renderTeamMembers();
+    }
     showToast(`Message from ${data.fromAgentName}`, 'info');
   }
 }
 
 // Agent typing indicator
 document.getElementById('agentChatInput')?.addEventListener('input', () => {
+  if (!currentAgentChat) return;
+
+  ws.send(JSON.stringify({
+    type: 'agent_typing_start',
+    toAgentId: currentAgentChat
+  }));
+
+  clearTimeout(agentTypingTimeout);
+  agentTypingTimeout = setTimeout(() => {
+    ws.send(JSON.stringify({
+      type: 'agent_typing_stop',
+      toAgentId: currentAgentChat
+    }));
+  }, 2000);
+});
+
+// ==================== TEAM CHAT SCREEN ====================
+
+function renderTeamMembers() {
+  const list = document.getElementById('teamMembersList');
+  const countEl = document.getElementById('teamAgentsCount');
+  const agentEntries = Object.entries(onlineAgents);
+
+  countEl.textContent = agentEntries.length;
+
+  if (agentEntries.length === 0) {
+    list.innerHTML = '<div class="no-agents">No other agents online</div>';
+    return;
+  }
+
+  list.innerHTML = agentEntries.map(([agentId, agent]) => {
+    const initials = agent.username ? agent.username.substring(0, 2).toUpperCase() : 'A';
+    const unreadCount = agentChats[agentId]?.unread || 0;
+    const isActive = currentAgentChat === agentId ? ' active' : '';
+    return `
+      <div class="agent-item ${agent.status}${isActive}" onclick="openTeamChat('${agentId}')">
+        <div class="agent-item-avatar">${initials}</div>
+        <div class="agent-item-info">
+          <span class="agent-item-name">${escapeHtml(agent.username)}</span>
+          <span class="agent-item-status">${agent.status}</span>
+        </div>
+        ${unreadCount > 0 ? `<span class="agent-unread-badge">${unreadCount}</span>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function openTeamChat(agentId) {
+  const agent = onlineAgents[agentId];
+  if (!agent) return;
+
+  currentAgentChat = agentId;
+
+  // Initialize chat if not exists
+  if (!agentChats[agentId]) {
+    agentChats[agentId] = { messages: [], unread: 0 };
+    ws.send(JSON.stringify({
+      type: 'get_agent_chat_history',
+      withAgentId: agentId
+    }));
+  }
+
+  // Clear unread
+  agentChats[agentId].unread = 0;
+  renderTeamMembers();
+  renderOnlineAgents();
+
+  // Update header
+  const initials = agent.username.substring(0, 2).toUpperCase();
+  document.getElementById('teamChatAvatar').textContent = initials;
+  document.getElementById('teamChatName').textContent = agent.username;
+  document.getElementById('teamChatStatus').textContent = agent.status;
+
+  // Show active chat, hide empty state
+  document.getElementById('teamNoChat').style.display = 'none';
+  document.getElementById('teamActiveChat').style.display = 'flex';
+
+  // Render messages
+  renderTeamChatMessages();
+
+  // Focus input
+  document.getElementById('teamChatInput').focus();
+}
+
+function renderTeamChatMessages() {
+  const container = document.getElementById('teamChatMsgs');
+  if (!currentAgentChat || !agentChats[currentAgentChat]) {
+    container.innerHTML = '<div class="agent-chat-empty">Start a conversation</div>';
+    return;
+  }
+
+  const messages = agentChats[currentAgentChat].messages;
+  if (messages.length === 0) {
+    container.innerHTML = '<div class="agent-chat-empty">Start a conversation</div>';
+    return;
+  }
+
+  container.innerHTML = messages.map(msg => {
+    const isMine = msg.from === currentAgentId || msg.fromName === currentUsername;
+    const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+    return `
+      <div class="agent-msg ${isMine ? 'mine' : 'theirs'}">
+        <div class="agent-msg-bubble">${escapeHtml(msg.message)}</div>
+        <div class="agent-msg-time">${time}</div>
+      </div>
+    `;
+  }).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function sendTeamMessage() {
+  const input = document.getElementById('teamChatInput');
+  const message = input.value.trim();
+
+  if (!message || !currentAgentChat) return;
+
+  const timestamp = new Date().toISOString();
+
+  if (!agentChats[currentAgentChat]) {
+    agentChats[currentAgentChat] = { messages: [], unread: 0 };
+  }
+  agentChats[currentAgentChat].messages.push({
+    from: currentAgentId,
+    fromName: currentUsername,
+    to: currentAgentChat,
+    message: message,
+    timestamp: timestamp
+  });
+
+  renderTeamChatMessages();
+  renderAgentChatMessages();
+
+  ws.send(JSON.stringify({
+    type: 'agent_message',
+    toAgentId: currentAgentChat,
+    message: message,
+    timestamp: timestamp
+  }));
+
+  input.value = '';
+
+  ws.send(JSON.stringify({
+    type: 'agent_typing_stop',
+    toAgentId: currentAgentChat
+  }));
+}
+
+// Team chat typing indicator
+document.getElementById('teamChatInput')?.addEventListener('input', () => {
   if (!currentAgentChat) return;
 
   ws.send(JSON.stringify({
@@ -5904,6 +6401,9 @@ window.openAgentChat = openAgentChat;
 window.closeAgentChat = closeAgentChat;
 window.sendAgentMessage = sendAgentMessage;
 window.toggleAgentsPanel = toggleAgentsPanel;
+window.openTeamChat = openTeamChat;
+window.sendTeamMessage = sendTeamMessage;
+window.renderTeamMembers = renderTeamMembers;
 window.toggleAgentsSectionCollapse = toggleAgentsSectionCollapse;
 window.addComment = addComment;
 window.handleCommentInput = handleCommentInput;
@@ -6094,6 +6594,223 @@ window.setConversationPriority = setConversationPriority;
 window.addConversationTag = addConversationTag;
 window.removeConversationTag = removeConversationTag;
 window.reopenConversation = reopenConversation;
+window.switchNavRail = switchNavRail;
+
+// ==================== NAV RAIL ====================
+let currentNavView = 'inbox';
+
+// ==================== REVIEWS SCREEN ====================
+let allReviews = [];
+let currentReviewFilter = 'all';
+
+function renderReviewsScreen() {
+  allReviews = [];
+  Object.keys(users).forEach(vid => {
+    const u = users[vid];
+    if (u.csatRating) {
+      allReviews.push({
+        visitorId: vid,
+        name: u.name || vid,
+        rating: u.csatRating,
+        feedback: u.csatFeedback || '',
+        lastActivity: u.lastActivity || 0
+      });
+    }
+  });
+
+  renderReviewStats(allReviews);
+  renderReviewsList(getFilteredReviews());
+}
+
+function getFilteredReviews() {
+  if (currentReviewFilter === 'all') return allReviews;
+  if (currentReviewFilter === 'positive') return allReviews.filter(r => r.rating >= 4);
+  if (currentReviewFilter === 'neutral') return allReviews.filter(r => r.rating === 3);
+  if (currentReviewFilter === 'negative') return allReviews.filter(r => r.rating <= 2);
+  return allReviews;
+}
+
+function filterReviews(filter) {
+  currentReviewFilter = filter;
+  document.querySelectorAll('.reviews-filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.reviews-filter-btn[data-filter="${filter}"]`).classList.add('active');
+  renderReviewsList(getFilteredReviews());
+}
+
+function renderReviewStats(reviews) {
+  const total = reviews.length;
+  const avgEl = document.getElementById('reviewsAvgRating');
+  const starsEl = document.getElementById('reviewsAvgStars');
+  const countEl = document.getElementById('reviewsTotalCount');
+  const ringFill = document.getElementById('reviewsRingFill');
+
+  const circumference = 2 * Math.PI * 52;
+  ringFill.style.strokeDasharray = circumference;
+
+  if (total === 0) {
+    avgEl.textContent = '0.0';
+    starsEl.innerHTML = '<span class="review-star">☆</span>'.repeat(5);
+    countEl.textContent = '0 reviews';
+    ringFill.style.strokeDashoffset = circumference;
+  } else {
+    const sum = reviews.reduce((s, r) => s + r.rating, 0);
+    const avg = sum / total;
+    avgEl.textContent = avg.toFixed(1);
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += `<span class="review-star ${i <= Math.round(avg) ? 'filled' : ''}">${i <= Math.round(avg) ? '★' : '☆'}</span>`;
+    }
+    starsEl.innerHTML = starsHtml;
+    countEl.textContent = total + (total === 1 ? ' review' : ' reviews');
+    const offset = circumference - (avg / 5) * circumference;
+    ringFill.style.strokeDashoffset = offset;
+  }
+
+  // Sentiment counts
+  const positive = reviews.filter(r => r.rating >= 4).length;
+  const neutral = reviews.filter(r => r.rating === 3).length;
+  const negative = reviews.filter(r => r.rating <= 2).length;
+  document.getElementById('reviewsSentimentPositive').textContent = positive;
+  document.getElementById('reviewsSentimentNeutral').textContent = neutral;
+  document.getElementById('reviewsSentimentNegative').textContent = negative;
+
+  // Distribution bars
+  const dist = [0, 0, 0, 0, 0];
+  reviews.forEach(r => { dist[r.rating - 1]++; });
+
+  const rows = document.querySelectorAll('#reviewsStatsBars .reviews-bar-row');
+  rows.forEach(row => {
+    const star = parseInt(row.getAttribute('data-star'));
+    const count = dist[star - 1];
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    row.querySelector('.reviews-bar-fill').style.width = pct + '%';
+    row.querySelector('.reviews-bar-count').textContent = count;
+    row.querySelector('.reviews-bar-pct').textContent = pct + '%';
+  });
+}
+
+function renderReviewsList(reviews) {
+  const listEl = document.getElementById('reviewsList');
+  const emptyEl = document.getElementById('reviewsEmpty');
+  const showingEl = document.getElementById('reviewsShowing');
+
+  if (reviews.length === 0) {
+    listEl.style.display = 'none';
+    emptyEl.style.display = 'flex';
+    showingEl.textContent = '';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  listEl.style.display = '';
+  showingEl.textContent = `Showing ${reviews.length} of ${allReviews.length}`;
+
+  const sorted = [...reviews].sort((a, b) => b.lastActivity - a.lastActivity);
+
+  listEl.innerHTML = sorted.map((r, idx) => {
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += `<span class="review-star ${i <= r.rating ? 'filled' : ''}">${i <= r.rating ? '★' : '☆'}</span>`;
+    }
+    const ratingClass = r.rating <= 2 ? 'low' : r.rating <= 3 ? 'medium' : 'high';
+    const dateStr = r.lastActivity ? new Date(r.lastActivity).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    const initials = (r.name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const avatarColors = ['#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316','#eab308','#22c55e','#14b8a6','#06b6d4','#3b82f6'];
+    const colorIdx = r.name ? r.name.charCodeAt(0) % avatarColors.length : 0;
+
+    return `<div class="review-card review-${ratingClass}" style="animation-delay: ${idx * 40}ms">
+      <div class="review-card-top">
+        <div class="review-card-avatar" style="background:${avatarColors[colorIdx]}">${initials}</div>
+        <div class="review-card-info">
+          <div class="review-card-customer">${r.name}</div>
+          <div class="review-card-date">${dateStr}</div>
+        </div>
+        <div class="review-card-rating-badge review-badge-${ratingClass}">${r.rating}.0</div>
+      </div>
+      <div class="review-card-stars">${starsHtml}</div>
+      ${r.feedback ? `<div class="review-card-feedback"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.3"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg> ${r.feedback}</div>` : '<div class="review-card-no-feedback">No written feedback</div>'}
+      <div class="review-card-footer">
+        <button class="review-card-link" onclick="viewReviewConversation('${r.visitorId}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          View Conversation
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function viewReviewConversation(visitorId) {
+  switchNavRail('inbox');
+  selectUser(visitorId);
+}
+
+window.viewReviewConversation = viewReviewConversation;
+window.renderReviewsScreen = renderReviewsScreen;
+window.filterReviews = filterReviews;
+
+function switchNavRail(id) {
+  // Remove active from all nav rail buttons
+  document.querySelectorAll('.nav-rail-btn').forEach(btn => btn.classList.remove('active'));
+
+  if (id === 'inbox') {
+    currentNavView = 'inbox';
+    document.getElementById('navInbox').classList.add('active');
+    document.querySelector('.sidebar').style.display = '';
+    document.querySelector('.main-content').style.display = '';
+    document.getElementById('teamChatScreen').style.display = 'none';
+    document.getElementById('reviewsScreen').style.display = 'none';
+  } else if (id === 'team') {
+    currentNavView = 'team';
+    document.getElementById('navTeam').classList.add('active');
+    document.querySelector('.sidebar').style.display = 'none';
+    document.querySelector('.main-content').style.display = 'none';
+    document.getElementById('teamChatScreen').style.display = 'flex';
+    document.getElementById('reviewsScreen').style.display = 'none';
+    renderTeamMembers();
+  } else if (id === 'reviews') {
+    currentNavView = 'reviews';
+    document.getElementById('navReviews').classList.add('active');
+    document.querySelector('.sidebar').style.display = 'none';
+    document.querySelector('.main-content').style.display = 'none';
+    document.getElementById('teamChatScreen').style.display = 'none';
+    document.getElementById('reviewsScreen').style.display = 'flex';
+    renderReviewsScreen();
+  } else if (id === 'settings') {
+    document.getElementById(currentNavView === 'reviews' ? 'navReviews' : currentNavView === 'team' ? 'navTeam' : 'navInbox').classList.add('active');
+    openSettings();
+  } else if (id === 'help') {
+    document.getElementById(currentNavView === 'reviews' ? 'navReviews' : currentNavView === 'team' ? 'navTeam' : 'navInbox').classList.add('active');
+    openShortcutsModal();
+  }
+}
+
+// Nav rail tooltip positioning
+(function() {
+  const tooltip = document.getElementById('navRailTooltip');
+  document.querySelectorAll('.nav-rail-btn[data-nav-tip]').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      const rect = btn.getBoundingClientRect();
+      tooltip.textContent = btn.getAttribute('data-nav-tip');
+      tooltip.style.left = (rect.right + 8) + 'px';
+      tooltip.style.top = (rect.top + rect.height / 2) + 'px';
+      tooltip.style.transform = 'translateY(-50%)';
+      tooltip.classList.add('visible');
+    });
+    btn.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+})();
+
+// Update nav rail avatar when user info loads
+function updateNavRailAvatar() {
+  const avatarEl = document.getElementById('navRailAvatar');
+  const mainAvatar = document.getElementById('currentUserAvatar');
+  if (avatarEl && mainAvatar) {
+    avatarEl.textContent = mainAvatar.textContent;
+  }
+}
+setInterval(updateNavRailAvatar, 2000);
 </script>
 
 </body>
