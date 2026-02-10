@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Knowledge Search - Assistica AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Support.css">
+
+<style>
+/* ==================== KB PAGE LAYOUT ==================== */
+.kb-page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+/* ==================== HERO / HEADER ==================== */
+.kb-hero {
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #a855f7));
+  padding: 32px 40px 44px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.kb-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.kb-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.kb-hero h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.kb-hero p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 20px;
+}
+
+.kb-hero-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.kb-hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+.kb-hero-stat svg {
+  opacity: 0.9;
+}
+
+/* ==================== SEARCH AREA ==================== */
+.kb-search-area {
+  max-width: 800px;
+  margin: -24px auto 0;
+  padding: 0 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.kb-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 14px;
+  padding: 6px 8px 6px 18px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kb-search-bar:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent-color) 15%, transparent);
+}
+
+.kb-search-bar .search-icon {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.kb-search-bar .search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 15px;
+  color: var(--text-primary);
+  padding: 10px 0;
+  font-family: inherit;
+}
+
+.kb-search-bar .search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.kb-search-bar .clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.kb-search-bar .clear-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.kb-search-bar .submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: var(--accent-color);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.kb-search-bar .submit-btn:hover {
+  opacity: 0.85;
+}
+
+/* ==================== CONTENT AREA ==================== */
+.kb-content-area {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 28px 40px 60px;
+  width: 100%;
+  flex: 1;
+}
+
+/* ==================== WELCOME STATE ==================== */
+.kb-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 36px 20px;
+}
+
+.kb-welcome-icon {
+  width: 72px;
+  height: 72px;
+  background: color-mix(in srgb, var(--accent-color) 12%, var(--bg-secondary));
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color);
+  margin-bottom: 18px;
+}
+
+.kb-welcome h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.kb-welcome > p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  max-width: 420px;
+}
+
+.kb-example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 560px;
+}
+
+.kb-chip {
+  padding: 9px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.kb-chip:hover {
+  border-color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 8%, var(--bg-secondary));
+}
+
+/* ==================== RECENT SEARCHES ==================== */
+.kb-recent-searches {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.kb-recent-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.kb-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kb-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.kb-recent-item:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.kb-recent-item svg {
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.kb-recent-item span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kb-recent-item .kb-recent-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.kb-recent-item:hover .kb-recent-remove {
+  opacity: 1;
+}
+
+.kb-recent-remove:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* ==================== LOADING STATE ==================== */
+.kb-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 20px;
+  gap: 16px;
+}
+
+.kb-loading-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: kb-spin 0.8s linear infinite;
+}
+
+@keyframes kb-spin {
+  to { transform: rotate(360deg); }
+}
+
+.kb-loading-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.kb-loading-dots::after {
+  content: '';
+  animation: kb-dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes kb-dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+  100% { content: ''; }
+}
+
+/* ==================== ANSWER CARD ==================== */
+.kb-answer-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.kb-answer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.kb-answer-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+.kb-answer-label .kb-ai-badge {
+  padding: 2px 8px;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.kb-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.kb-copy-btn:hover {
+  border-color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 8%, var(--bg-primary));
+}
+
+.kb-copy-btn.copied {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.kb-answer-body {
+  padding: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ==================== SOURCES ==================== */
+.kb-sources-section {
+  border-top: 1px solid var(--border-color);
+}
+
+.kb-sources-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 18px;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.kb-sources-toggle:hover {
+  color: var(--text-primary);
+}
+
+.kb-sources-chevron {
+  transition: transform 0.2s;
+}
+
+.kb-sources-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+.kb-sources-list {
+  padding: 0 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kb-source-item {
+  padding: 12px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.kb-source-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.kb-source-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kb-source-score {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  color: var(--accent-color);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.kb-source-snippet {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ==================== NO RESULTS / ERROR ==================== */
+.kb-no-results,
+.kb-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.kb-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.kb-no-results h3,
+.kb-error-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.kb-no-results p,
+.kb-error-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* ==================== TOAST ==================== */
+.kb-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  padding: 10px 22px;
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  pointer-events: none;
+}
+
+.kb-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.kb-toast.success { background: #16a34a; }
+.kb-toast.error { background: #dc2626; }
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 640px) {
+  .kb-hero {
+    padding: 24px 16px 36px;
+  }
+  .kb-hero h1 {
+    font-size: 20px;
+  }
+  .kb-search-area {
+    padding: 0 12px;
+    margin-top: -20px;
+  }
+  .kb-content-area {
+    padding: 20px 12px 40px;
+  }
+  .kb-example-chips {
+    max-width: 100%;
+  }
+  .kb-answer-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR (same structure as Support.html) -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo" data-brand="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </div>
+    <div class="topbar-brand"><span data-brand="name">Assistica AI</span> <span>Knowledge Base</span></div>
+  </div>
+
+  <div class="topbar-right">
+    <a class="topbar-btn" id="navDocuments" title="Manage Documents" aria-label="Manage Documents" style="text-decoration:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    </a>
+
+    <button class="topbar-btn" title="Back to Dashboard" onclick="goToDashboard()" aria-label="Back to Dashboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+      </svg>
+    </button>
+
+    <div class="topbar-divider"></div>
+
+    <div class="topbar-user-wrapper">
+      <div class="topbar-user" onclick="toggleUserMenu()" id="userMenuTrigger">
+        <div class="topbar-user-avatar" id="currentUserAvatar">A</div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name" id="currentUserName">Agent</div>
+          <div class="topbar-user-role">Support Agent</div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--text-muted);" id="dropdownChevron">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      <div class="user-dropdown" id="userDropdown">
+        <div class="dropdown-header">
+          <div class="dropdown-header-info">
+            <div class="dropdown-avatar" id="dropdownAvatar">A</div>
+            <div>
+              <div class="dropdown-name" id="dropdownName">Agent</div>
+              <div class="dropdown-email" id="dropdownEmail">agent@example.com</div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" onclick="goToDashboard()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Back to Dashboard
+          </button>
+          <button class="dropdown-item" onclick="window.location.href=document.getElementById('navDocuments').href">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            Manage Documents
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item logout" onclick="logout()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav Rail Tooltip -->
+<div class="nav-rail-tooltip" id="navRailTooltip"></div>
+
+<!-- MAIN LAYOUT (same as Support.html) -->
+<div class="main-layout">
+
+<!-- LEFT NAV RAIL (same as Support.html) -->
+<nav class="nav-rail" aria-label="Main navigation">
+  <div class="nav-rail-top">
+    <button class="nav-rail-btn" id="navInbox" data-nav-tip="Inbox" onclick="goToDashboard()" aria-label="Inbox">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navTeam" data-nav-tip="Team" onclick="goToDashboard()" aria-label="Team Chat">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navReviews" data-nav-tip="Reviews" onclick="goToDashboard()" aria-label="Reviews">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn active" id="navKB" data-nav-tip="Knowledge Base" aria-label="Knowledge Base">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navSettings" data-nav-tip="Settings" onclick="goToDashboard()" aria-label="Settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navHelp" data-nav-tip="Help" onclick="goToDashboard()" aria-label="Help & Shortcuts">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
+  </div>
+  <div class="nav-rail-bottom">
+    <div class="nav-rail-avatar" id="navRailAvatar" onclick="goToDashboard()" title="Back to Dashboard">A</div>
+  </div>
+</nav>
+
+<!-- KB PAGE CONTENT -->
+<div class="kb-page-content">
+  <!-- Hero Header -->
+  <div class="kb-hero">
+    <div class="kb-hero-content">
+      <h1>AI Knowledge Search</h1>
+      <p>Get instant AI-powered answers from your documentation</p>
+      <div class="kb-hero-stats">
+        <div class="kb-hero-stat" id="statDocs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>0 documents</span>
+        </div>
+        <div class="kb-hero-stat" id="statChunks">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V9c0-2-1-3-3-3h-4l-2-2H7C5 4 4 5 4 7z"/></svg>
+          <span>0 chunks</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="kb-search-area">
+    <form class="kb-search-bar" id="searchForm" onsubmit="event.preventDefault(); performSearch()">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Ask anything about your documentation..." autocomplete="off">
+      <button type="button" class="clear-btn" id="clearBtn" onclick="clearSearch()" style="display:none" aria-label="Clear search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <button type="submit" class="submit-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <div class="kb-content-area">
+    <!-- Welcome State -->
+    <div class="kb-welcome" id="welcomeState">
+      <div class="kb-welcome-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+      <h3>Search your knowledge base</h3>
+      <p>Ask a question and get AI-powered answers from your uploaded documents</p>
+      <div class="kb-example-chips">
+        <button class="kb-chip" onclick="searchFromChip(this.textContent)">How do I reset my password?</button>
+        <button class="kb-chip" onclick="searchFromChip(this.textContent)">What is the refund policy?</button>
+        <button class="kb-chip" onclick="searchFromChip(this.textContent)">How to contact support?</button>
+        <button class="kb-chip" onclick="searchFromChip(this.textContent)">Shipping information</button>
+      </div>
+
+      <!-- Recent Searches -->
+      <div class="kb-recent-searches" id="recentSearches" style="display:none">
+        <div class="kb-recent-title">Recent Searches</div>
+        <div class="kb-recent-list" id="recentList"></div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="kb-loading-state" id="loadingState" style="display:none">
+      <div class="kb-loading-spinner"></div>
+      <p>Searching knowledge base<span class="kb-loading-dots"></span></p>
+    </div>
+
+    <!-- Answer Section -->
+    <div id="answerSection" style="display:none">
+      <div class="kb-answer-card">
+        <div class="kb-answer-header">
+          <div class="kb-answer-label">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <span>AI Answer</span>
+            <span class="kb-ai-badge">AI</span>
+          </div>
+          <button class="kb-copy-btn" id="copyBtn" onclick="copyAnswer()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <div class="kb-answer-body" id="answerBody"></div>
+        <div class="kb-sources-section">
+          <button class="kb-sources-toggle" onclick="toggleSources()">
+            <svg class="kb-sources-chevron" id="sourcesChevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            <span id="sourcesCount">0 sources</span>
+          </button>
+          <div class="kb-sources-list" id="sourcesList" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results State -->
+    <div class="kb-no-results" id="noResults" style="display:none">
+      <div class="kb-state-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6"/></svg>
+      </div>
+      <h3>No matching results</h3>
+      <p>Try rephrasing your question or using different keywords</p>
+      <button class="kb-chip" onclick="clearSearch()">Clear search</button>
+    </div>
+
+    <!-- Error State -->
+    <div class="kb-error-state" id="errorState" style="display:none">
+      <div class="kb-state-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+      </div>
+      <h3>Something went wrong</h3>
+      <p id="errorMsg">Failed to search knowledge base</p>
+      <button class="kb-chip" onclick="retrySearch()">Try again</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Toast -->
+<div class="kb-toast" id="toast"></div>
+
+<script src="/config.js"></script>
+<script src="/branding.js"></script>
+<script>
+const API_URL = CONFIG.API_BASE;
+
+let siteId = null;
+let token = null;
+let lastQuery = '';
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  siteId = params.get('siteId');
+  token = params.get('token') || localStorage.getItem('token');
+
+  if (!siteId || !token) {
+    window.location.href = '/login';
+    return;
+  }
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('supportDashboardTheme');
+  if (savedTheme && savedTheme !== 'light') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  // Set nav links
+  document.getElementById('navDocuments').href = `/knowledge-base.html?siteId=${siteId}&token=${token}`;
+
+  // Load site info
+  loadSiteInfo();
+
+  // Load stats
+  loadStats();
+
+  // Render recent searches
+  renderRecentSearches();
+
+  // Focus search input
+  document.getElementById('searchInput').focus();
+
+  // Show/hide clear button on input
+  document.getElementById('searchInput').addEventListener('input', function() {
+    document.getElementById('clearBtn').style.display = this.value ? '' : 'none';
+  });
+
+  // Nav rail tooltips
+  setupNavTooltips();
+});
+
+// ==================== NAV ====================
+function goToDashboard() {
+  window.location.href = `/Support.html?siteId=${siteId}&token=${token}`;
+}
+
+function toggleUserMenu() {
+  const dropdown = document.getElementById('userDropdown');
+  dropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const wrapper = document.querySelector('.topbar-user-wrapper');
+  const dropdown = document.getElementById('userDropdown');
+  if (wrapper && dropdown && !wrapper.contains(e.target)) {
+    dropdown.classList.remove('show');
+  }
+});
+
+function logout() {
+  localStorage.removeItem('token');
+  window.location.href = '/login';
+}
+
+function setupNavTooltips() {
+  const tooltip = document.getElementById('navRailTooltip');
+  document.querySelectorAll('.nav-rail-btn[data-nav-tip]').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      const rect = btn.getBoundingClientRect();
+      tooltip.textContent = btn.getAttribute('data-nav-tip');
+      tooltip.style.left = (rect.right + 8) + 'px';
+      tooltip.style.top = (rect.top + rect.height / 2) + 'px';
+      tooltip.style.transform = 'translateY(-50%)';
+      tooltip.classList.add('visible');
+    });
+    btn.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+}
+
+// ==================== SITE INFO & USER ====================
+async function loadSiteInfo() {
+  try {
+    const response = await fetch(`${API_URL}/sites/${siteId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await response.json();
+    const site = result.site || result;
+    const avatar = document.getElementById('navRailAvatar');
+    if (avatar && site.name) {
+      avatar.textContent = site.name.charAt(0).toUpperCase();
+    }
+  } catch (e) {}
+
+  // Load current user info
+  try {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    const user = data.user || data;
+    const name = user.username || user.name || 'Agent';
+    const email = user.email || '';
+    const initial = name.charAt(0).toUpperCase();
+
+    document.getElementById('currentUserName').textContent = name;
+    document.getElementById('currentUserAvatar').textContent = initial;
+    document.getElementById('dropdownName').textContent = name;
+    document.getElementById('dropdownAvatar').textContent = initial;
+    document.getElementById('dropdownEmail').textContent = email;
+    document.getElementById('navRailAvatar').textContent = initial;
+  } catch (e) {}
+}
+
+// ==================== STATS ====================
+async function loadStats() {
+  try {
+    const response = await fetch(`${API_URL}/knowledge/sites/${siteId}/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await response.json();
+    const data = result.data || result;
+    document.querySelector('#statDocs span').textContent = `${data.totalDocuments || 0} documents`;
+    document.querySelector('#statChunks span').textContent = `${data.totalChunks || 0} chunks`;
+  } catch (e) {}
+}
+
+// ==================== SEARCH ====================
+function performSearch() {
+  const input = document.getElementById('searchInput');
+  const query = (input.value || '').trim();
+  if (!query) return;
+
+  lastQuery = query;
+  document.getElementById('clearBtn').style.display = '';
+
+  // Save to recent
+  saveRecentSearch(query);
+
+  // Show loading
+  showState('loading');
+
+  fetch(`${API_URL}/ai/analyze-message-with-rag`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ message: query, siteId, maxChunks: 5, minSimilarity: 0.15 })
+  })
+    .then(r => { if (!r.ok) throw new Error('Request failed'); return r.json(); })
+    .then(result => {
+      const data = result.data || result;
+      if (!data.usedKnowledgeBase || (!data.suggestedReply && (!data.relevantKnowledge || data.relevantKnowledge.length === 0))) {
+        showState('no-results');
+        return;
+      }
+
+      // Render answer
+      document.getElementById('answerBody').textContent = data.suggestedReply || 'No answer generated.';
+
+      // Render sources
+      const sources = data.relevantKnowledge || [];
+      document.getElementById('sourcesCount').textContent = `${sources.length} source${sources.length !== 1 ? 's' : ''}`;
+
+      document.getElementById('sourcesList').innerHTML = sources.map((src, i) => `
+        <div class="kb-source-item">
+          <div class="kb-source-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span class="kb-source-title">${escapeHtml(src.title || src.documentTitle || 'Document ' + (i + 1))}</span>
+            ${src.similarity ? `<span class="kb-source-score">${Math.round(src.similarity * 100)}% match</span>` : ''}
+          </div>
+          <p class="kb-source-snippet">${escapeHtml((src.content || src.chunk || '').substring(0, 200))}${(src.content || src.chunk || '').length > 200 ? '...' : ''}</p>
+        </div>
+      `).join('');
+
+      // Collapse sources by default
+      document.getElementById('sourcesList').style.display = 'none';
+      document.getElementById('sourcesChevron').classList.remove('expanded');
+
+      // Reset copy button
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.classList.remove('copied');
+      copyBtn.querySelector('span').textContent = 'Copy';
+
+      showState('answer');
+    })
+    .catch(err => {
+      document.getElementById('errorMsg').textContent = err.message || 'Failed to search knowledge base';
+      showState('error');
+    });
+}
+
+function searchFromChip(text) {
+  document.getElementById('searchInput').value = text;
+  performSearch();
+}
+
+function retrySearch() {
+  if (lastQuery) {
+    document.getElementById('searchInput').value = lastQuery;
+    performSearch();
+  }
+}
+
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  input.focus();
+  document.getElementById('clearBtn').style.display = 'none';
+  showState('welcome');
+}
+
+function showState(state) {
+  document.getElementById('welcomeState').style.display = state === 'welcome' ? 'flex' : 'none';
+  document.getElementById('loadingState').style.display = state === 'loading' ? 'flex' : 'none';
+  document.getElementById('answerSection').style.display = state === 'answer' ? 'block' : 'none';
+  document.getElementById('noResults').style.display = state === 'no-results' ? 'flex' : 'none';
+  document.getElementById('errorState').style.display = state === 'error' ? 'flex' : 'none';
+}
+
+// ==================== COPY ====================
+function copyAnswer() {
+  const text = document.getElementById('answerBody').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.classList.add('copied');
+    btn.querySelector('span').textContent = 'Copied!';
+    showToast('Copied to clipboard', 'success');
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.querySelector('span').textContent = 'Copy';
+    }, 2000);
+  }).catch(() => {
+    showToast('Failed to copy', 'error');
+  });
+}
+
+// ==================== SOURCES TOGGLE ====================
+function toggleSources() {
+  const list = document.getElementById('sourcesList');
+  const chevron = document.getElementById('sourcesChevron');
+  const isHidden = list.style.display === 'none';
+  list.style.display = isHidden ? 'flex' : 'none';
+  chevron.classList.toggle('expanded', isHidden);
+}
+
+// ==================== RECENT SEARCHES ====================
+function getRecentSearches() {
+  try {
+    return JSON.parse(localStorage.getItem('kbRecentSearches') || '[]');
+  } catch { return []; }
+}
+
+function saveRecentSearch(query) {
+  let recent = getRecentSearches();
+  recent = recent.filter(q => q !== query);
+  recent.unshift(query);
+  recent = recent.slice(0, 5);
+  localStorage.setItem('kbRecentSearches', JSON.stringify(recent));
+}
+
+function removeRecentSearch(index) {
+  let recent = getRecentSearches();
+  recent.splice(index, 1);
+  localStorage.setItem('kbRecentSearches', JSON.stringify(recent));
+  renderRecentSearches();
+}
+
+function renderRecentSearches() {
+  const recent = getRecentSearches();
+  const container = document.getElementById('recentSearches');
+  const list = document.getElementById('recentList');
+
+  if (recent.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = '';
+  list.innerHTML = recent.map((q, i) => `
+    <div class="kb-recent-item" onclick="searchFromChip('${escapeAttr(q)}')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>${escapeHtml(q)}</span>
+      <button class="kb-recent-remove" onclick="event.stopPropagation(); removeRecentSearch(${i})" aria-label="Remove">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+// ==================== HELPERS ====================
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function escapeAttr(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function showToast(message, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'kb-toast ' + type;
+  requestAnimationFrame(() => {
+    toast.classList.add('visible');
+  });
+  setTimeout(() => {
+    toast.classList.remove('visible');
+  }, 3000);
+}
+</script>
+
+</body>
+</html>

@@ -49,12 +49,6 @@
       </svg>
     </button>
 
-    <button class="topbar-btn" title="Report Issue" id="reportIssueBtn" onclick="openReportIssue()" aria-label="Report Issue">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-    </button>
-
     <div class="topbar-divider"></div>
 
     <!-- Connection Status Indicator -->
@@ -168,6 +162,11 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
       </svg>
     </button>
+    <button class="nav-rail-btn" id="navKB" data-nav-tip="Knowledge Base" onclick="switchNavRail('kb')" aria-label="Knowledge Base">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    </button>
     <button class="nav-rail-btn" id="navSettings" data-nav-tip="Settings" onclick="switchNavRail('settings')" aria-label="Settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -181,6 +180,11 @@
     </button>
   </div>
   <div class="nav-rail-bottom">
+    <button class="nav-rail-btn" id="navReportIssue" data-nav-tip="Report Issue" onclick="openReportIssue()" aria-label="Report Issue">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </button>
     <div class="nav-rail-avatar" id="navRailAvatar" onclick="toggleUserMenu()" title="Profile">A</div>
   </div>
 </nav>
@@ -669,6 +673,7 @@
     </div>
   </div>
 </div>
+
 
 </div> <!-- Close main-layout -->
 
@@ -1416,6 +1421,70 @@
       <div class="csat-feedback-label">Customer Comment</div>
       <div class="csat-feedback-text" id="csatFeedbackText"></div>
     </div>
+  </div>
+</div>
+
+<!-- Report Issue Modal -->
+<div id="reportIssueModal" class="report-issue-overlay" style="display:none;" onclick="if(event.target===this)closeReportIssue()">
+  <div class="report-issue-modal">
+    <div class="report-issue-header">
+      <div class="report-issue-header-left">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3>Report an Issue</h3>
+      </div>
+      <button class="report-issue-close" onclick="closeReportIssue()">&times;</button>
+    </div>
+    <form id="reportIssueForm" class="report-issue-body">
+      <div class="report-issue-row">
+        <div class="report-issue-field">
+          <label for="riTitle">Title <span class="ri-required">*</span></label>
+          <input type="text" id="riTitle" placeholder="Brief summary of the issue" required>
+        </div>
+      </div>
+      <div class="report-issue-row two-col">
+        <div class="report-issue-field">
+          <label for="riCategory">Category</label>
+          <select id="riCategory">
+            <option value="bug">Bug Report</option>
+            <option value="feature">Feature Request</option>
+            <option value="ui">UI/UX Issue</option>
+            <option value="performance">Performance</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="report-issue-field">
+          <label for="riPriority">Priority</label>
+          <select id="riPriority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+      </div>
+      <div class="report-issue-field">
+        <label for="riDescription">Description <span class="ri-required">*</span></label>
+        <textarea id="riDescription" rows="5" placeholder="Please describe the issue in detail. Include steps to reproduce if applicable." required></textarea>
+      </div>
+      <div class="report-issue-field">
+        <label>Attachments</label>
+        <div class="ri-file-area" id="riFileArea" onclick="document.getElementById('riFileInput').click()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          <span>Click to upload files</span>
+          <input type="file" id="riFileInput" multiple accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.log,.zip" style="display:none" onchange="handleRiFiles(this)">
+        </div>
+        <div class="ri-file-list" id="riFileList"></div>
+      </div>
+      <div class="report-issue-footer">
+        <button type="button" class="ri-btn-cancel" onclick="closeReportIssue()">Cancel</button>
+        <button type="submit" class="ri-btn-submit" id="riSubmitBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          Submit Report
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -3551,19 +3620,92 @@ function openSettings() {
   document.getElementById('settingsModal').style.display = 'flex';
 }
 
+// ==================== REPORT ISSUE (IN-APP) ====================
+let riSelectedFiles = [];
+
 function openReportIssue() {
-  const params = new URLSearchParams(location.search);
-  const rSiteId = params.get('siteId') || '';
-  const rToken = params.get('token') || '';
-  const rName = document.getElementById('currentUserName')?.textContent || '';
-  const rEmail = document.getElementById('dropdownEmail')?.textContent || '';
-  const qp = new URLSearchParams();
-  if (rToken) qp.set('token', rToken);
-  if (rSiteId) qp.set('siteId', rSiteId);
-  if (rName && rName !== 'Agent') qp.set('name', rName);
-  if (rEmail && rEmail !== 'agent@example.com') qp.set('email', rEmail);
-  window.open('/report-issue.html?' + qp.toString(), '_blank');
+  document.getElementById('reportIssueModal').style.display = 'flex';
 }
+
+function closeReportIssue() {
+  document.getElementById('reportIssueModal').style.display = 'none';
+  document.getElementById('reportIssueForm').reset();
+  riSelectedFiles = [];
+  document.getElementById('riFileList').innerHTML = '';
+  const submitBtn = document.getElementById('riSubmitBtn');
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Submit Report';
+}
+
+function handleRiFiles(input) {
+  const newFiles = Array.from(input.files);
+  riSelectedFiles = [...riSelectedFiles, ...newFiles];
+  renderRiFileList();
+  input.value = '';
+}
+
+function removeRiFile(idx) {
+  riSelectedFiles.splice(idx, 1);
+  renderRiFileList();
+}
+
+function renderRiFileList() {
+  const listEl = document.getElementById('riFileList');
+  if (riSelectedFiles.length === 0) { listEl.innerHTML = ''; return; }
+  listEl.innerHTML = riSelectedFiles.map((f, i) => {
+    const size = f.size < 1024 ? f.size + ' B' : (f.size / 1024).toFixed(1) + ' KB';
+    return `<div class="ri-file-item"><span class="ri-file-name">${f.name}</span><span class="ri-file-size">${size}</span><button type="button" class="ri-file-remove" onclick="removeRiFile(${i})">&times;</button></div>`;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('reportIssueForm');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('riSubmitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="animation: spin 1s linear infinite;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Submitting...';
+
+    const urlParams = new URLSearchParams(location.search);
+    const siteId = urlParams.get('siteId') || '';
+    const agentName = document.getElementById('currentUserName')?.textContent || '';
+    const agentEmail = document.getElementById('dropdownEmail')?.textContent || '';
+
+    const formData = new FormData();
+    formData.append('name', agentName);
+    formData.append('email', agentEmail);
+    formData.append('title', document.getElementById('riTitle').value.trim());
+    formData.append('category', document.getElementById('riCategory').value);
+    formData.append('priority', document.getElementById('riPriority').value);
+    formData.append('description', document.getElementById('riDescription').value.trim());
+    if (siteId) formData.append('siteId', siteId);
+
+    riSelectedFiles.forEach(file => formData.append('files', file));
+
+    try {
+      const response = await fetch(`${API_BASE}/IssueReports`, { method: 'POST', body: formData });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        closeReportIssue();
+        showToast('Issue reported successfully! We\'ll look into it.', 'success');
+      } else {
+        showToast(result.message || 'Failed to submit report. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Submit Report';
+      }
+    } catch (error) {
+      console.error('Report issue error:', error);
+      showToast('Failed to submit report. Please try again.', 'error');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Submit Report';
+    }
+  });
+});
+
+window.closeReportIssue = closeReportIssue;
+window.handleRiFiles = handleRiFiles;
+window.removeRiFile = removeRiFile;
 
 function closeSettingsModal() {
   document.getElementById('settingsModal').style.display = 'none';
@@ -6748,38 +6890,51 @@ window.viewReviewConversation = viewReviewConversation;
 window.renderReviewsScreen = renderReviewsScreen;
 window.filterReviews = filterReviews;
 
+
 function switchNavRail(id) {
   // Remove active from all nav rail buttons
   document.querySelectorAll('.nav-rail-btn').forEach(btn => btn.classList.remove('active'));
+
+  const allScreens = ['teamChatScreen', 'reviewsScreen'];
+  const hideAllScreens = () => allScreens.forEach(s => document.getElementById(s).style.display = 'none');
 
   if (id === 'inbox') {
     currentNavView = 'inbox';
     document.getElementById('navInbox').classList.add('active');
     document.querySelector('.sidebar').style.display = '';
     document.querySelector('.main-content').style.display = '';
-    document.getElementById('teamChatScreen').style.display = 'none';
-    document.getElementById('reviewsScreen').style.display = 'none';
+    hideAllScreens();
   } else if (id === 'team') {
     currentNavView = 'team';
     document.getElementById('navTeam').classList.add('active');
     document.querySelector('.sidebar').style.display = 'none';
     document.querySelector('.main-content').style.display = 'none';
+    hideAllScreens();
     document.getElementById('teamChatScreen').style.display = 'flex';
-    document.getElementById('reviewsScreen').style.display = 'none';
     renderTeamMembers();
   } else if (id === 'reviews') {
     currentNavView = 'reviews';
     document.getElementById('navReviews').classList.add('active');
     document.querySelector('.sidebar').style.display = 'none';
     document.querySelector('.main-content').style.display = 'none';
-    document.getElementById('teamChatScreen').style.display = 'none';
+    hideAllScreens();
     document.getElementById('reviewsScreen').style.display = 'flex';
     renderReviewsScreen();
+  } else if (id === 'kb') {
+    const siteId = new URLSearchParams(window.location.search).get('siteId');
+    const token = new URLSearchParams(window.location.search).get('token') || localStorage.getItem('token');
+    window.open(`kb-search.html?siteId=${siteId}&token=${token}`, '_blank');
+    // Restore previous active nav state
+    const navMap = { reviews: 'navReviews', team: 'navTeam' };
+    document.getElementById(navMap[currentNavView] || 'navInbox').classList.add('active');
+    return;
   } else if (id === 'settings') {
-    document.getElementById(currentNavView === 'reviews' ? 'navReviews' : currentNavView === 'team' ? 'navTeam' : 'navInbox').classList.add('active');
+    const navMap = { reviews: 'navReviews', team: 'navTeam' };
+    document.getElementById(navMap[currentNavView] || 'navInbox').classList.add('active');
     openSettings();
   } else if (id === 'help') {
-    document.getElementById(currentNavView === 'reviews' ? 'navReviews' : currentNavView === 'team' ? 'navTeam' : 'navInbox').classList.add('active');
+    const navMap = { reviews: 'navReviews', team: 'navTeam' };
+    document.getElementById(navMap[currentNavView] || 'navInbox').classList.add('active');
     openShortcutsModal();
   }
 }

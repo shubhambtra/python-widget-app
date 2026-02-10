@@ -508,6 +508,10 @@ def serve_site_admin_onboarding_js():
 def knowledge_base_page():
     return FileResponse(BASE_DIR / "knowledge-base.html")
 
+@app.get("/kb-search.html")
+def kb_search_page():
+    return FileResponse(BASE_DIR / "kb-search.html")
+
 @app.get("/report-issue")
 def report_issue_page():
     return FileResponse(BASE_DIR / "report-issue.html")
