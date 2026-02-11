@@ -9,13 +9,13 @@ const CONFIG = {
     // API Configuration
     // For local development: http://localhost:5000
     // For production: https://api.yourdomain.com
-    API_URL: 'http://localhost:5000',
-    //API_URL: 'https://chatapp.code2night.com',
+    //API_URL: 'http://localhost:5000',
+    API_URL: 'https://chatapp.code2night.com',
     // WebSocket Configuration
     // For local development: ws://localhost:5000
     // For production: wss://api.yourdomain.com
-    //WS_URL: 'wss://chatapp.code2night.com',
-    WS_URL: 'ws://localhost:5000',
+    WS_URL: 'wss://chatapp.code2night.com',
+    //WS_URL: 'ws://localhost:5000',
     // Frontend URL (for redirects, etc.)
     // For local development: http://localhost:8000
     // For production: https://app.yourdomain.com
