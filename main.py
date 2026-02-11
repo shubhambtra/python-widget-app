@@ -512,6 +512,10 @@ def knowledge_base_page():
 def kb_search_page():
     return FileResponse(BASE_DIR / "kb-search.html")
 
+@app.get("/Reviews.html")
+def reviews_page():
+    return FileResponse(BASE_DIR / "Reviews.html")
+
 @app.get("/report-issue")
 def report_issue_page():
     return FileResponse(BASE_DIR / "report-issue.html")

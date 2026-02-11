@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews - Assistica AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Support.css">
+<style>
+.reviews-page-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  gap: 16px;
+  color: var(--text-muted);
+}
+.reviews-page-loading .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo" data-brand="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </div>
+    <div class="topbar-brand"><span data-brand="name">Assistica AI</span> <span>Support</span></div>
+  </div>
+
+  <div class="topbar-center" role="search" style="visibility:hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+    <input type="text" placeholder="Search conversations..." disabled />
+  </div>
+
+  <div class="topbar-right">
+    <div class="topbar-divider"></div>
+
+    <!-- Connection Status Indicator -->
+    <div class="connection-status" id="connectionStatus" title="Connected">
+      <span class="connection-dot connected"></span>
+      <span class="connection-text">Connected</span>
+    </div>
+
+    <div class="topbar-divider"></div>
+
+    <div class="topbar-user-wrapper">
+      <div class="topbar-user" id="userMenuTrigger">
+        <div class="topbar-user-avatar" id="currentUserAvatar">A</div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name" id="currentUserName">Agent</div>
+          <div class="topbar-user-role">Support Agent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav Rail Tooltip -->
+<div class="nav-rail-tooltip" id="navRailTooltip"></div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+<!-- LEFT NAV RAIL -->
+<nav class="nav-rail" aria-label="Main navigation">
+  <div class="nav-rail-top">
+    <button class="nav-rail-btn" id="navInbox" data-nav-tip="Inbox" onclick="navigateTo('inbox')" aria-label="Inbox">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navTeam" data-nav-tip="Team" onclick="navigateTo('team')" aria-label="Team Chat">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn active" id="navReviews" data-nav-tip="Reviews" aria-label="Reviews">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navKB" data-nav-tip="Knowledge Base" onclick="navigateTo('kb')" aria-label="Knowledge Base">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navSettings" data-nav-tip="Settings" onclick="navigateTo('settings')" aria-label="Settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+    <button class="nav-rail-btn" id="navHelp" data-nav-tip="Help" onclick="navigateTo('help')" aria-label="Help & Shortcuts">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
+  </div>
+  <div class="nav-rail-bottom">
+    <button class="nav-rail-btn" id="navReportIssue" data-nav-tip="Report Issue" onclick="navigateTo('report-issue')" aria-label="Report Issue">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </button>
+    <div class="nav-rail-avatar" id="navRailAvatar" title="Profile">A</div>
+  </div>
+</nav>
+
+<!-- REVIEWS CONTENT AREA (replaces sidebar + main-content) -->
+<div style="flex:1; overflow-y:auto; display:flex; flex-direction:column;">
+  <!-- Loading state -->
+  <div class="reviews-page-loading" id="reviewsLoading">
+    <div class="spinner"></div>
+    <span>Loading reviews...</span>
+  </div>
+
+  <!-- Reviews Screen (hidden until loaded) -->
+  <div class="reviews-screen" id="reviewsScreen" style="display:none">
+    <div class="reviews-container">
+      <div class="reviews-header">
+        <div class="reviews-header-left">
+          <h2>Reviews</h2>
+          <p class="reviews-subtitle">Customer satisfaction ratings</p>
+        </div>
+        <div class="reviews-header-right">
+          <div class="reviews-filter-group">
+            <button class="reviews-filter-btn active" data-filter="all" onclick="filterReviews('all')">All</button>
+            <button class="reviews-filter-btn" data-filter="positive" onclick="filterReviews('positive')">Positive</button>
+            <button class="reviews-filter-btn" data-filter="neutral" onclick="filterReviews('neutral')">Neutral</button>
+            <button class="reviews-filter-btn" data-filter="negative" onclick="filterReviews('negative')">Negative</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Cards Row -->
+      <div class="reviews-summary-row" id="reviewsSummaryRow">
+        <div class="reviews-summary-card reviews-summary-score">
+          <div class="reviews-ring-wrap">
+            <svg class="reviews-ring" viewBox="0 0 120 120">
+              <circle class="reviews-ring-bg" cx="60" cy="60" r="52" />
+              <circle class="reviews-ring-fill" id="reviewsRingFill" cx="60" cy="60" r="52" />
+            </svg>
+            <div class="reviews-ring-label">
+              <span class="reviews-ring-value" id="reviewsAvgRating">0.0</span>
+              <span class="reviews-ring-sub">out of 5</span>
+            </div>
+          </div>
+          <div class="reviews-score-meta">
+            <div class="reviews-avg-stars" id="reviewsAvgStars">&#9734;&#9734;&#9734;&#9734;&#9734;</div>
+            <div class="reviews-total-count" id="reviewsTotalCount">0 reviews</div>
+          </div>
+        </div>
+        <div class="reviews-summary-card reviews-summary-dist">
+          <div class="reviews-dist-title">Rating Distribution</div>
+          <div class="reviews-stats-bars" id="reviewsStatsBars">
+            <div class="reviews-bar-row" data-star="5"><span class="reviews-bar-label">5</span><span class="reviews-bar-star-icon">&#9733;</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-5"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+            <div class="reviews-bar-row" data-star="4"><span class="reviews-bar-label">4</span><span class="reviews-bar-star-icon">&#9733;</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-4"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+            <div class="reviews-bar-row" data-star="3"><span class="reviews-bar-label">3</span><span class="reviews-bar-star-icon">&#9733;</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-3"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+            <div class="reviews-bar-row" data-star="2"><span class="reviews-bar-label">2</span><span class="reviews-bar-star-icon">&#9733;</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-2"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+            <div class="reviews-bar-row" data-star="1"><span class="reviews-bar-label">1</span><span class="reviews-bar-star-icon">&#9733;</span><div class="reviews-bar-track"><div class="reviews-bar-fill bar-fill-1"></div></div><span class="reviews-bar-count">0</span><span class="reviews-bar-pct">0%</span></div>
+          </div>
+        </div>
+        <div class="reviews-summary-card reviews-summary-sentiment">
+          <div class="reviews-sentiment-title">Sentiment Breakdown</div>
+          <div class="reviews-sentiment-items">
+            <div class="reviews-sentiment-item positive">
+              <div class="reviews-sentiment-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="reviews-sentiment-data">
+                <span class="reviews-sentiment-value" id="reviewsSentimentPositive">0</span>
+                <span class="reviews-sentiment-label">Positive</span>
+              </div>
+            </div>
+            <div class="reviews-sentiment-item neutral">
+              <div class="reviews-sentiment-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="reviews-sentiment-data">
+                <span class="reviews-sentiment-value" id="reviewsSentimentNeutral">0</span>
+                <span class="reviews-sentiment-label">Neutral</span>
+              </div>
+            </div>
+            <div class="reviews-sentiment-item negative">
+              <div class="reviews-sentiment-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="reviews-sentiment-data">
+                <span class="reviews-sentiment-value" id="reviewsSentimentNegative">0</span>
+                <span class="reviews-sentiment-label">Negative</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews List -->
+      <div class="reviews-list-section">
+        <div class="reviews-list-toolbar">
+          <h3 class="reviews-list-header">Recent Reviews</h3>
+          <span class="reviews-list-showing" id="reviewsShowing"></span>
+        </div>
+        <div class="reviews-list" id="reviewsList"></div>
+        <div class="reviews-empty" id="reviewsEmpty" style="display:none">
+          <div class="reviews-empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+          </div>
+          <h3>No reviews yet</h3>
+          <p>Customer ratings will appear here once conversations receive CSAT feedback.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div> <!-- Close main-layout -->
+
+<script src="/config.js"></script>
+<script src="/branding.js"></script>
+<script>
+const API_BASE = CONFIG.API_BASE;
+let siteId = null;
+let token = null;
+let allReviews = [];
+let currentReviewFilter = 'all';
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  siteId = params.get('siteId');
+  token = params.get('token') || localStorage.getItem('token');
+
+  if (!siteId || !token) {
+    window.location.href = '/login';
+    return;
+  }
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('supportDashboardTheme');
+  if (savedTheme && savedTheme !== 'light') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  // Load user info from localStorage if available
+  const userName = localStorage.getItem('userName');
+  const userEmail = localStorage.getItem('userEmail');
+  if (userName) {
+    const initials = userName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    document.getElementById('currentUserName').textContent = userName;
+    document.getElementById('currentUserAvatar').textContent = initials;
+    document.getElementById('navRailAvatar').textContent = initials;
+  }
+
+  // Nav rail tooltip positioning
+  document.querySelectorAll('.nav-rail-btn[data-nav-tip]').forEach(btn => {
+    const tooltip = document.getElementById('navRailTooltip');
+    btn.addEventListener('mouseenter', () => {
+      tooltip.textContent = btn.getAttribute('data-nav-tip');
+      const rect = btn.getBoundingClientRect();
+      tooltip.style.top = rect.top + rect.height / 2 - 16 + 'px';
+      tooltip.style.left = rect.right + 10 + 'px';
+      tooltip.classList.add('visible');
+    });
+    btn.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+
+  loadReviews();
+});
+
+// ==================== NAVIGATION ====================
+function navigateTo(id) {
+  const base = `Support.html?siteId=${siteId}&token=${token}`;
+  if (id === 'inbox') {
+    window.location.href = base;
+  } else if (id === 'team') {
+    window.location.href = base + '&nav=team';
+  } else if (id === 'kb') {
+    window.open(`kb-search.html?siteId=${siteId}&token=${token}`, '_blank');
+  } else if (id === 'settings') {
+    window.location.href = base + '&nav=settings';
+  } else if (id === 'help') {
+    window.location.href = base + '&nav=help';
+  } else if (id === 'report-issue') {
+    window.open(`report-issue.html?siteId=${siteId}&token=${token}`, '_blank');
+  }
+}
+
+function viewReviewConversation(visitorId) {
+  window.location.href = `Support.html?siteId=${siteId}&token=${token}&selectVisitor=${visitorId}`;
+}
+
+// ==================== DATA ====================
+async function loadReviews() {
+  try {
+    const response = await fetch(`${API_BASE}/sites/${siteId}/conversations`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      showToast('Failed to load reviews', 'error');
+      document.getElementById('reviewsLoading').innerHTML = '<span style="color:var(--text-muted)">Failed to load reviews. <a href="javascript:location.reload()" style="color:var(--accent)">Retry</a></span>';
+      return;
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      showToast('Failed to load reviews', 'error');
+      return;
+    }
+
+    const conversations = result.data.items || [];
+    allReviews = [];
+
+    for (const conv of conversations) {
+      if (conv.rating) {
+        allReviews.push({
+          visitorId: conv.visitorId,
+          name: conv.visitorName || 'Visitor',
+          rating: conv.rating,
+          feedback: conv.ratingFeedback || '',
+          lastActivity: new Date(conv.lastMessageAt || conv.createdAt).getTime()
+        });
+      }
+    }
+
+    document.getElementById('reviewsLoading').style.display = 'none';
+    document.getElementById('reviewsScreen').style.display = 'flex';
+    renderReviewStats(allReviews);
+    renderReviewsList(getFilteredReviews());
+  } catch (err) {
+    console.error('Failed to load reviews:', err);
+    showToast('Network error loading reviews', 'error');
+    document.getElementById('reviewsLoading').innerHTML = '<span style="color:var(--text-muted)">Network error. <a href="javascript:location.reload()" style="color:var(--accent)">Retry</a></span>';
+  }
+}
+
+// ==================== REVIEWS LOGIC ====================
+function getFilteredReviews() {
+  if (currentReviewFilter === 'all') return allReviews;
+  if (currentReviewFilter === 'positive') return allReviews.filter(r => r.rating >= 4);
+  if (currentReviewFilter === 'neutral') return allReviews.filter(r => r.rating === 3);
+  if (currentReviewFilter === 'negative') return allReviews.filter(r => r.rating <= 2);
+  return allReviews;
+}
+
+function filterReviews(filter) {
+  currentReviewFilter = filter;
+  document.querySelectorAll('.reviews-filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.reviews-filter-btn[data-filter="${filter}"]`).classList.add('active');
+  renderReviewsList(getFilteredReviews());
+}
+
+function renderReviewStats(reviews) {
+  const total = reviews.length;
+  const avgEl = document.getElementById('reviewsAvgRating');
+  const starsEl = document.getElementById('reviewsAvgStars');
+  const countEl = document.getElementById('reviewsTotalCount');
+  const ringFill = document.getElementById('reviewsRingFill');
+
+  const circumference = 2 * Math.PI * 52;
+  ringFill.style.strokeDasharray = circumference;
+
+  if (total === 0) {
+    avgEl.textContent = '0.0';
+    starsEl.innerHTML = '<span class="review-star">&#9734;</span>'.repeat(5);
+    countEl.textContent = '0 reviews';
+    ringFill.style.strokeDashoffset = circumference;
+  } else {
+    const sum = reviews.reduce((s, r) => s + r.rating, 0);
+    const avg = sum / total;
+    avgEl.textContent = avg.toFixed(1);
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += `<span class="review-star ${i <= Math.round(avg) ? 'filled' : ''}">${i <= Math.round(avg) ? '\u2605' : '\u2606'}</span>`;
+    }
+    starsEl.innerHTML = starsHtml;
+    countEl.textContent = total + (total === 1 ? ' review' : ' reviews');
+    const offset = circumference - (avg / 5) * circumference;
+    ringFill.style.strokeDashoffset = offset;
+  }
+
+  const positive = reviews.filter(r => r.rating >= 4).length;
+  const neutral = reviews.filter(r => r.rating === 3).length;
+  const negative = reviews.filter(r => r.rating <= 2).length;
+  document.getElementById('reviewsSentimentPositive').textContent = positive;
+  document.getElementById('reviewsSentimentNeutral').textContent = neutral;
+  document.getElementById('reviewsSentimentNegative').textContent = negative;
+
+  const dist = [0, 0, 0, 0, 0];
+  reviews.forEach(r => { dist[r.rating - 1]++; });
+
+  const rows = document.querySelectorAll('#reviewsStatsBars .reviews-bar-row');
+  rows.forEach(row => {
+    const star = parseInt(row.getAttribute('data-star'));
+    const count = dist[star - 1];
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    row.querySelector('.reviews-bar-fill').style.width = pct + '%';
+    row.querySelector('.reviews-bar-count').textContent = count;
+    row.querySelector('.reviews-bar-pct').textContent = pct + '%';
+  });
+}
+
+function renderReviewsList(reviews) {
+  const listEl = document.getElementById('reviewsList');
+  const emptyEl = document.getElementById('reviewsEmpty');
+  const showingEl = document.getElementById('reviewsShowing');
+
+  if (reviews.length === 0) {
+    listEl.style.display = 'none';
+    emptyEl.style.display = 'flex';
+    showingEl.textContent = '';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  listEl.style.display = '';
+  showingEl.textContent = `Showing ${reviews.length} of ${allReviews.length}`;
+
+  const sorted = [...reviews].sort((a, b) => b.lastActivity - a.lastActivity);
+
+  listEl.innerHTML = sorted.map((r, idx) => {
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += `<span class="review-star ${i <= r.rating ? 'filled' : ''}">${i <= r.rating ? '\u2605' : '\u2606'}</span>`;
+    }
+    const ratingClass = r.rating <= 2 ? 'low' : r.rating <= 3 ? 'medium' : 'high';
+    const dateStr = r.lastActivity ? new Date(r.lastActivity).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    const initials = (r.name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const avatarColors = ['#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316','#eab308','#22c55e','#14b8a6','#06b6d4','#3b82f6'];
+    const colorIdx = r.name ? r.name.charCodeAt(0) % avatarColors.length : 0;
+
+    return `<div class="review-card review-${ratingClass}" style="animation-delay: ${idx * 40}ms">
+      <div class="review-card-top">
+        <div class="review-card-avatar" style="background:${avatarColors[colorIdx]}">${initials}</div>
+        <div class="review-card-info">
+          <div class="review-card-customer">${r.name}</div>
+          <div class="review-card-date">${dateStr}</div>
+        </div>
+        <div class="review-card-rating-badge review-badge-${ratingClass}">${r.rating}.0</div>
+      </div>
+      <div class="review-card-stars">${starsHtml}</div>
+      ${r.feedback ? `<div class="review-card-feedback"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" opacity="0.3"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg> ${r.feedback}</div>` : '<div class="review-card-no-feedback">No written feedback</div>'}
+      <div class="review-card-footer">
+        <button class="review-card-link" onclick="viewReviewConversation('${r.visitorId}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          View Conversation
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== TOAST ====================
+function showToast(message, type = "info") {
+  const existingToast = document.querySelector(".toast-notification");
+  if (existingToast) existingToast.remove();
+
+  const toast = document.createElement("div");
+  toast.className = "toast-notification";
+  toast.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    padding: 14px 20px;
+    background: ${type === "info" ? "#1e293b" : type === "success" ? "#16a34a" : "#dc2626"};
+    color: white;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+  `;
+  toast.textContent = message;
+
+  if (!document.getElementById("toast-styles")) {
+    const style = document.createElement("style");
+    style.id = "toast-styles";
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "slideIn 0.3s ease reverse";
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+</script>
+</body>
+</html>
