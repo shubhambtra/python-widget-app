@@ -3,173 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Knowledge Search - Assistica AI</title>
+<title>AI Doc Assistant - Assistica AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="Support.css">
 
 <style>
-/* ==================== KB PAGE LAYOUT ==================== */
+/* ==================== KB CHAT LAYOUT ==================== */
 .kb-page-content {
   flex: 1;
   display: flex;
+  gap: 20px;
+  overflow: hidden;
+  background: var(--bg-primary);
+  padding: 24px;
+}
+
+/* ==================== CHATBOX CARD ==================== */
+.kb-chatbox {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
   flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+/* ==================== RIGHT SIDEBAR ==================== */
+.kb-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   overflow-y: auto;
+  height: 100%;
+}
+
+.kb-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.kb-sidebar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: 2px;
+}
+
+/* Sidebar card */
+.kb-sidebar-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.kb-sidebar-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kb-sidebar-card-title svg {
+  opacity: 0.5;
+}
+
+/* Stats grid */
+.kb-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.kb-stat-item {
+  padding: 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.kb-stat-item:hover {
+  border-color: color-mix(in srgb, var(--accent-color) 30%, var(--border-color));
+}
+
+.kb-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kb-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Suggested questions */
+.kb-suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kb-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+}
+
+.kb-suggestion-item:hover {
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent-color) 4%, var(--bg-primary));
+  transform: translateX(2px);
+}
+
+.kb-suggestion-item svg {
+  flex-shrink: 0;
+  color: var(--accent-color);
+  opacity: 0.6;
+}
+
+/* Document list in sidebar */
+.kb-doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kb-doc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  transition: border-color 0.15s;
+}
+
+.kb-doc-item:hover {
+  border-color: color-mix(in srgb, var(--accent-color) 30%, var(--border-color));
+}
+
+.kb-doc-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-color) 10%, var(--bg-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.kb-doc-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.kb-doc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kb-doc-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Download button */
+.kb-doc-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.kb-doc-download:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 6%, var(--bg-secondary));
+}
+
+/* Sidebar empty state */
+.kb-sidebar-empty {
+  text-align: center;
+  padding: 12px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ==================== CHATBOX HEADER ==================== */
+.kb-chatbox-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.kb-chatbox-header-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 55%, #a855f7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.kb-chatbox-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.kb-chatbox-header-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+.kb-chatbox-header-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.kb-chatbox-header-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #16a34a;
+  padding: 5px 12px;
+  background: color-mix(in srgb, #16a34a 8%, var(--bg-primary));
+  border: 1px solid color-mix(in srgb, #16a34a 15%, var(--border-color));
+  border-radius: 20px;
+}
+
+.kb-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 6px rgba(22, 163, 106, 0.4);
+  animation: kb-pulse 2s ease-in-out infinite;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes kb-fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kb-skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes kb-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+@keyframes kb-typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%           { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ==================== CHAT MESSAGES AREA ==================== */
+.kb-chat-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-primary);
 }
 
-/* ==================== HERO / HEADER ==================== */
-.kb-hero {
-  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #a855f7));
-  padding: 32px 40px 44px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
+.kb-chat-area::-webkit-scrollbar {
+  width: 6px;
+}
+.kb-chat-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kb-chat-area::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 25%, transparent);
+  border-radius: 3px;
+}
+.kb-chat-area::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-muted) 45%, transparent);
 }
 
-.kb-hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  border-radius: 50%;
-}
-
-.kb-hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.kb-hero h1 {
-  font-size: 26px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 6px;
-}
-
-.kb-hero p {
-  font-size: 14px;
-  color: rgba(255,255,255,0.8);
-  margin-bottom: 20px;
-}
-
-.kb-hero-stats {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.kb-hero-stat {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.18);
-  color: white;
-  font-size: 12px;
-  font-weight: 500;
-  backdrop-filter: blur(4px);
-}
-
-.kb-hero-stat svg {
-  opacity: 0.9;
-}
-
-/* ==================== SEARCH AREA ==================== */
-.kb-search-area {
-  max-width: 800px;
-  margin: -24px auto 0;
-  padding: 0 40px;
-  position: relative;
-  z-index: 2;
-}
-
-.kb-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-secondary);
-  border: 2px solid var(--border-color);
-  border-radius: 14px;
-  padding: 6px 8px 6px 18px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.kb-search-bar:focus-within {
-  border-color: var(--accent-color);
-  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent-color) 15%, transparent);
-}
-
-.kb-search-bar .search-icon {
-  flex-shrink: 0;
-  color: var(--text-secondary);
-}
-
-.kb-search-bar .search-input {
-  flex: 1;
-  border: none;
-  background: none;
-  outline: none;
-  font-size: 15px;
-  color: var(--text-primary);
-  padding: 10px 0;
-  font-family: inherit;
-}
-
-.kb-search-bar .search-input::placeholder {
-  color: var(--text-secondary);
-}
-
-.kb-search-bar .clear-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: none;
-  border-radius: 8px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.kb-search-bar .clear-btn:hover {
-  background: var(--hover-bg);
-  color: var(--text-primary);
-}
-
-.kb-search-bar .submit-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border: none;
-  background: var(--accent-color);
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: opacity 0.2s;
-}
-
-.kb-search-bar .submit-btn:hover {
-  opacity: 0.85;
-}
-
-/* ==================== CONTENT AREA ==================== */
-.kb-content-area {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 28px 40px 60px;
+.kb-chat-inner {
   width: 100%;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
 
@@ -178,66 +354,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 36px 20px;
+  flex: 1;
+  padding: 48px 20px;
+  animation: kb-fade-in-up 0.5s ease;
 }
 
-.kb-welcome-icon {
+.kb-welcome-logo {
   width: 72px;
   height: 72px;
-  background: color-mix(in srgb, var(--accent-color) 12%, var(--bg-secondary));
-  border-radius: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 55%, #a855f7));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-color);
-  margin-bottom: 18px;
+  color: #fff;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--accent-color) 30%, transparent),
+              0 0 0 1px color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 
-.kb-welcome h3 {
-  font-size: 20px;
-  font-weight: 600;
+.kb-welcome h2 {
+  font-size: 24px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
 }
 
 .kb-welcome > p {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 24px;
-  max-width: 420px;
+  max-width: 400px;
+  line-height: 1.6;
+  margin-bottom: 36px;
 }
 
-.kb-example-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  max-width: 560px;
-}
-
-.kb-chip {
-  padding: 9px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 22px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  font-family: inherit;
-}
-
-.kb-chip:hover {
-  border-color: var(--accent-color);
-  background: color-mix(in srgb, var(--accent-color) 8%, var(--bg-secondary));
-}
-
-/* ==================== RECENT SEARCHES ==================== */
+/* Recent Searches in welcome */
 .kb-recent-searches {
-  margin-top: 28px;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 
 .kb-recent-title {
@@ -246,7 +408,8 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  padding-left: 4px;
 }
 
 .kb-recent-list {
@@ -259,22 +422,24 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 12px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
   color: var(--text-secondary);
   font-size: 13px;
+  border: 1px solid transparent;
 }
 
 .kb-recent-item:hover {
   background: var(--hover-bg);
   color: var(--text-primary);
+  border-color: var(--border-color);
 }
 
 .kb-recent-item svg {
   flex-shrink: 0;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .kb-recent-item span {
@@ -308,143 +473,171 @@
   color: var(--text-primary);
 }
 
-/* ==================== LOADING STATE ==================== */
-.kb-loading-state {
+/* ==================== CHAT MESSAGES ==================== */
+.kb-messages {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 56px 20px;
-  gap: 16px;
+  gap: 24px;
+  flex: 1;
+  padding-bottom: 12px;
 }
 
-.kb-loading-spinner {
-  width: 42px;
-  height: 42px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--accent-color);
-  border-radius: 50%;
-  animation: kb-spin 0.8s linear infinite;
+/* User message bubble — right aligned */
+.kb-msg-user {
+  display: flex;
+  justify-content: flex-end;
+  animation: kb-fade-in-up 0.3s ease;
 }
 
-@keyframes kb-spin {
-  to { transform: rotate(360deg); }
-}
-
-.kb-loading-state p {
+.kb-msg-user-bubble {
+  max-width: 70%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 80%, #7c3aed));
+  color: #fff;
+  border-radius: 20px 20px 6px 20px;
   font-size: 14px;
-  color: var(--text-secondary);
+  line-height: 1.55;
+  word-wrap: break-word;
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--accent-color) 30%, transparent),
+              0 1px 3px rgba(0,0,0,0.08);
 }
 
-.kb-loading-dots::after {
-  content: '';
-  animation: kb-dots 1.5s steps(4, end) infinite;
+/* AI message bubble — left aligned */
+.kb-msg-ai {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: kb-fade-in-up 0.35s ease;
 }
 
-@keyframes kb-dots {
-  0%   { content: ''; }
-  25%  { content: '.'; }
-  50%  { content: '..'; }
-  75%  { content: '...'; }
-  100% { content: ''; }
+.kb-msg-ai-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 55%, #a855f7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
-/* ==================== ANSWER CARD ==================== */
-.kb-answer-card {
+.kb-msg-ai-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 85%;
+}
+
+.kb-msg-ai-bubble {
+  padding: 16px 20px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-left: 4px solid var(--accent-color);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.kb-answer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.kb-answer-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-radius: 6px 20px 20px 20px;
   font-size: 14px;
-  font-weight: 600;
-  color: var(--accent-color);
+  line-height: 1.75;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
 
-.kb-answer-label .kb-ai-badge {
-  padding: 2px 8px;
-  background: var(--accent-color);
-  color: #fff;
-  border-radius: 10px;
+/* Actions row under AI bubble */
+.kb-msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.kb-msg-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.kb-msg-action-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.kb-msg-action-btn.copied {
+  color: #22c55e;
+  border-color: color-mix(in srgb, #22c55e 25%, transparent);
+  background: color-mix(in srgb, #22c55e 6%, transparent);
+}
+
+/* Metadata pills under bubble */
+.kb-msg-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.kb-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--accent-color) 8%, var(--bg-primary));
+  color: var(--text-secondary);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 10%, var(--border-color));
 }
 
-.kb-copy-btn {
+.kb-meta-pill svg {
+  width: 11px;
+  height: 11px;
+  opacity: 0.5;
+}
+
+.kb-meta-pill.sentiment-positive { background: color-mix(in srgb, #22c55e 10%, var(--bg-primary)); border-color: color-mix(in srgb, #22c55e 20%, var(--border-color)); color: #16a34a; }
+.kb-meta-pill.sentiment-negative { background: color-mix(in srgb, #ef4444 10%, var(--bg-primary)); border-color: color-mix(in srgb, #ef4444 20%, var(--border-color)); color: #dc2626; }
+.kb-meta-pill.sentiment-neutral  { background: color-mix(in srgb, #6b7280 10%, var(--bg-primary)); border-color: color-mix(in srgb, #6b7280 20%, var(--border-color)); color: #6b7280; }
+
+/* ==================== SOURCES (collapsible under AI bubble) ==================== */
+.kb-sources-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
   background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 12px;
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
   font-family: inherit;
-}
-
-.kb-copy-btn:hover {
-  border-color: var(--accent-color);
-  background: color-mix(in srgb, var(--accent-color) 8%, var(--bg-primary));
-}
-
-.kb-copy-btn.copied {
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
-.kb-answer-body {
-  padding: 18px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text-primary);
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* ==================== SOURCES ==================== */
-.kb-sources-section {
-  border-top: 1px solid var(--border-color);
-}
-
-.kb-sources-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 18px;
-  border: none;
-  background: none;
-  color: var(--text-secondary);
-  font-size: 13px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  margin-top: 10px;
 }
 
 .kb-sources-toggle:hover {
-  color: var(--text-primary);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 5%, var(--bg-primary));
 }
 
 .kb-sources-chevron {
-  transition: transform 0.2s;
+  transition: transform 0.25s ease;
 }
 
 .kb-sources-chevron.expanded {
@@ -452,17 +645,25 @@
 }
 
 .kb-sources-list {
-  padding: 0 18px 14px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .kb-source-item {
-  padding: 12px 14px;
+  padding: 12px 16px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
+  border-left: 3px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
+  transition: all 0.2s;
+}
+
+.kb-source-item:hover {
+  border-left-color: var(--accent-color);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  transform: translateX(2px);
 }
 
 .kb-source-header {
@@ -474,7 +675,7 @@
 }
 
 .kb-source-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
@@ -485,63 +686,210 @@
 }
 
 .kb-source-score {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--accent-color);
-  font-weight: 500;
   white-space: nowrap;
 }
 
+.kb-score-bar-bg {
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--accent-color) 12%, var(--bg-secondary));
+  overflow: hidden;
+}
+
+.kb-score-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #a855f7));
+  transition: width 0.5s ease;
+}
+
 .kb-source-snippet {
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.55;
   color: var(--text-secondary);
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* ==================== NO RESULTS / ERROR ==================== */
-.kb-no-results,
-.kb-error-state {
+/* ==================== TYPING INDICATOR ==================== */
+.kb-typing {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 48px 20px;
+  gap: 12px;
+  align-items: flex-start;
+  animation: kb-fade-in-up 0.25s ease;
 }
 
-.kb-state-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+.kb-typing-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 55%, #a855f7));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.kb-typing-bubble {
+  padding: 16px 22px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px 20px 20px 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.kb-typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-color) 50%, var(--text-muted));
+}
+
+.kb-typing-dot:nth-child(1) { animation: kb-typing-dot 1.2s ease-in-out infinite; }
+.kb-typing-dot:nth-child(2) { animation: kb-typing-dot 1.2s ease-in-out infinite 0.2s; }
+.kb-typing-dot:nth-child(3) { animation: kb-typing-dot 1.2s ease-in-out infinite 0.4s; }
+
+/* ==================== NO RESULTS / ERROR (as AI bubble) ==================== */
+.kb-msg-ai-bubble.error-bubble {
+  border-color: color-mix(in srgb, #ef4444 25%, var(--border-color));
+  background: color-mix(in srgb, #ef4444 4%, var(--bg-secondary));
+  border-left: 3px solid #ef4444;
+}
+
+.kb-msg-ai-bubble.no-results-bubble {
   color: var(--text-secondary);
-  opacity: 0.5;
+  border-left: 3px solid var(--text-muted);
 }
 
-.kb-no-results h3,
-.kb-error-state h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 8px;
+/* ==================== COMPOSER (bottom input bar) ==================== */
+.kb-composer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  padding: 16px 0 18px;
 }
 
-.kb-no-results p,
-.kb-error-state p {
+.kb-composer-inner {
+  padding: 0 24px;
+}
+
+.kb-composer-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  padding: 6px 8px 6px 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.kb-composer-bar:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 12%, transparent),
+              0 4px 20px rgba(0,0,0,0.06);
+}
+
+.kb-composer-bar .search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
   font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
+  color: var(--text-primary);
+  padding: 12px 0;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.kb-composer-bar .search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.kb-composer-bar .clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.kb-composer-bar .clear-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.kb-composer-bar .submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 75%, #7c3aed));
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+.kb-composer-bar .submit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-color) 40%, transparent);
+}
+
+.kb-composer-bar .submit-btn:active {
+  transform: scale(0.95);
+}
+
+.kb-composer-hint {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.kb-composer-hint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  font-size: 10px;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 /* ==================== TOAST ==================== */
 .kb-toast {
   position: fixed;
-  bottom: 24px;
+  bottom: 100px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
   padding: 10px 22px;
@@ -563,28 +911,129 @@
 .kb-toast.success { background: #16a34a; }
 .kb-toast.error { background: #dc2626; }
 
+/* ==================== EMPTY STATE (no documents) ==================== */
+.kb-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  padding: 40px 20px;
+  animation: kb-fade-in-up 0.4s ease;
+}
+
+.kb-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--text-muted) 8%, var(--bg-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.kb-empty-state h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.kb-empty-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 360px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.kb-empty-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent-color);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.kb-empty-action:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
 /* ==================== RESPONSIVE ==================== */
+@media (max-width: 1100px) {
+  .kb-sidebar {
+    width: 260px;
+  }
+}
+
+@media (max-width: 900px) {
+  .kb-page-content {
+    padding: 12px;
+  }
+  .kb-sidebar {
+    display: none;
+  }
+  .kb-chatbox {
+    border-radius: 12px;
+  }
+}
+
 @media (max-width: 640px) {
-  .kb-hero {
-    padding: 24px 16px 36px;
+  .kb-page-content {
+    padding: 0;
   }
-  .kb-hero h1 {
-    font-size: 20px;
-  }
-  .kb-search-area {
-    padding: 0 12px;
-    margin-top: -20px;
-  }
-  .kb-content-area {
-    padding: 20px 12px 40px;
-  }
-  .kb-example-chips {
+  .kb-chatbox {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
     max-width: 100%;
   }
-  .kb-answer-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .kb-chat-inner,
+  .kb-composer-inner {
+    padding: 0 14px;
+  }
+  .kb-chatbox-header {
+    padding: 14px 16px;
+  }
+  .kb-chatbox-header-subtitle {
+    display: none;
+  }
+  .kb-msg-user-bubble {
+    max-width: 88%;
+  }
+  .kb-msg-ai-content {
+    max-width: 92%;
+  }
+  .kb-welcome h2 {
+    font-size: 20px;
+  }
+  .kb-welcome-logo {
+    width: 60px;
+    height: 60px;
+  }
+  .kb-composer-bar {
+    border-radius: 14px;
+    padding: 4px 6px 4px 16px;
+  }
+  .kb-composer-bar .submit-btn {
+    width: 38px;
+    height: 38px;
+  }
+  .kb-recent-searches {
+    max-width: 100%;
   }
 }
 </style>
@@ -592,7 +1041,7 @@
 
 <body>
 
-<!-- TOP BAR (same structure as Support.html) -->
+<!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
     <div class="topbar-logo" data-brand="icon">
@@ -600,7 +1049,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
     </div>
-    <div class="topbar-brand"><span data-brand="name">Assistica AI</span> <span>Knowledge Base</span></div>
+    <div class="topbar-brand"><span data-brand="name">Assistica AI</span></div>
   </div>
 
   <div class="topbar-right">
@@ -669,10 +1118,10 @@
 <!-- Nav Rail Tooltip -->
 <div class="nav-rail-tooltip" id="navRailTooltip"></div>
 
-<!-- MAIN LAYOUT (same as Support.html) -->
+<!-- MAIN LAYOUT -->
 <div class="main-layout">
 
-<!-- LEFT NAV RAIL (same as Support.html) -->
+<!-- LEFT NAV RAIL -->
 <nav class="nav-rail" aria-label="Main navigation">
   <div class="nav-rail-top">
     <button class="nav-rail-btn" id="navInbox" data-nav-tip="Inbox" onclick="goToDashboard()" aria-label="Inbox">
@@ -695,7 +1144,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
       </svg>
     </button>
-    <button class="nav-rail-btn" id="navSettings" data-nav-tip="Settings" onclick="goToDashboard()" aria-label="Settings">
+    <button class="nav-rail-btn" id="navSettings" data-nav-tip="Settings" onclick="openSettings()" aria-label="Settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -714,115 +1163,163 @@
 
 <!-- KB PAGE CONTENT -->
 <div class="kb-page-content">
-  <!-- Hero Header -->
-  <div class="kb-hero">
-    <div class="kb-hero-content">
-      <h1>AI Knowledge Search</h1>
-      <p>Get instant AI-powered answers from your documentation</p>
-      <div class="kb-hero-stats">
-        <div class="kb-hero-stat" id="statDocs">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          <span>0 documents</span>
-        </div>
-        <div class="kb-hero-stat" id="statChunks">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V9c0-2-1-3-3-3h-4l-2-2H7C5 4 4 5 4 7z"/></svg>
-          <span>0 chunks</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Search Bar -->
-  <div class="kb-search-area">
-    <form class="kb-search-bar" id="searchForm" onsubmit="event.preventDefault(); performSearch()">
-      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" class="search-input" placeholder="Ask anything about your documentation..." autocomplete="off">
-      <button type="button" class="clear-btn" id="clearBtn" onclick="clearSearch()" style="display:none" aria-label="Clear search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-      <button type="submit" class="submit-btn" aria-label="Search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
-    </form>
-  </div>
+  <!-- Chat box container -->
+  <div class="kb-chatbox">
 
-  <div class="kb-content-area">
-    <!-- Welcome State -->
-    <div class="kb-welcome" id="welcomeState">
-      <div class="kb-welcome-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <!-- Chat box header -->
+    <div class="kb-chatbox-header">
+      <div class="kb-chatbox-header-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
-      <h3>Search your knowledge base</h3>
-      <p>Ask a question and get AI-powered answers from your uploaded documents</p>
-      <div class="kb-example-chips">
-        <button class="kb-chip" onclick="searchFromChip(this.textContent)">How do I reset my password?</button>
-        <button class="kb-chip" onclick="searchFromChip(this.textContent)">What is the refund policy?</button>
-        <button class="kb-chip" onclick="searchFromChip(this.textContent)">How to contact support?</button>
-        <button class="kb-chip" onclick="searchFromChip(this.textContent)">Shipping information</button>
+      <div class="kb-chatbox-header-text">
+        <div class="kb-chatbox-header-title">AI Doc Assistant</div>
+        <div class="kb-chatbox-header-subtitle">Search and ask anything from your documents</div>
       </div>
-
-      <!-- Recent Searches -->
-      <div class="kb-recent-searches" id="recentSearches" style="display:none">
-        <div class="kb-recent-title">Recent Searches</div>
-        <div class="kb-recent-list" id="recentList"></div>
+      <div class="kb-chatbox-header-status">
+        <span class="kb-status-dot"></span>
+        Online
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div class="kb-loading-state" id="loadingState" style="display:none">
-      <div class="kb-loading-spinner"></div>
-      <p>Searching knowledge base<span class="kb-loading-dots"></span></p>
-    </div>
+    <!-- Chat area (scrollable) -->
+    <div class="kb-chat-area" id="chatArea">
+      <div class="kb-chat-inner" id="chatInner">
 
-    <!-- Answer Section -->
-    <div id="answerSection" style="display:none">
-      <div class="kb-answer-card">
-        <div class="kb-answer-header">
-          <div class="kb-answer-label">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            <span>AI Answer</span>
-            <span class="kb-ai-badge">AI</span>
+        <!-- Welcome state (shown when no messages) -->
+        <div class="kb-welcome" id="welcomeState">
+          <div class="kb-welcome-logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
           </div>
-          <button class="kb-copy-btn" id="copyBtn" onclick="copyAnswer()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            <span>Copy</span>
-          </button>
+          <h2>Ask Your Documents</h2>
+          <p>Search across all your uploaded docs and get instant AI-powered answers with source references.</p>
+
+          <!-- Recent Searches -->
+          <div class="kb-recent-searches" id="recentSearches" style="display:none">
+            <div class="kb-recent-title">Recent Searches</div>
+            <div class="kb-recent-list" id="recentList"></div>
+          </div>
         </div>
-        <div class="kb-answer-body" id="answerBody"></div>
-        <div class="kb-sources-section">
-          <button class="kb-sources-toggle" onclick="toggleSources()">
-            <svg class="kb-sources-chevron" id="sourcesChevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            <span id="sourcesCount">0 sources</span>
-          </button>
-          <div class="kb-sources-list" id="sourcesList" style="display:none"></div>
+
+        <!-- Empty state (no documents uploaded) -->
+        <div class="kb-empty-state" id="emptyState" style="display:none">
+          <div class="kb-empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h2>No documentation available</h2>
+          <p>No documents have been uploaded yet. Upload some documents first so the AI can search and answer your questions.</p>
+          <a class="kb-empty-action" id="emptyUploadBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7l7-7 7 7"/></svg>
+            Upload Documents
+          </a>
         </div>
+
+        <!-- Messages container (hidden until first search) -->
+        <div class="kb-messages" id="messagesContainer" style="display:none"></div>
+
       </div>
     </div>
 
-    <!-- No Results State -->
-    <div class="kb-no-results" id="noResults" style="display:none">
-      <div class="kb-state-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6"/></svg>
+    <!-- Bottom composer -->
+    <div class="kb-composer">
+      <div class="kb-composer-inner">
+        <form class="kb-composer-bar" id="searchForm" onsubmit="event.preventDefault(); performSearch()">
+          <input type="text" id="searchInput" class="search-input" placeholder="Ask a question..." autocomplete="off">
+          <button type="button" class="clear-btn" id="clearBtn" onclick="clearInput()" style="display:none" aria-label="Clear">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+          <button type="submit" class="submit-btn" aria-label="Send">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </form>
+        <div class="kb-composer-hint">Press <kbd>Enter</kbd> to send</div>
       </div>
-      <h3>No matching results</h3>
-      <p>Try rephrasing your question or using different keywords</p>
-      <button class="kb-chip" onclick="clearSearch()">Clear search</button>
     </div>
 
-    <!-- Error State -->
-    <div class="kb-error-state" id="errorState" style="display:none">
-      <div class="kb-state-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-      </div>
-      <h3>Something went wrong</h3>
-      <p id="errorMsg">Failed to search knowledge base</p>
-      <button class="kb-chip" onclick="retrySearch()">Try again</button>
-    </div>
   </div>
+
+  <!-- Right sidebar -->
+  <div class="kb-sidebar" id="kbSidebar">
+
+    <!-- Doc Stats -->
+    <div class="kb-sidebar-card">
+      <div class="kb-sidebar-card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Document Stats
+      </div>
+      <div class="kb-stats-grid">
+        <div class="kb-stat-item">
+          <div class="kb-stat-value" id="statDocs">-</div>
+          <div class="kb-stat-label">Documents</div>
+        </div>
+        <div class="kb-stat-item">
+          <div class="kb-stat-value" id="statChunks">-</div>
+          <div class="kb-stat-label">Chunks</div>
+        </div>
+        <div class="kb-stat-item">
+          <div class="kb-stat-value" id="statSearches">0</div>
+          <div class="kb-stat-label">Searches</div>
+        </div>
+        <div class="kb-stat-item">
+          <div class="kb-stat-value" id="statAnswered">0</div>
+          <div class="kb-stat-label">Answered</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggested Questions (populated dynamically) -->
+    <div class="kb-sidebar-card">
+      <div class="kb-sidebar-card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Try Asking
+      </div>
+      <div class="kb-suggestions-list" id="suggestionsList">
+        <div class="kb-sidebar-empty">Loading suggestions...</div>
+      </div>
+    </div>
+
+    <!-- Uploaded Documents -->
+    <div class="kb-sidebar-card">
+      <div class="kb-sidebar-card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Your Documents
+      </div>
+      <div class="kb-doc-list" id="docList">
+        <div class="kb-sidebar-empty">Loading documents...</div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="settings-modal-overlay" style="display: none;" onclick="if(event.target === this) closeSettingsModal()">
+  <div class="settings-modal">
+    <div class="settings-modal-header">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Settings
+      </h2>
+      <button class="settings-modal-close" onclick="closeSettingsModal()" aria-label="Close settings">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="settings-modal-body" id="settingsModalBody"></div>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -836,6 +1333,9 @@ const API_URL = CONFIG.API_BASE;
 let siteId = null;
 let token = null;
 let lastQuery = '';
+let msgIdCounter = 0;
+let searchCount = 0;
+let answeredCount = 0;
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
@@ -860,8 +1360,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load site info
   loadSiteInfo();
 
-  // Load stats
+  // Check if KB has documents + populate sidebar stats
   loadStats();
+
+  // Load documents into sidebar
+  loadDocuments();
 
   // Render recent searches
   renderRecentSearches();
@@ -888,7 +1391,6 @@ function toggleUserMenu() {
   dropdown.classList.toggle('show');
 }
 
-// Close dropdown when clicking outside
 document.addEventListener('click', (e) => {
   const wrapper = document.querySelector('.topbar-user-wrapper');
   const dropdown = document.getElementById('userDropdown');
@@ -933,7 +1435,6 @@ async function loadSiteInfo() {
     }
   } catch (e) {}
 
-  // Load current user info
   try {
     const response = await fetch(`${API_URL}/auth/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -953,7 +1454,7 @@ async function loadSiteInfo() {
   } catch (e) {}
 }
 
-// ==================== STATS ====================
+// ==================== STATS / EMPTY CHECK ====================
 async function loadStats() {
   try {
     const response = await fetch(`${API_URL}/knowledge/sites/${siteId}/stats`, {
@@ -961,9 +1462,319 @@ async function loadStats() {
     });
     const result = await response.json();
     const data = result.data || result;
-    document.querySelector('#statDocs span').textContent = `${data.totalDocuments || 0} documents`;
-    document.querySelector('#statChunks span').textContent = `${data.totalChunks || 0} chunks`;
+    const totalDocs = data.totalDocuments || 0;
+    const totalChunks = data.totalChunks || 0;
+
+    // Update sidebar stats
+    document.getElementById('statDocs').textContent = totalDocs;
+    document.getElementById('statChunks').textContent = totalChunks;
+
+    if (totalDocs === 0 && totalChunks === 0) {
+      document.getElementById('welcomeState').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'flex';
+      document.getElementById('emptyUploadBtn').href = `/knowledge-base.html?siteId=${siteId}&token=${token}`;
+      document.getElementById('searchInput').disabled = true;
+      document.getElementById('searchInput').placeholder = 'No documents available to search...';
+      document.querySelector('.submit-btn').disabled = true;
+      document.querySelector('.submit-btn').style.opacity = '0.4';
+      document.querySelector('.submit-btn').style.cursor = 'not-allowed';
+    }
   } catch (e) {}
+}
+
+// ==================== SIDEBAR: LOAD DOCUMENTS ====================
+async function loadDocuments() {
+  const docList = document.getElementById('docList');
+  try {
+    const response = await fetch(`${API_URL}/knowledge/sites/${siteId}/documents`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await response.json();
+    const docs = result.data || result.documents || result || [];
+
+    if (!Array.isArray(docs) || docs.length === 0) {
+      docList.innerHTML = '<div class="kb-sidebar-empty">No documents uploaded yet</div>';
+      document.getElementById('suggestionsList').innerHTML = '<div class="kb-sidebar-empty">Upload documents to get suggestions</div>';
+      return;
+    }
+
+    docList.innerHTML = docs.map(doc => {
+      const name = doc.title || doc.fileName || 'Untitled';
+      const chunks = doc.chunkCount || 0;
+      const status = doc.status || 'unknown';
+      const statusColor = status === 'indexed' ? '#16a34a' : status === 'processing' ? '#f59e0b' : '#6b7280';
+      const fileSize = doc.fileSize ? formatFileSize(doc.fileSize) : '';
+      const sizeText = fileSize ? ` &bull; ${fileSize}` : '';
+      return `
+        <div class="kb-doc-item">
+          <div class="kb-doc-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div class="kb-doc-info">
+            <div class="kb-doc-name">${escapeHtml(name)}</div>
+            <div class="kb-doc-meta">${chunks} chunks${sizeText} <span style="color:${statusColor};">&bull; ${status}</span></div>
+          </div>
+          <button class="kb-doc-download" onclick="downloadDocument('${doc.id}', '${escapeAttr(name)}')" title="Download as text">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          </button>
+        </div>`;
+    }).join('');
+
+    // Generate dynamic suggestions from documents
+    generateSuggestions(docs);
+  } catch (e) {
+    docList.innerHTML = '<div class="kb-sidebar-empty">Could not load documents</div>';
+  }
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+// ==================== SIDEBAR: DYNAMIC SUGGESTIONS ====================
+function generateSuggestions(docs) {
+  const list = document.getElementById('suggestionsList');
+  const suggestions = [];
+  const arrowSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>';
+
+  // Templates that adapt to document titles
+  const templates = [
+    title => `What is ${title} about?`,
+    title => `Summarize ${title}`,
+    title => `What are the key points in ${title}?`,
+    title => `What features are described in ${title}?`,
+    title => `How does ${title} work?`,
+    title => `What technologies are mentioned in ${title}?`,
+    title => `What are the requirements in ${title}?`,
+  ];
+
+  // Generate 2 questions per doc (max 6 total), cycling through templates
+  let templateIdx = 0;
+  for (const doc of docs) {
+    if (suggestions.length >= 6) break;
+    const title = doc.title || doc.fileName || 'the document';
+    const cleanTitle = title.replace(/_/g, ' ');
+
+    // Pick 2 different templates per doc
+    for (let i = 0; i < 2 && suggestions.length < 6; i++) {
+      suggestions.push(templates[templateIdx % templates.length](cleanTitle));
+      templateIdx++;
+    }
+  }
+
+  if (suggestions.length === 0) {
+    list.innerHTML = '<div class="kb-sidebar-empty">No suggestions available</div>';
+    return;
+  }
+
+  list.innerHTML = suggestions.map(q => `
+    <button class="kb-suggestion-item" onclick="askSuggestion(this)">
+      ${arrowSvg}
+      <span>${escapeHtml(q)}</span>
+    </button>
+  `).join('');
+}
+
+// ==================== SIDEBAR: DOWNLOAD DOCUMENT ====================
+async function downloadDocument(docId, docName) {
+  try {
+    showToast('Downloading...', 'success');
+    const response = await fetch(`${API_URL}/knowledge/documents/${docId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await response.json();
+    const doc = result.data || result;
+    const text = doc.extractedText || doc.chunks?.map(c => c.content).join('\n\n') || 'No content available';
+
+    // Create and trigger download
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (docName || 'document').replace(/[^a-zA-Z0-9_\- ]/g, '') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Downloaded successfully', 'success');
+  } catch (e) {
+    showToast('Failed to download', 'error');
+  }
+}
+
+// ==================== SIDEBAR: SUGGESTION CLICK ====================
+function askSuggestion(btn) {
+  const text = btn.querySelector('span').textContent;
+  document.getElementById('searchInput').value = text;
+  performSearch();
+}
+
+function updateSearchStats(wasAnswered) {
+  searchCount++;
+  if (wasAnswered) answeredCount++;
+  document.getElementById('statSearches').textContent = searchCount;
+  document.getElementById('statAnswered').textContent = answeredCount;
+}
+
+// ==================== CHAT HELPERS ====================
+function scrollToBottom() {
+  const area = document.getElementById('chatArea');
+  requestAnimationFrame(() => {
+    area.scrollTop = area.scrollHeight;
+  });
+}
+
+function showMessages() {
+  document.getElementById('welcomeState').style.display = 'none';
+  document.getElementById('messagesContainer').style.display = 'flex';
+}
+
+function addUserMessage(text) {
+  showMessages();
+  const container = document.getElementById('messagesContainer');
+  const div = document.createElement('div');
+  div.className = 'kb-msg-user';
+  div.innerHTML = `<div class="kb-msg-user-bubble">${escapeHtml(text)}</div>`;
+  container.appendChild(div);
+  scrollToBottom();
+}
+
+function addTypingIndicator() {
+  showMessages();
+  const container = document.getElementById('messagesContainer');
+  const div = document.createElement('div');
+  div.className = 'kb-typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = `
+    <div class="kb-typing-avatar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    </div>
+    <div class="kb-typing-bubble">
+      <div class="kb-typing-dot"></div>
+      <div class="kb-typing-dot"></div>
+      <div class="kb-typing-dot"></div>
+    </div>
+  `;
+  container.appendChild(div);
+  scrollToBottom();
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function addAIMessage(text, data, sources) {
+  const container = document.getElementById('messagesContainer');
+  const id = 'ai-msg-' + (++msgIdCounter);
+  const div = document.createElement('div');
+  div.className = 'kb-msg-ai';
+  div.id = id;
+
+  // Build meta pills
+  let metaHtml = '';
+  const pills = [];
+  if (data.sentiment) {
+    const cls = data.sentiment === 'positive' ? 'sentiment-positive' :
+                data.sentiment === 'negative' ? 'sentiment-negative' : 'sentiment-neutral';
+    pills.push(`<span class="kb-meta-pill ${cls}">${escapeHtml(data.sentiment)}</span>`);
+  }
+  if (data.intent) {
+    pills.push(`<span class="kb-meta-pill">${escapeHtml(data.intent)}</span>`);
+  }
+  if (data.keywords && Array.isArray(data.keywords)) {
+    data.keywords.slice(0, 3).forEach(kw => {
+      pills.push(`<span class="kb-meta-pill">${escapeHtml(kw)}</span>`);
+    });
+  }
+  if (pills.length) {
+    metaHtml = `<div class="kb-msg-meta">${pills.join('')}</div>`;
+  }
+
+  // Build sources
+  let sourcesHtml = '';
+  if (sources && sources.length > 0) {
+    const sourceItems = sources.map((src, i) => {
+      const score = src.similarity ? Math.round(src.similarity * 100) : 0;
+      return `
+        <div class="kb-source-item">
+          <div class="kb-source-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span class="kb-source-title">${escapeHtml(src.title || src.documentTitle || 'Document ' + (i + 1))}</span>
+            ${src.similarity ? `<span class="kb-source-score">${score}%<span class="kb-score-bar-bg"><span class="kb-score-bar-fill" style="width:${score}%"></span></span></span>` : ''}
+          </div>
+          <p class="kb-source-snippet">${escapeHtml((src.content || src.chunk || '').substring(0, 150))}${(src.content || src.chunk || '').length > 150 ? '...' : ''}</p>
+        </div>`;
+    }).join('');
+
+    sourcesHtml = `
+      <button class="kb-sources-toggle" onclick="toggleSources('${id}')">
+        <svg class="kb-sources-chevron" id="chevron-${id}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        ${sources.length} source${sources.length !== 1 ? 's' : ''}
+      </button>
+      <div class="kb-sources-list" id="sources-${id}" style="display:none">${sourceItems}</div>
+    `;
+  }
+
+  div.innerHTML = `
+    <div class="kb-msg-ai-avatar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    </div>
+    <div class="kb-msg-ai-content">
+      <div class="kb-msg-ai-bubble">${escapeHtml(text)}</div>
+      <div class="kb-msg-actions">
+        <button class="kb-msg-action-btn" onclick="copyText(this, '${id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+      ${metaHtml}
+      ${sourcesHtml}
+    </div>
+  `;
+
+  container.appendChild(div);
+  scrollToBottom();
+}
+
+function addErrorMessage(errorText) {
+  const container = document.getElementById('messagesContainer');
+  const div = document.createElement('div');
+  div.className = 'kb-msg-ai';
+  div.innerHTML = `
+    <div class="kb-msg-ai-avatar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    </div>
+    <div class="kb-msg-ai-content">
+      <div class="kb-msg-ai-bubble error-bubble">${escapeHtml(errorText)}</div>
+      <div class="kb-msg-actions">
+        <button class="kb-msg-action-btn" onclick="retrySearch()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Retry
+        </button>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  scrollToBottom();
+}
+
+function addNoResultsMessage() {
+  const container = document.getElementById('messagesContainer');
+  const div = document.createElement('div');
+  div.className = 'kb-msg-ai';
+  div.innerHTML = `
+    <div class="kb-msg-ai-avatar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    </div>
+    <div class="kb-msg-ai-content">
+      <div class="kb-msg-ai-bubble no-results-bubble">I couldn't find a match in your documents. Try rephrasing your question or using different keywords.</div>
+    </div>
+  `;
+  container.appendChild(div);
+  scrollToBottom();
 }
 
 // ==================== SEARCH ====================
@@ -973,13 +1784,19 @@ function performSearch() {
   if (!query) return;
 
   lastQuery = query;
-  document.getElementById('clearBtn').style.display = '';
 
   // Save to recent
   saveRecentSearch(query);
 
-  // Show loading
-  showState('loading');
+  // Add user bubble
+  addUserMessage(query);
+
+  // Clear input
+  input.value = '';
+  document.getElementById('clearBtn').style.display = 'none';
+
+  // Show typing indicator
+  addTypingIndicator();
 
   fetch(`${API_URL}/ai/analyze-message-with-rag`, {
     method: 'POST',
@@ -988,44 +1805,23 @@ function performSearch() {
   })
     .then(r => { if (!r.ok) throw new Error('Request failed'); return r.json(); })
     .then(result => {
+      removeTypingIndicator();
       const data = result.data || result;
+
       if (!data.usedKnowledgeBase || (!data.suggestedReply && (!data.relevantKnowledge || data.relevantKnowledge.length === 0))) {
-        showState('no-results');
+        addNoResultsMessage();
+        updateSearchStats(false);
         return;
       }
 
-      // Render answer
-      document.getElementById('answerBody').textContent = data.suggestedReply || 'No answer generated.';
-
-      // Render sources
+      const answer = data.suggestedReply || 'No answer generated.';
       const sources = data.relevantKnowledge || [];
-      document.getElementById('sourcesCount').textContent = `${sources.length} source${sources.length !== 1 ? 's' : ''}`;
-
-      document.getElementById('sourcesList').innerHTML = sources.map((src, i) => `
-        <div class="kb-source-item">
-          <div class="kb-source-header">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span class="kb-source-title">${escapeHtml(src.title || src.documentTitle || 'Document ' + (i + 1))}</span>
-            ${src.similarity ? `<span class="kb-source-score">${Math.round(src.similarity * 100)}% match</span>` : ''}
-          </div>
-          <p class="kb-source-snippet">${escapeHtml((src.content || src.chunk || '').substring(0, 200))}${(src.content || src.chunk || '').length > 200 ? '...' : ''}</p>
-        </div>
-      `).join('');
-
-      // Collapse sources by default
-      document.getElementById('sourcesList').style.display = 'none';
-      document.getElementById('sourcesChevron').classList.remove('expanded');
-
-      // Reset copy button
-      const copyBtn = document.getElementById('copyBtn');
-      copyBtn.classList.remove('copied');
-      copyBtn.querySelector('span').textContent = 'Copy';
-
-      showState('answer');
+      addAIMessage(answer, data, sources);
+      updateSearchStats(true);
     })
     .catch(err => {
-      document.getElementById('errorMsg').textContent = err.message || 'Failed to search knowledge base';
-      showState('error');
+      removeTypingIndicator();
+      addErrorMessage(err.message || 'Failed to search your documents');
     });
 }
 
@@ -1041,33 +1837,28 @@ function retrySearch() {
   }
 }
 
-function clearSearch() {
+function clearInput() {
   const input = document.getElementById('searchInput');
   input.value = '';
   input.focus();
   document.getElementById('clearBtn').style.display = 'none';
-  showState('welcome');
-}
-
-function showState(state) {
-  document.getElementById('welcomeState').style.display = state === 'welcome' ? 'flex' : 'none';
-  document.getElementById('loadingState').style.display = state === 'loading' ? 'flex' : 'none';
-  document.getElementById('answerSection').style.display = state === 'answer' ? 'block' : 'none';
-  document.getElementById('noResults').style.display = state === 'no-results' ? 'flex' : 'none';
-  document.getElementById('errorState').style.display = state === 'error' ? 'flex' : 'none';
 }
 
 // ==================== COPY ====================
-function copyAnswer() {
-  const text = document.getElementById('answerBody').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
+function copyText(btn, msgId) {
+  const bubble = document.querySelector(`#${msgId} .kb-msg-ai-bubble`);
+  if (!bubble) return;
+  navigator.clipboard.writeText(bubble.textContent).then(() => {
     btn.classList.add('copied');
-    btn.querySelector('span').textContent = 'Copied!';
+    btn.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+      Copied!`;
     showToast('Copied to clipboard', 'success');
     setTimeout(() => {
       btn.classList.remove('copied');
-      btn.querySelector('span').textContent = 'Copy';
+      btn.innerHTML = `
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy`;
     }, 2000);
   }).catch(() => {
     showToast('Failed to copy', 'error');
@@ -1075,9 +1866,10 @@ function copyAnswer() {
 }
 
 // ==================== SOURCES TOGGLE ====================
-function toggleSources() {
-  const list = document.getElementById('sourcesList');
-  const chevron = document.getElementById('sourcesChevron');
+function toggleSources(msgId) {
+  const list = document.getElementById('sources-' + msgId);
+  const chevron = document.getElementById('chevron-' + msgId);
+  if (!list || !chevron) return;
   const isHidden = list.style.display === 'none';
   list.style.display = isHidden ? 'flex' : 'none';
   chevron.classList.toggle('expanded', isHidden);
@@ -1148,6 +1940,94 @@ function showToast(message, type) {
   setTimeout(() => {
     toast.classList.remove('visible');
   }, 3000);
+}
+
+// ==================== SETTINGS / THEMES ====================
+const themes = [
+  { id: 'auto', name: 'Auto (System)', colors: { bg: '#e2e8f0', sidebar: '#f1f5f9', accent: '#6366f1', text: '#475569' } },
+  { id: 'light', name: 'Light', colors: { bg: '#f1f5f9', sidebar: '#ffffff', accent: '#2563eb', text: '#1e293b' } },
+  { id: 'dark', name: 'Dark', colors: { bg: '#0f172a', sidebar: '#1e293b', accent: '#6366f1', text: '#e2e8f0' } },
+  { id: 'ocean', name: 'Ocean Blue', colors: { bg: '#0c1929', sidebar: '#132f4c', accent: '#2196f3', text: '#e3f2fd' } },
+  { id: 'forest', name: 'Forest Green', colors: { bg: '#0d1f12', sidebar: '#1a3a21', accent: '#4caf50', text: '#e8f5e9' } },
+  { id: 'sunset', name: 'Sunset', colors: { bg: '#1a1a2e', sidebar: '#2d2d44', accent: '#ff6b6b', text: '#fce4ec' } },
+  { id: 'midnight', name: 'Midnight Purple', colors: { bg: '#13111c', sidebar: '#1e1a2e', accent: '#a855f7', text: '#e9d5ff' } },
+  { id: 'rose', name: 'Rose Gold', colors: { bg: '#1c1618', sidebar: '#2d2226', accent: '#f472b6', text: '#fce7f3' } },
+  { id: 'cyber', name: 'Cyberpunk', colors: { bg: '#0a0a0f', sidebar: '#12121a', accent: '#00ff88', text: '#00ff88' } },
+  { id: 'coffee', name: 'Coffee', colors: { bg: '#1a1614', sidebar: '#2d2520', accent: '#d97706', text: '#fef3c7' } },
+  { id: 'nord', name: 'Nord', colors: { bg: '#2e3440', sidebar: '#3b4252', accent: '#88c0d0', text: '#eceff4' } },
+  { id: 'dracula', name: 'Dracula', colors: { bg: '#282a36', sidebar: '#343746', accent: '#bd93f9', text: '#f8f8f2' } },
+  { id: 'solarized', name: 'Solarized', colors: { bg: '#002b36', sidebar: '#073642', accent: '#2aa198', text: '#93a1a1' } },
+  { id: 'monokai', name: 'Monokai', colors: { bg: '#272822', sidebar: '#3e3d32', accent: '#f92672', text: '#f8f8f2' } }
+];
+
+function getCurrentTheme() {
+  return localStorage.getItem('supportDashboardTheme') || 'light';
+}
+
+function setTheme(themeId) {
+  const theme = themes.find(t => t.id === themeId);
+  if (!theme) return;
+
+  if (themeId === 'auto') {
+    document.documentElement.removeAttribute('data-theme');
+  } else if (themeId === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', themeId);
+  }
+
+  localStorage.setItem('supportDashboardTheme', themeId);
+
+  document.querySelectorAll('.theme-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.theme === themeId);
+  });
+
+  showToast(`Theme changed to ${theme.name}`, 'success');
+}
+
+function renderThemeSettings() {
+  const currentTheme = getCurrentTheme();
+  document.getElementById('settingsModalBody').innerHTML = `
+    <div class="settings-section">
+      <h3>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        </svg>
+        Theme
+      </h3>
+      <div class="theme-grid">
+        ${themes.map(theme => `
+          <div class="theme-card ${currentTheme === theme.id ? 'active' : ''}" data-theme="${theme.id}" onclick="setTheme('${theme.id}')">
+            <div class="theme-preview" style="background: ${theme.colors.bg};">
+              <div class="preview-sidebar" style="background: ${theme.colors.sidebar};">
+                <div class="preview-bar" style="background: ${theme.colors.accent};"></div>
+                <div class="preview-bar" style="background: ${theme.colors.text};"></div>
+                <div class="preview-bar" style="background: ${theme.colors.text};"></div>
+              </div>
+              <div class="preview-main">
+                <div class="preview-content" style="background: ${theme.colors.text};"></div>
+              </div>
+            </div>
+            <div class="theme-card-name">
+              ${theme.name}
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function openSettings() {
+  renderThemeSettings();
+  document.getElementById('settingsModal').style.display = 'flex';
+}
+
+function closeSettingsModal() {
+  document.getElementById('settingsModal').style.display = 'none';
 }
 </script>
 
