@@ -1,5 +1,5 @@
 /**
- * ChatApp Configuration v1.1
+ * ChatApp Configuration v1.2
  *
  * Edit this file to configure URLs for different environments.
  * This file is loaded by all HTML pages.
