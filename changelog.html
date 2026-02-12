@@ -448,6 +448,16 @@
         <p data-brand="copyright">&copy; 2025 Assistica AI. All rights reserved.</p>
     </footer>
 
+    <script src="/config.js"></script>
+    <script>
+    (function(w,d,s,o){
+        w.AssisticaAIWidget=o;w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};
+        var js=d.createElement(s),fs=d.getElementsByTagName(s)[0];
+        js.src=CONFIG.CHAT_WIDGET_SRC;
+        js.async=1;fs.parentNode.insertBefore(js,fs);
+    })(window,document,'script','chatapp');
+    chatapp('init', { siteId: CONFIG.CHAT_WIDGET_SITE_ID, apiKey: CONFIG.CHAT_WIDGET_API_KEY });
+    </script>
     <script src="/branding.js"></script>
 </body>
 </html>

@@ -24,7 +24,13 @@ const CONFIG = {
     // Widget URL (where widget.js is hosted)
     // For local development: http://localhost:8000
     // For production: https://widget.yourdomain.com or same as APP_URL
-    WIDGET_URL: window.location.origin
+    WIDGET_URL: window.location.origin,
+
+    // Chat Widget Configuration (for embedding on public pages)
+    // Change these if the widget host or site credentials change
+    CHAT_WIDGET_SRC: 'https://python-widget-app.onrender.com/static/widget.js',
+    CHAT_WIDGET_SITE_ID: '3499011b-2965-4417-a773-9f5d6f368e2f',
+    CHAT_WIDGET_API_KEY: 'sk_CAKsLM1kDxV978dog00k4n5RCDclNLOfwhp0iei9'
 };
 
 // Computed values (don't edit these)
