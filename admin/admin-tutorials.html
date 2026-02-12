@@ -15,8 +15,8 @@
         }
 
         .video-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
             transition: all 0.2s;
@@ -87,7 +87,7 @@
         }
 
         .video-description {
-            color: #64748b;
+            color: var(--text-secondary);
             font-size: 0.875rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -136,7 +136,7 @@
             display: flex;
             gap: 0.5rem;
             padding-top: 0.75rem;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-color);
         }
 
         .video-actions button {
@@ -150,12 +150,12 @@
         }
 
         .btn-edit {
-            background: #f1f5f9;
-            color: #475569;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
         }
 
         .btn-edit:hover {
-            background: #e2e8f0;
+            background: var(--border-color);
         }
 
         .btn-delete {
@@ -170,7 +170,7 @@
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         .empty-state svg {
@@ -193,7 +193,7 @@
             font-size: 0.875rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
-            color: #374151;
+            color: var(--text-primary);
         }
 
         .form-group input,
@@ -201,9 +201,11 @@
         .form-group select {
             width: 100%;
             padding: 0.625rem 0.875rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 0.875rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             transition: all 0.2s;
         }
 
@@ -228,7 +230,7 @@
 
         .form-group .help-text {
             font-size: 0.75rem;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-top: 0.25rem;
         }
 
@@ -241,7 +243,7 @@
 
         .toggle-label {
             font-size: 0.875rem;
-            color: #374151;
+            color: var(--text-primary);
         }
 
         .toggle-switch {

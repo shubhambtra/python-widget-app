@@ -1436,7 +1436,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="contactEmail">Email</label>
-                                <input type="email" id="contactEmail" placeholder="your@email.com" required>
+                                <input type="email" id="contactEmailField" placeholder="your@email.com" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -1593,7 +1593,7 @@
         submitBtn.innerHTML = 'Sending...';
 
         const name = document.getElementById('contactName').value;
-        const email = document.getElementById('contactEmail').value;
+        const email = document.getElementById('contactEmailField').value;
         const subject = document.getElementById('contactSubject').value;
         const message = document.getElementById('contactMessage').value;
 
@@ -1601,7 +1601,7 @@
             const response = await fetch(`${CONFIG.API_BASE}/ContactSubmissions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, subject, message })
+                body: JSON.stringify({ Name: name, Email: email, Subject: subject, Message: message })
             });
 
             const result = await response.json();
