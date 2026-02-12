@@ -1117,6 +1117,10 @@ function expand() {
   unreadCount = 0;
   updateBadge();
   parent.postMessage({ type: "CHAT_EXPAND" }, "*");
+  // Tell support dashboard that customer has read the messages
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({ type: 'messages_read', timestamp: new Date().toISOString() }));
+  }
 }
 
 function updateBadge() {
@@ -1213,9 +1217,20 @@ function connectWebSocket() {
     if (data.type === "message") {
       addMessage("support", data.message, data.file);
 
+      // Send delivery acknowledgement back to support dashboard
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+          type: 'message_delivered',
+          timestamp: new Date().toISOString()
+        }));
+      }
+
       if (isCollapsed) {
         unreadCount++;
         updateBadge();
+      } else {
+        // Widget is open — customer sees the message immediately, send read receipt
+        socket.send(JSON.stringify({ type: 'messages_read', timestamp: new Date().toISOString() }));
       }
     }
 
@@ -1255,7 +1270,7 @@ function connectWebSocket() {
     }
 
     // Handle read receipt updates
-    if (data.type === "message_read") {
+    if (data.type === "message_read" || data.type === "messages_read") {
       updateReadReceipts('read');
     }
 
@@ -1270,16 +1285,24 @@ function connectWebSocket() {
 }
 
 // Update read receipts on messages
+// Single tick = delivered, Double tick = seen/read
 function updateReadReceipts(status) {
   const receipts = document.querySelectorAll('.read-receipt.sent, .read-receipt.delivered');
   receipts.forEach(receipt => {
     receipt.className = `read-receipt ${status}`;
-    if (status === 'read' || status === 'delivered') {
-      // Double checkmark
+    if (status === 'read') {
+      // Double checkmark = seen
       receipt.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 7l-8.5 8.5-4-4"></path>
           <path d="M22 7l-8.5 8.5-1-1"></path>
+        </svg>
+      `;
+    } else if (status === 'delivered') {
+      // Single checkmark = delivered
+      receipt.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
         </svg>
       `;
     }
@@ -1485,21 +1508,14 @@ function addMessage(from, text, fileData = null, status = 'sent') {
   time.appendChild(timeText);
 
   // Add read receipt icon for customer's messages
+  // Single tick = delivered, Double tick = seen/read
   if (from === "me") {
     const receipt = document.createElement("span");
     receipt.className = `read-receipt ${status}`;
     receipt.id = `receipt-${Date.now()}`;
 
     if (status === 'read') {
-      // Double checkmark (read) - green
-      receipt.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 7l-8.5 8.5-4-4"></path>
-          <path d="M22 7l-8.5 8.5-1-1"></path>
-        </svg>
-      `;
-    } else if (status === 'delivered') {
-      // Double checkmark (delivered) - gray
+      // Double checkmark = seen
       receipt.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 7l-8.5 8.5-4-4"></path>
@@ -1507,7 +1523,7 @@ function addMessage(from, text, fileData = null, status = 'sent') {
         </svg>
       `;
     } else {
-      // Single checkmark (sent) - light gray
+      // Single checkmark = delivered (covers both 'sent' and 'delivered')
       receipt.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 6L9 17l-5-5"></path>
