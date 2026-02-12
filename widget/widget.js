@@ -162,6 +162,8 @@
     iframe.style.width = "200px";
     iframe.style.borderRadius = "28px";
     iframe.style.cursor = "pointer";
+    iframe.style.boxShadow = "none";
+    iframe.style.background = "transparent";
   }
 
   function expand() {
@@ -170,6 +172,8 @@
     iframe.style.width = "360px";
     iframe.style.borderRadius = "16px";
     iframe.style.cursor = "default";
+    iframe.style.boxShadow = "0 10px 40px rgba(0, 0, 0, 0.15)";
+    iframe.style.background = "white";
     unreadCount = 0;
     updateBadge();
   }
