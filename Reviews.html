@@ -305,7 +305,7 @@ function navigateTo(id) {
   } else if (id === 'team') {
     window.location.href = base + '&nav=team';
   } else if (id === 'kb') {
-    window.open(`kb-search.html?siteId=${siteId}&token=${token}`, '_blank');
+    window.location.href = `kb-search.html?siteId=${siteId}&token=${token}`;
   } else if (id === 'settings') {
     window.location.href = base + '&nav=settings';
   } else if (id === 'help') {

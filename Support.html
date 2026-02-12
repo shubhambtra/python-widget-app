@@ -6710,7 +6710,7 @@ function switchNavRail(id) {
   } else if (id === 'kb') {
     const siteId = new URLSearchParams(window.location.search).get('siteId');
     const token = new URLSearchParams(window.location.search).get('token') || localStorage.getItem('token');
-    window.open(`kb-search.html?siteId=${siteId}&token=${token}`, '_blank');
+    window.location.href = `kb-search.html?siteId=${siteId}&token=${token}`;
     // Restore previous active nav state
     const navMap = { team: 'navTeam' };
     document.getElementById(navMap[currentNavView] || 'navInbox').classList.add('active');
