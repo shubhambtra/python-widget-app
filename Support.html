@@ -1472,6 +1472,8 @@ function createWebSocket() {
 }
 
 function attachWebSocketHandlers(socket) {
+let wsPingInterval = null;
+
 socket.onopen = () => {
   console.log("Connected to support WebSocket");
   updateConnectionStatus('connected');
@@ -1482,6 +1484,8 @@ socket.onopen = () => {
   loadHistoricalConversations();
   loadSiteAgents(); // Load agents for transfer feature
   loadPlatformFeatures(); // Load platform feature flags
+  clearInterval(wsPingInterval);
+  wsPingInterval = setInterval(() => { socket.send(JSON.stringify({ type: 'ping' })); }, 30000);
 };
 
 socket.onmessage = (e) => {
@@ -1498,6 +1502,7 @@ socket.onmessage = (e) => {
 };
 
 socket.onclose = () => {
+  clearInterval(wsPingInterval);
   if (!loggedOut) {
     console.log("WebSocket closed, reconnecting in", wsReconnectDelay / 1000, "s...");
     updateConnectionStatus('disconnected');
@@ -2708,15 +2713,12 @@ function renderMessages() {
     if (!hasText && !hasFile) return '';
 
     // Read receipt checkmarks for support messages
+    // Single tick = delivered, Double tick = seen/read
     let readReceipt = '';
     if (m.from === 'support' && platformFeatures.readReceipts) {
-      const status = m.readAt ? 'read' : (m.deliveredAt ? 'delivered' : 'sent');
-      readReceipt = `<span class="read-receipt ${status}" title="${status.charAt(0).toUpperCase() + status.slice(1)}">
+      const status = m.readAt ? 'read' : 'delivered';
+      readReceipt = `<span class="read-receipt ${status}" title="${status === 'read' ? 'Seen' : 'Delivered'}">
         ${status === 'read' ? `
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 7l-8.5 8.5-4-4M22 7l-8.5 8.5-1-1"/>
-          </svg>
-        ` : status === 'delivered' ? `
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 7l-8.5 8.5-4-4M22 7l-8.5 8.5-1-1"/>
           </svg>
