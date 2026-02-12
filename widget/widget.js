@@ -73,6 +73,8 @@
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: white;
+    overflow: hidden;
+    color-scheme: normal;
   `;
   iframe.allow = "clipboard-write";
 

@@ -19,10 +19,11 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  height: 100vh;
+  height: 100%;
   background: transparent;
+  overflow: hidden;
 }
 
 /* ==================== CHAT CONTAINER ==================== */
@@ -716,12 +717,14 @@ body {
   cursor: pointer;
   background: transparent;
   box-shadow: none;
+  overflow: visible;
 }
 
 .chat-widget.collapsed .chat-header {
   border-radius: 28px;
   padding: 12px 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  height: 56px;
 }
 
 .chat-widget.collapsed .messages-area,
