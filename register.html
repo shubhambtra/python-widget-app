@@ -623,6 +623,7 @@
             font-weight: bold;
         }
 
+
         .btn-plan {
             width: 100%;
             padding: 0.6rem;
@@ -1066,7 +1067,8 @@
 
                     <div class="form-group">
                         <label for="domain">Your Website Domain</label>
-                        <input type="text" id="domain" name="domain" placeholder="myapp.com" required>
+                        <input type="text" id="domain" name="domain" placeholder="myapp.com" required oninput="sanitizeDomainInput(this)" onblur="validateDomainField()">
+                        <div class="form-hint" id="domain-hint" style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Enter your domain without http:// or https:// (e.g., myapp.com)</div>
                         <div class="form-error" id="domain-error"></div>
                     </div>
 
@@ -1161,15 +1163,6 @@
     </div>
 
     <script src="/config.js"></script>
-    <script>
-    (function(w,d,s,o){
-        w.AssisticaAIWidget=o;w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};
-        var js=d.createElement(s),fs=d.getElementsByTagName(s)[0];
-        js.src=CONFIG.CHAT_WIDGET_SRC;
-        js.async=1;fs.parentNode.insertBefore(js,fs);
-    })(window,document,'script','chatapp');
-    chatapp('init', { siteId: CONFIG.CHAT_WIDGET_SITE_ID, apiKey: CONFIG.CHAT_WIDGET_API_KEY });
-    </script>
     <script src="/js/visitor-tracker.js"></script>
     <script src="/branding.js"></script>
     <script>
@@ -1261,8 +1254,16 @@
                 features.push(`${plan.maxConversationsPerMonth ? plan.maxConversationsPerMonth.toLocaleString() : 'Unlimited'} Conversations/month`);
                 features.push(`${plan.maxMessagesPerMonth ? plan.maxMessagesPerMonth.toLocaleString() : 'Unlimited'} Messages/month`);
                 features.push(`${plan.maxStorageMb >= 1000 ? (plan.maxStorageMb / 1000) + 'GB' : plan.maxStorageMb + 'MB'} File Storage`);
-                if (plan.aiAnalysisEnabled) features.push('AI Analysis');
-                if (plan.aiAutoReplyEnabled) features.push('AI Auto-Reply');
+                if (plan.aiAnalysisEnabled) features.push(plan.maxAiAnalysesPerMonth ? `${plan.maxAiAnalysesPerMonth.toLocaleString()} AI Conversation Analyses/mo` : 'Unlimited AI Conversation Analysis');
+                if (plan.aiAutoReplyEnabled) features.push(plan.maxAiAutoRepliesPerMonth ? `${plan.maxAiAutoRepliesPerMonth.toLocaleString()} AI Auto-Replies/mo` : 'Unlimited AI Auto-Replies');
+                if (plan.chatTranscriptsEnabled) features.push('Chat Transcripts & Reports');
+                features.push('AI Documentation Search');
+                features.push('Team Collaboration');
+                if (plan.monthlyPrice === 0) {
+                    features.push('Email Support');
+                } else {
+                    features.push('24/7 Priority Support');
+                }
 
                 return `
                     <div class="plan-card ${isPopular ? 'popular' : ''}" data-plan-id="${plan.id}" onclick="selectPlan('${plan.id}')">
@@ -1527,6 +1528,69 @@
             });
         }
 
+        // Domain input sanitization and validation
+        function sanitizeDomainInput(input) {
+            let val = input.value;
+            // Strip protocols and trailing slashes/paths
+            val = val.replace(/^(https?:\/\/)?(www\.)?/i, '').replace(/\/.*$/, '').trim();
+            if (val !== input.value) input.value = val;
+
+            const hint = document.getElementById('domain-hint');
+            const errorEl = document.getElementById('domain-error');
+            if (val && isValidDomain(val)) {
+                hint.style.color = '#22c55e';
+                hint.textContent = '\u2713 ' + val;
+                errorEl.textContent = '';
+            } else if (val) {
+                hint.style.color = '#94a3b8';
+                hint.textContent = 'Enter your domain without http:// or https:// (e.g., myapp.com)';
+            } else {
+                hint.style.color = '#94a3b8';
+                hint.textContent = 'Enter your domain without http:// or https:// (e.g., myapp.com)';
+            }
+        }
+
+        function isValidDomain(domain) {
+            // Must have at least one dot, valid characters, TLD at least 2 chars, no spaces
+            return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/.test(domain);
+        }
+
+        function validateDomainField() {
+            const domain = document.getElementById('domain').value.trim();
+            const errorEl = document.getElementById('domain-error');
+            const hint = document.getElementById('domain-hint');
+
+            if (!domain) {
+                errorEl.textContent = 'Domain is required';
+                return false;
+            }
+
+            if (domain.includes(' ')) {
+                showFieldError('domain', 'Domain cannot contain spaces');
+                return false;
+            }
+
+            if (/^(https?:\/\/)/i.test(domain)) {
+                showFieldError('domain', 'Please enter the domain without http:// or https://');
+                return false;
+            }
+
+            if (/^localhost/i.test(domain) || /^[\d.]+$/.test(domain)) {
+                showFieldError('domain', 'Please enter a real domain name, not an IP address or localhost');
+                return false;
+            }
+
+            if (!isValidDomain(domain)) {
+                showFieldError('domain', 'Please enter a valid domain (e.g., myapp.com or shop.myapp.com)');
+                return false;
+            }
+
+            hint.style.color = '#22c55e';
+            hint.textContent = '\u2713 ' + domain;
+            errorEl.textContent = '';
+            return true;
+        }
+
         // Validate step 1 (includes domain validation)
         function validateStep1() {
             clearFieldErrors();
@@ -1572,8 +1636,7 @@
                 valid = false;
             }
 
-            if (!domain || !domain.match(/^[a-zA-Z0-9][a-zA-Z0-9-_.]+\.[a-zA-Z]{2,}$/)) {
-                showFieldError('domain', 'Please enter a valid domain (e.g., myapp.com)');
+            if (!validateDomainField()) {
                 valid = false;
             }
 

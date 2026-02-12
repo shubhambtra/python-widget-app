@@ -602,6 +602,7 @@
             font-weight: 600;
         }
 
+
         .pricing-card .btn-primary,
         .pricing-card .btn-secondary {
             width: 100%;
@@ -1748,6 +1749,15 @@
             else features.push('Unlimited messages');
             if (plan.maxFileSizeMb) features.push(`${plan.maxFileSizeMb}MB file uploads`);
             if (plan.maxStorageMb) features.push(`${plan.maxStorageMb}MB storage`);
+            if (plan.aiAnalysisEnabled) features.push(plan.maxAiAnalysesPerMonth ? `${plan.maxAiAnalysesPerMonth.toLocaleString()} AI Conversation Analyses/mo` : 'Unlimited AI Conversation Analysis');
+            if (plan.chatTranscriptsEnabled) features.push('Chat Transcripts & Reports');
+            features.push('AI Documentation Search');
+            features.push('Team Collaboration');
+            if (isFree) {
+                features.push('Email Support');
+            } else {
+                features.push('24/7 Priority Support');
+            }
             if (plan.description) features.push(plan.description);
 
             const trialDays = plan.trialDays || 0;
@@ -1777,7 +1787,7 @@
                         ${priceHtml}
                     </div>
                     <ul class="pricing-features">
-                        ${features.slice(0, 6).map(f => `<li>${f}</li>`).join('')}
+                        ${features.map(f => `<li>${f}</li>`).join('')}
                     </ul>
                     <a href="/register" class="${isPopular ? 'btn-primary' : 'btn-secondary'}">${isFree ? (trialDays > 0 ? `Start ${trialDays}-Day Free Trial` : 'Get Started Free') : 'Get Started'}</a>
                 </div>

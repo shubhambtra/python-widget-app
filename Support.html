@@ -345,6 +345,28 @@
             </div>
             <div class="conv-actions-divider"></div>
             <div class="conv-actions-section">
+              <div class="conv-actions-label">Export <span id="exportPremiumBadge" style="display: none;"></span></div>
+              <button class="conv-action-btn" id="btnExportPDF" onclick="exportConversationPDF(); toggleConvActionsMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Export as PDF
+              </button>
+              <button class="conv-action-btn" id="btnExportText" onclick="exportConversationText(); toggleConvActionsMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export as Text
+              </button>
+              <button class="conv-action-btn" id="btnEmailTranscript" onclick="emailConversationTranscript(); toggleConvActionsMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Email Transcript
+              </button>
+            </div>
+            <div class="conv-actions-divider"></div>
+            <div class="conv-actions-section">
               <button class="conv-action-btn" id="btnReopenConv" onclick="reopenConversation()" style="display:none;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -1425,6 +1447,7 @@ let aiAnalysisAvailable = false;
 let aiAutoReplyAvailable = false;
 let aiAnalysisLimitExhausted = false;
 let aiAutoReplyLimitExhausted = false;
+let chatTranscriptsAvailable = false;
 
 // Platform feature flags (from admin settings)
 let platformFeatures = {
@@ -4256,10 +4279,12 @@ function updateAiFeatureAvailability() {
     aiAutoReplyAvailable = false;
     aiAnalysisLimitExhausted = false;
     aiAutoReplyLimitExhausted = false;
+    chatTranscriptsAvailable = false;
   } else {
     // Check if features are enabled in plan
     aiAnalysisAvailable = sitePlan.aiAnalysisEnabled === true;
     aiAutoReplyAvailable = sitePlan.aiAutoReplyEnabled === true;
+    chatTranscriptsAvailable = sitePlan.chatTranscriptsEnabled === true;
 
     // Check if limits are exhausted
     const analysisUsage = siteUsage.find(u => u.metricName === 'ai_analyses');
@@ -4276,6 +4301,7 @@ function updateAiFeatureAvailability() {
 
   // Update UI
   updateAiToggleUI();
+  updateExportButtonsUI();
 }
 
 function updateAiToggleUI() {
@@ -4406,6 +4432,12 @@ function showUpgradeModal(feature, reason) {
         usageValue.className = 'value exhausted';
       }
     }
+  } else if (feature === 'chat_transcripts') {
+    featureName.textContent = 'Chat Transcripts & Reports';
+    featureDesc.textContent = 'Export conversations as PDF or text files, and email transcripts directly to customers or team members.';
+    title.textContent = 'Unlock Chat Transcripts';
+    subtitle.textContent = 'This feature is not included in your current plan';
+    usageStatus.style.display = 'none';
   }
 
   modal.classList.add('show');
@@ -4425,7 +4457,10 @@ function openEmailModal() {
     return;
   }
 
-  document.getElementById('emailTo').value = email;
+  const emailToField = document.getElementById('emailTo');
+  emailToField.value = email;
+  emailToField.readOnly = true;
+  emailToField.placeholder = '';
   document.getElementById('emailSubject').value = `Follow-up from ${document.title || 'Support'}`;
   document.getElementById('emailBody').value = `Hi ${users[currentVisitor].name},\n\nThank you for contacting us.\n\n`;
 
@@ -4439,13 +4474,24 @@ function openEmailModal() {
 function closeEmailModal() {
   const modal = document.getElementById('emailModal');
   modal.classList.remove('show');
-  setTimeout(() => modal.style.display = 'none', 300);
+  setTimeout(() => {
+    modal.style.display = 'none';
+    const emailToField = document.getElementById('emailTo');
+    emailToField.readOnly = true;
+    emailToField.placeholder = '';
+  }, 300);
 }
 
 async function sendEmail() {
-  const to = document.getElementById('emailTo').value;
+  const to = document.getElementById('emailTo').value.trim();
   const subject = document.getElementById('emailSubject').value.trim();
   const body = document.getElementById('emailBody').value.trim();
+
+  if (!to) {
+    showNotification('Please enter a recipient email', 'error');
+    document.getElementById('emailTo').focus();
+    return;
+  }
 
   if (!subject) {
     showNotification('Please enter a subject', 'error');
@@ -4498,6 +4544,214 @@ async function sendEmail() {
 
 // Attach Send Email button click handler
 document.getElementById('btnSendEmail')?.addEventListener('click', openEmailModal);
+
+// ==================== EXPORT & EMAIL TRANSCRIPT ====================
+
+function buildTranscriptData() {
+  if (!currentVisitor || !users[currentVisitor]) return null;
+  const user = users[currentVisitor];
+  const messages = user.messages || [];
+  if (messages.length === 0) return null;
+  return {
+    name: user.name || 'Visitor',
+    email: user.email || '',
+    visitorId: currentVisitor,
+    messages: messages,
+    firstDate: messages[0].time,
+    lastDate: messages[messages.length - 1].time
+  };
+}
+
+function formatTranscriptLine(msg) {
+  const time = msg.time instanceof Date ? msg.time : new Date(msg.time);
+  const timestamp = time.toLocaleString();
+  const sender = msg.from === 'customer' ? 'Visitor' : 'Support';
+  let line = `[${timestamp}] ${sender}: ${msg.text || ''}`;
+  if (msg.file) {
+    line += msg.text ? ' ' : '';
+    line += `[Attachment: ${msg.file.name || 'file'}]`;
+  }
+  return line;
+}
+
+function exportConversationText() {
+  if (!chatTranscriptsAvailable) {
+    showUpgradeModal('chat_transcripts', 'not_enabled');
+    return;
+  }
+  const data = buildTranscriptData();
+  if (!data) {
+    showNotification('No conversation to export', 'error');
+    return;
+  }
+
+  let text = '=== Conversation Transcript ===\n';
+  text += `Visitor: ${data.name}\n`;
+  if (data.email) text += `Email: ${data.email}\n`;
+  text += `From: ${data.firstDate.toLocaleString()}\n`;
+  text += `To: ${data.lastDate.toLocaleString()}\n`;
+  text += '================================\n\n';
+
+  data.messages.forEach(msg => {
+    if (!msg.text && !msg.file) return;
+    text += formatTranscriptLine(msg) + '\n';
+  });
+
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeName = data.name.replace(/[^a-zA-Z0-9]/g, '-');
+  const dateStr = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `conversation-${safeName}-${dateStr}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showNotification('Conversation exported as text', 'success');
+}
+
+function exportConversationPDF() {
+  if (!chatTranscriptsAvailable) {
+    showUpgradeModal('chat_transcripts', 'not_enabled');
+    return;
+  }
+  const data = buildTranscriptData();
+  if (!data) {
+    showNotification('No conversation to export', 'error');
+    return;
+  }
+
+  const messagesHtml = data.messages.map(msg => {
+    if (!msg.text && !msg.file) return '';
+    const time = msg.time instanceof Date ? msg.time : new Date(msg.time);
+    const sender = msg.from === 'customer' ? 'Visitor' : 'Support';
+    const senderClass = msg.from === 'customer' ? 'visitor' : 'support';
+    let content = escapeHtml(msg.text || '');
+    if (msg.file) {
+      content += (content ? '<br>' : '') + '<em>[Attachment: ' + escapeHtml(msg.file.name || 'file') + ']</em>';
+    }
+    return `<div class="msg ${senderClass}">
+      <div class="msg-header"><strong>${sender}</strong> <span class="msg-time">${escapeHtml(time.toLocaleString())}</span></div>
+      <div class="msg-body">${content}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Conversation - ${escapeHtml(data.name)}</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; }
+  .header { border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 24px; }
+  .header h1 { font-size: 20px; margin: 0 0 8px; }
+  .header p { margin: 2px 0; font-size: 13px; color: #6b7280; }
+  .msg { margin-bottom: 12px; padding: 10px 14px; border-radius: 8px; }
+  .msg.visitor { background: #f3f4f6; }
+  .msg.support { background: #eff6ff; }
+  .msg-header { font-size: 12px; margin-bottom: 4px; color: #6b7280; }
+  .msg-header strong { color: #1a1a1a; }
+  .msg-time { margin-left: 8px; }
+  .msg-body { font-size: 14px; line-height: 1.5; }
+  @media print { body { padding: 0; } }
+</style></head><body>
+<div class="header">
+  <h1>Conversation Transcript</h1>
+  <p><strong>Visitor:</strong> ${escapeHtml(data.name)}</p>
+  ${data.email ? `<p><strong>Email:</strong> ${escapeHtml(data.email)}</p>` : ''}
+  <p><strong>Date:</strong> ${escapeHtml(data.firstDate.toLocaleString())} — ${escapeHtml(data.lastDate.toLocaleString())}</p>
+</div>
+${messagesHtml}
+</body></html>`;
+
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-10000px;left:-10000px;width:800px;height:600px;';
+  document.body.appendChild(iframe);
+  iframe.contentDocument.open();
+  iframe.contentDocument.write(html);
+  iframe.contentDocument.close();
+
+  iframe.onload = () => {
+    setTimeout(() => {
+      iframe.contentWindow.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    }, 250);
+  };
+  // Fallback if already loaded
+  if (iframe.contentDocument.readyState === 'complete') {
+    setTimeout(() => {
+      iframe.contentWindow.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    }, 250);
+  }
+}
+
+function emailConversationTranscript() {
+  if (!chatTranscriptsAvailable) {
+    showUpgradeModal('chat_transcripts', 'not_enabled');
+    return;
+  }
+  if (!currentVisitor || !users[currentVisitor]) return;
+
+  const data = buildTranscriptData();
+  if (!data) {
+    showNotification('No conversation to export', 'error');
+    return;
+  }
+
+  // Build transcript for email body
+  let bodyText = `Conversation Transcript\nVisitor: ${data.name}\n`;
+  bodyText += `Date: ${data.firstDate.toLocaleString()} — ${data.lastDate.toLocaleString()}\n`;
+  bodyText += '─'.repeat(40) + '\n\n';
+
+  data.messages.forEach(msg => {
+    if (!msg.text && !msg.file) return;
+    bodyText += formatTranscriptLine(msg) + '\n';
+  });
+
+  const emailToField = document.getElementById('emailTo');
+  emailToField.value = data.email || '';
+  emailToField.readOnly = false;
+  emailToField.placeholder = 'Enter recipient email...';
+  document.getElementById('emailSubject').value = `Conversation Transcript - ${data.name}`;
+  document.getElementById('emailBody').value = bodyText;
+
+  const modal = document.getElementById('emailModal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('show'), 10);
+  document.getElementById('emailTo').focus();
+}
+
+function updateExportButtonsUI() {
+  const badge = document.getElementById('exportPremiumBadge');
+  const btnPDF = document.getElementById('btnExportPDF');
+  const btnText = document.getElementById('btnExportText');
+  const btnEmail = document.getElementById('btnEmailTranscript');
+  const starIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+
+  if (!chatTranscriptsAvailable) {
+    badge.innerHTML = `<span class="premium-badge" onclick="showUpgradeModal('chat_transcripts', 'not_enabled')">${starIcon} PRO</span>`;
+    badge.style.display = 'inline';
+    [btnPDF, btnText, btnEmail].forEach(btn => {
+      if (btn) {
+        btn.classList.add('disabled');
+        btn.style.opacity = '0.5';
+        btn.style.pointerEvents = 'none';
+      }
+    });
+  } else {
+    badge.style.display = 'none';
+    [btnPDF, btnText, btnEmail].forEach(btn => {
+      if (btn) {
+        btn.classList.remove('disabled');
+        btn.style.opacity = '';
+        btn.style.pointerEvents = '';
+      }
+    });
+  }
+}
+
+window.exportConversationText = exportConversationText;
+window.exportConversationPDF = exportConversationPDF;
+window.emailConversationTranscript = emailConversationTranscript;
 
 function showNotification(message, type = 'info') {
   // Create notification element

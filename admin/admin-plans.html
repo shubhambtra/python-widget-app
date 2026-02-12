@@ -224,6 +224,18 @@
                 <div style="font-size: 0.75rem; color: #9ca3af;">Automated AI responses</div>
               </div>
             </label>
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 14px 16px; background: white; border: 1px solid #f59e0b; border-radius: 10px;">
+              <input type="checkbox" id="planChatTranscriptsEnabled" style="width: 18px; height: 18px; accent-color: #f59e0b;">
+              <div>
+                <div style="font-weight: 500; color: #374151; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#f59e0b">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Chat Transcripts
+                </div>
+                <div style="font-size: 0.75rem; color: #9ca3af;">Export PDF, Text & email transcripts</div>
+              </div>
+            </label>
           </div>
 
           <!-- AI Usage Limits -->
@@ -564,6 +576,9 @@ function renderPlansTable(plans) {
                 <span class="badge ${plan.aiAutoReplyEnabled ? 'pro' : 'inactive'}" style="font-size: 10px;">
                   ${plan.aiAutoReplyEnabled ? '&#10003; Auto Reply' : '&#10007; Auto Reply'}${plan.aiAutoReplyEnabled && plan.maxAiAutoRepliesPerMonth ? ' (' + plan.maxAiAutoRepliesPerMonth + '/mo)' : ''}
                 </span>
+                <span class="badge ${plan.chatTranscriptsEnabled ? 'active' : 'inactive'}" style="font-size: 10px;">
+                  ${plan.chatTranscriptsEnabled ? '&#10003; Transcripts' : '&#10007; Transcripts'}
+                </span>
               </div>
             </td>
             <td><span class="badge ${plan.subscribersCount > 0 ? 'active' : 'free'}">${plan.subscribersCount || 0} subscribers</span></td>
@@ -604,6 +619,7 @@ function openCreatePlanModal() {
   document.getElementById('planSortOrder').value = '0';
   document.getElementById('planAiAnalysisEnabled').checked = false;
   document.getElementById('planAiAutoReplyEnabled').checked = false;
+  document.getElementById('planChatTranscriptsEnabled').checked = false;
   document.getElementById('planMaxAiAnalyses').value = '';
   document.getElementById('planMaxAiAutoReplies').value = '';
   // INR fields
@@ -637,6 +653,7 @@ function openEditPlanModal(planId) {
   document.getElementById('planIsPublic').checked = plan.isPublic;
   document.getElementById('planAiAnalysisEnabled').checked = plan.aiAnalysisEnabled || false;
   document.getElementById('planAiAutoReplyEnabled').checked = plan.aiAutoReplyEnabled || false;
+  document.getElementById('planChatTranscriptsEnabled').checked = plan.chatTranscriptsEnabled || false;
   document.getElementById('planMaxAiAnalyses').value = plan.maxAiAnalysesPerMonth || '';
   document.getElementById('planMaxAiAutoReplies').value = plan.maxAiAutoRepliesPerMonth || '';
   // INR fields
@@ -671,6 +688,7 @@ async function savePlan() {
     isPublic: document.getElementById('planIsPublic').checked,
     aiAnalysisEnabled: document.getElementById('planAiAnalysisEnabled').checked,
     aiAutoReplyEnabled: document.getElementById('planAiAutoReplyEnabled').checked,
+    chatTranscriptsEnabled: document.getElementById('planChatTranscriptsEnabled').checked,
     maxAiAnalysesPerMonth: parseInt(document.getElementById('planMaxAiAnalyses').value) || null,
     maxAiAutoRepliesPerMonth: parseInt(document.getElementById('planMaxAiAutoReplies').value) || null
   };

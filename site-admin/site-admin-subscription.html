@@ -641,6 +641,12 @@ function renderUpgradePlans() {
             </svg>
             <span>${plan.maxFileSizeMb || 10} MB file uploads</span>
           </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="${plan.chatTranscriptsEnabled ? '#10b981' : '#cbd5e1'}" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="${plan.chatTranscriptsEnabled ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/>
+            </svg>
+            <span style="${plan.chatTranscriptsEnabled ? '' : 'color: #94a3b8;'}">Chat Transcripts & Reports</span>
+          </div>
         </div>
 
         <button onclick="selectUpgradePlan('${plan.id}')" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px;">
