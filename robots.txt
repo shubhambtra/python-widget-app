@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /support
+Disallow: /api/
+Sitemap: https://chatapp.code2night.com/sitemap.xml

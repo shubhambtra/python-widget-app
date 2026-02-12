@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Assistica AI changelog - see the latest features, improvements, and bug fixes for our AI-powered customer support platform.">
+    <meta name="keywords" content="Assistica, changelog, updates, release notes, new features">
+    <meta property="og:title" content="Changelog - Assistica AI">
+    <meta property="og:description" content="See the latest features, improvements, and bug fixes for Assistica AI.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chatapp.code2night.com/changelog">
+    <meta property="og:image" content="https://chatapp.code2night.com/favicon.svg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Changelog - Assistica AI">
+    <meta name="twitter:description" content="See the latest features, improvements, and bug fixes for Assistica AI.">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="canonical" href="https://chatapp.code2night.com/changelog">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <title>Changelog - Assistica AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .login-btn {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .login-btn:hover {
+            color: #fff;
+        }
+
+        .register-btn {
+            background: #2563eb;
+            color: #fff;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .register-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 8rem 2rem 3rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Timeline */
+        .changelog-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .changelog-entry {
+            position: relative;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .changelog-entry::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 2.25rem;
+            width: 12px;
+            height: 12px;
+            background: #2563eb;
+            border-radius: 50%;
+            border: 3px solid #0f172a;
+        }
+
+        .timeline-line {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(37, 99, 235, 0.3);
+            margin-left: 1rem;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .entry-version {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .entry-date {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .entry-items {
+            list-style: none;
+        }
+
+        .entry-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .entry-items li + li {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            margin-top: 0.15rem;
+        }
+
+        .badge-new {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-improved {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-fixed {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .changelog-container {
+                padding: 1rem;
+            }
+
+            .timeline-line {
+                padding-left: 1.5rem;
+            }
+
+            .changelog-entry {
+                padding: 1.25rem;
+            }
+
+            .entry-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon" data-brand="icon">C</div>
+            <span data-brand="name">Assistica AI</span>
+        </a>
+        <div class="nav-menu">
+            <a href="/#features" class="nav-link">Features</a>
+            <a href="/#pricing" class="nav-link">Pricing</a>
+            <a href="/tutorials" class="nav-link">Tutorials</a>
+            <a href="/#about" class="nav-link">About Us</a>
+            <a href="/#contact" class="nav-link">Contact</a>
+            <a href="/guide" class="nav-link">Guide</a>
+            <a href="/changelog" class="nav-link active">Changelog</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="register-btn">Get Started</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Changelog</h1>
+        <p>Stay up to date with new features, improvements, and bug fixes for Assistica AI.</p>
+    </section>
+
+    <div class="changelog-container">
+        <div class="timeline-line">
+
+            <!-- v1.2.0 -->
+            <div class="changelog-entry">
+                <div class="entry-header">
+                    <span class="entry-version">v1.2.0</span>
+                    <span class="entry-date">February 12, 2026</span>
+                </div>
+                <ul class="entry-items">
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>SEO infrastructure: meta tags, Open Graph, Twitter Cards, sitemap, and robots.txt</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>PWA manifest for installable web app experience</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Changelog page for tracking product updates</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>SVG favicon matching brand identity</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- v1.1.0 -->
+            <div class="changelog-entry">
+                <div class="entry-header">
+                    <span class="entry-version">v1.1.0</span>
+                    <span class="entry-date">February 7, 2026</span>
+                </div>
+                <ul class="entry-items">
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Keyboard shortcuts: Ctrl+K for search, Ctrl+Enter to send, Esc to close panels</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Emoji picker with "Recent" category stored in localStorage</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Custom quick replies with add/delete support</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Notification sound with mute toggle in settings (Web Audio API)</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Auto dark mode syncing with system preferences</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-improved">Improved</span>
+                        <span>Loading skeleton animations for conversations and messages</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-improved">Improved</span>
+                        <span>Error states with retry buttons for failed operations</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-improved">Improved</span>
+                        <span>Transfer modal with 5-second timeout and retry option</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-improved">Improved</span>
+                        <span>Search empty state with helpful suggestions</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-improved">Improved</span>
+                        <span>ARIA labels on all icon-only buttons for accessibility</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-fixed">Fixed</span>
+                        <span>Textarea placeholder vertical alignment</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-fixed">Fixed</span>
+                        <span>File upload now shows toast notifications instead of browser alerts</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- v1.0.0 -->
+            <div class="changelog-entry">
+                <div class="entry-header">
+                    <span class="entry-version">v1.0.0</span>
+                    <span class="entry-date">January 2026</span>
+                </div>
+                <ul class="entry-items">
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Initial release of Assistica AI support dashboard</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Real-time WebSocket chat with visitor management</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>AI-powered auto-responses and smart routing</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>14 color themes including dark, ocean, forest, and more</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>File sharing with type validation and size limits</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Conversation transfer between agents</span>
+                    </li>
+                    <li>
+                        <span class="badge badge-new">New</span>
+                        <span>Embeddable chat widget with easy integration</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p data-brand="copyright">&copy; 2025 Assistica AI. All rights reserved.</p>
+    </footer>
+
+    <script src="/branding.js"></script>
+</body>
+</html>

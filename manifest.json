@@ -1,0 +1,17 @@
+{
+  "name": "Assistica AI - AI-Powered Customer Support",
+  "short_name": "Assistica",
+  "description": "AI-powered customer support platform that helps businesses deliver exceptional experiences with real-time chat, smart routing, and analytics.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

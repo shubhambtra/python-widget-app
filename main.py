@@ -9,7 +9,7 @@ from pathlib import Path
 import httpx
 import jwt
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, UploadFile, File, Form, Header
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -250,6 +250,41 @@ def serve_admin_shared_js():
 @app.get("/js/visitor-tracker.js")
 def serve_visitor_tracker_js():
     return FileResponse(BASE_DIR / "js" / "visitor-tracker.js", media_type="application/javascript")
+
+
+# Serve favicon
+@app.get("/favicon.svg")
+def serve_favicon_svg():
+    return FileResponse(BASE_DIR / "favicon.svg", media_type="image/svg+xml")
+
+
+# Serve PWA manifest
+@app.get("/manifest.json")
+def serve_manifest():
+    return FileResponse(BASE_DIR / "manifest.json", media_type="application/json")
+
+
+# Serve robots.txt
+@app.get("/robots.txt")
+def serve_robots():
+    return FileResponse(BASE_DIR / "robots.txt", media_type="text/plain")
+
+
+# Serve sitemap
+@app.get("/sitemap.xml")
+def serve_sitemap():
+    return FileResponse(BASE_DIR / "sitemap.xml", media_type="application/xml")
+
+
+# Changelog page
+@app.get("/changelog")
+def changelog_page():
+    return FileResponse(BASE_DIR / "changelog.html")
+
+
+@app.get("/changelog.html")
+def changelog_page_html():
+    return FileResponse(BASE_DIR / "changelog.html")
 
 
 # Admin page routes
