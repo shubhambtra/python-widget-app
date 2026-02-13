@@ -1793,6 +1793,60 @@ function handleWsMessage(data) {
     }
   }
 
+  // Conversation transferred to this agent
+  if (data.type === "conversation_transferred_in") {
+    const vid = data.visitorId;
+    if (!users[vid]) {
+      users[vid] = {
+        name: data.name || vid,
+        conversationId: data.conversationId,
+        messages: [],
+        typing: false,
+        unread: 1,
+        lastActivity: new Date(),
+        analysis: null,
+        isOnline: vid in (connections || {}),
+        tags: []
+      };
+    } else {
+      users[vid].unread = (users[vid].unread || 0) + 1;
+      users[vid].lastActivity = new Date();
+    }
+    // Add transfer system message
+    const transferMsg = `Conversation transferred from ${data.fromAgent}`;
+    users[vid].messages.push({
+      from: 'system',
+      text: data.note ? `${transferMsg}. Note: ${data.note}` : transferMsg,
+      time: new Date(),
+      type: 'system'
+    });
+    renderUsers();
+    showToast(`Conversation transferred to you from ${data.fromAgent}`, 'success');
+    playNotificationSound();
+    // Load full message history for this conversation
+    if (data.conversationId) {
+      loadConversationMessages(vid);
+    }
+  }
+
+  // Conversation transferred out (sent away)
+  if (data.type === "conversation_transferred_out") {
+    const vid = data.visitorId;
+    if (users[vid]) {
+      delete users[vid];
+      if (currentVisitor === vid) {
+        currentVisitor = null;
+        showNoChat();
+      }
+      renderUsers();
+    }
+  }
+
+  // Transfer failed
+  if (data.type === "transfer_failed") {
+    showToast(data.error || 'Transfer failed', 'error');
+  }
+
   // Workflow notifications
   if (data.type === "workflow_notification") {
     showToast(data.message || "Workflow action executed", "info");
@@ -5245,7 +5299,8 @@ async function confirmTransfer() {
   if (!result.isConfirmed) return;
 
   try {
-    // Send transfer request via WebSocket
+    // Send transfer request via WebSocket - backend will respond with
+    // conversation_transferred_out (success) or transfer_failed (error)
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({
         type: 'transfer_conversation',
@@ -5256,18 +5311,11 @@ async function confirmTransfer() {
       }));
     }
 
-    showToast(`Conversation transferred to ${selectedTransferAgent.name}`, 'success');
     closeTransferModal();
-
-    // Remove from local list
-    delete users[currentVisitor];
-    currentVisitor = null;
-    showNoChat();
-    renderUsers();
 
   } catch (err) {
     console.error('Transfer failed:', err);
-    Swal.fire('Error', 'Failed to transfer conversation', 'error');
+    showToast('Failed to transfer conversation', 'error');
   }
 }
 

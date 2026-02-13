@@ -2603,6 +2603,81 @@ async def websocket_endpoint(ws: WebSocket):
                     "status": close_status
                 })
 
+            # ----- TRANSFER CONVERSATION -----
+            elif data.get("type") == "transfer_conversation" and role == SUPPORT:
+                target_visitor = data.get("visitorId")
+                conversation_id = data.get("conversationId")
+                to_agent_id = data.get("toAgentId")
+                transfer_note = data.get("note", "")
+
+                from_agent_id = auth.get("user_id")
+                from_agent_name = auth.get("username", "Agent")
+
+                print(f"Transfer conversation {conversation_id} from {from_agent_name} to {to_agent_id}")
+
+                if not conversation_id or not to_agent_id:
+                    await ws.send_json({"type": "transfer_failed", "error": "Missing conversation or agent ID"})
+                else:
+                    # 1. Reassign conversation via API
+                    transfer_success = False
+                    try:
+                        async with httpx.AsyncClient(verify=False) as client:
+                            response = await client.post(
+                                f"{API_BASE_URL}/sites/{site_id}/conversations/{conversation_id}/assign",
+                                json={"userId": to_agent_id},
+                                headers={"Authorization": f"Bearer {token}"},
+                                timeout=10.0
+                            )
+                            if response.status_code == 200:
+                                transfer_success = True
+                                print(f"Conversation {conversation_id} reassigned to {to_agent_id}")
+                            else:
+                                print(f"Failed to reassign conversation: {response.status_code} - {response.text}")
+                    except Exception as e:
+                        print(f"Error reassigning conversation: {e}")
+
+                    if transfer_success:
+                        # 2. Save system message about the transfer
+                        to_agent_data = site["agents"].get(to_agent_id, {})
+                        to_agent_name = to_agent_data.get("username", "another agent")
+                        transfer_msg = f"Conversation transferred from {from_agent_name} to {to_agent_name}"
+                        if transfer_note:
+                            transfer_msg += f". Note: {transfer_note}"
+
+                        await save_message_to_api(
+                            conversation_id=conversation_id,
+                            sender_id="system",
+                            sender_type="system",
+                            content=transfer_msg,
+                            message_type="system"
+                        )
+
+                        # 3. Notify the receiving agent (if online)
+                        if to_agent_id in site["agents"]:
+                            try:
+                                target_ws = site["agents"][to_agent_id]["ws"]
+                                visitor_name = site["names"].get(target_visitor, target_visitor)
+                                await target_ws.send_json({
+                                    "type": "conversation_transferred_in",
+                                    "visitorId": target_visitor,
+                                    "conversationId": conversation_id,
+                                    "name": visitor_name,
+                                    "fromAgent": from_agent_name,
+                                    "note": transfer_note
+                                })
+                            except Exception as e:
+                                print(f"Failed to notify target agent: {e}")
+
+                        # 4. Confirm to the sending agent
+                        await ws.send_json({
+                            "type": "conversation_transferred_out",
+                            "visitorId": target_visitor,
+                            "conversationId": conversation_id,
+                            "toAgent": to_agent_name
+                        })
+                    else:
+                        await ws.send_json({"type": "transfer_failed", "error": "Failed to reassign conversation"})
+
             # ----- CSAT RESPONSE FROM CUSTOMER -----
             elif data.get("type") == "csat_response" and role == CUSTOMER:
                 rating = data.get("rating", 0)
