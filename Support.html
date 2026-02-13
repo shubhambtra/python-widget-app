@@ -156,6 +156,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
+      <span class="nav-rail-badge" id="teamUnreadBadge" style="display:none;"></span>
     </button>
     <button class="nav-rail-btn" id="navReviews" data-nav-tip="Reviews" onclick="switchNavRail('reviews')" aria-label="Reviews">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -5678,6 +5679,7 @@ function openAgentChat(agentId) {
   // Clear unread
   agentChats[agentId].unread = 0;
   renderOnlineAgents();
+  updateTeamUnreadBadge();
 
   // Update modal
   const initials = agent.username.substring(0, 2).toUpperCase();
@@ -5788,12 +5790,10 @@ function handleIncomingAgentMessage(data) {
     timestamp: data.timestamp
   });
 
-  // If chat is open, render. Otherwise increment unread
-  if (currentAgentChat === fromAgentId) {
+  // If chat is open and team view is active, render. Otherwise increment unread
+  if (currentAgentChat === fromAgentId && currentNavView === 'team') {
     renderAgentChatMessages();
-    if (currentNavView === 'team') {
-      renderTeamChatMessages();
-    }
+    renderTeamChatMessages();
   } else {
     agentChats[fromAgentId].unread = (agentChats[fromAgentId].unread || 0) + 1;
     renderOnlineAgents();
@@ -5801,6 +5801,22 @@ function handleIncomingAgentMessage(data) {
       renderTeamMembers();
     }
     showToast(`Message from ${data.fromAgentName}`, 'info');
+    playNotificationSound();
+  }
+  updateTeamUnreadBadge();
+}
+
+function updateTeamUnreadBadge() {
+  let total = 0;
+  for (const agentId in agentChats) {
+    total += agentChats[agentId].unread || 0;
+  }
+  const badge = document.getElementById('teamUnreadBadge');
+  if (total > 0) {
+    badge.textContent = total > 99 ? '99+' : total;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
   }
 }
 
@@ -5872,6 +5888,7 @@ function openTeamChat(agentId) {
   agentChats[agentId].unread = 0;
   renderTeamMembers();
   renderOnlineAgents();
+  updateTeamUnreadBadge();
 
   // Update header
   const initials = agent.username.substring(0, 2).toUpperCase();
