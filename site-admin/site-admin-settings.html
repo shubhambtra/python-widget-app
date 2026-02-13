@@ -271,27 +271,6 @@
               </div>
             </div>
 
-            <h3 style="margin: 32px 0 16px; font-size: 16px; font-weight: 600;">AI Settings</h3>
-            <div class="toggle-group">
-              <div>
-                <div class="toggle-label">Enable AI Features</div>
-                <div class="toggle-desc">Use AI to analyze conversations and suggest responses</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="settingAiEnabled">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-
-            <div class="form-group" style="margin-top: 20px;">
-              <label class="form-label">AI Model</label>
-              <select class="form-select" id="settingAiModel">
-                <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
-                <option value="gpt-4o">GPT-4o (Balanced)</option>
-                <option value="gpt-4-turbo">GPT-4 Turbo (Best)</option>
-              </select>
-            </div>
-
             <div style="margin-top: 32px;">
               <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>
@@ -343,8 +322,6 @@ function fillSettingsForm(data) {
   document.getElementById('settingCompanyWebsite').value = data.companyWebsite || '';
   document.getElementById('settingIndustry').value = data.industry || '';
   document.getElementById('settingTimezone').value = data.timezone || 'UTC';
-  document.getElementById('settingAiEnabled').checked = data.aiEnabled !== false;
-  document.getElementById('settingAiModel').value = data.aiModel || 'gpt-4o-mini';
 }
 
 // ==================== API KEY ====================
@@ -436,8 +413,6 @@ async function saveSiteSettings(e) {
       companyWebsite: document.getElementById('settingCompanyWebsite').value,
       industry: document.getElementById('settingIndustry').value,
       timezone: document.getElementById('settingTimezone').value,
-      aiEnabled: document.getElementById('settingAiEnabled').checked,
-      aiModel: document.getElementById('settingAiModel').value
     });
     showToast('Settings saved!', 'success');
     loadSiteInfo();
