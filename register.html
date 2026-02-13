@@ -1190,7 +1190,6 @@
                 const data = await response.json();
                 userCountry = data.country_code;
                 useInr = (userCountry === 'IN');
-                console.log('Detected country:', userCountry, 'Use INR:', useInr);
             } catch (err) {
                 console.error('Failed to detect country:', err);
                 // Default to USD if detection fails
@@ -1743,7 +1742,6 @@
                     userAgent: navigator.userAgent
                 })
             };
-            console.log(`[REG] ${action}:`, status, details);
             try {
                 await fetch(`${API_BASE}/api/payments/log-event`, {
                     method: 'POST',
@@ -1759,7 +1757,6 @@
             const submitText = document.getElementById('submitText');
             const submitSpinner = document.getElementById('submitSpinner');
 
-            console.log('[REG] submitRegistration called', { userData, siteData, selectedPlanData, isCreatingAccount });
 
             // Ensure a plan is selected
             if (!selectedPlanData) {
@@ -1769,7 +1766,6 @@
 
             // Check if this is a paid plan
             const isFree = selectedPlanData.monthlyPrice === 0;
-            console.log('[REG] Plan check:', { isFree, monthlyPrice: selectedPlanData.monthlyPrice });
 
             if (isFree) {
                 // For FREE plans: Create account immediately, then redirect
@@ -1796,7 +1792,6 @@
                         fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(userData.username)}`).then(r => r.json())
                     ]);
 
-                    console.log('[REG] Pre-payment availability check:', { emailCheck, usernameCheck });
 
                     if (!emailCheck.success || !emailCheck.data?.available) {
                         await logRegistrationEvent('pre_payment_check', 'email_taken', { emailCheck });
@@ -1835,11 +1830,9 @@
 
         // Create account and site (called after payment success for paid plans, immediately for free plans)
         async function createAccountAndSite() {
-            console.log('[REG] createAccountAndSite called', { isCreatingAccount, userData, siteData });
 
             // Guard to prevent double registration
             if (isCreatingAccount) {
-                console.log('[REG] BLOCKED: Account creation already in progress');
                 await logRegistrationEvent('create_account', 'blocked_duplicate');
                 return false;
             }
@@ -1857,13 +1850,11 @@
 
             try {
                 // Pre-check: Verify email and username are still available before creating account
-                console.log('[REG] Post-payment availability check...');
                 const [emailCheck, usernameCheck] = await Promise.all([
                     fetch(`${API_BASE}/api/auth/check-email?email=${encodeURIComponent(userData.email)}`).then(r => r.json()),
                     fetch(`${API_BASE}/api/auth/check-username?username=${encodeURIComponent(userData.username)}`).then(r => r.json())
                 ]);
 
-                console.log('[REG] Post-payment availability results:', { emailCheck, usernameCheck });
 
                 if (!emailCheck.success || !emailCheck.data?.available) {
                     await logRegistrationEvent('post_payment_check', 'email_taken', { emailCheck });
@@ -1880,7 +1871,6 @@
                 submitText.textContent = 'Creating account...';
 
                 // Step 1: Register user
-                console.log('[REG] Calling /api/auth/register...');
                 const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1894,7 +1884,6 @@
                 });
 
                 const registerResult = await registerResponse.json();
-                console.log('[REG] Register response:', { status: registerResponse.status, result: registerResult });
 
                 if (!registerResponse.ok || !registerResult.success) {
                     const errorMsg = registerResult.message ||
@@ -1923,7 +1912,6 @@
                     billingCycle: selectedPlanData ? (document.getElementById('billingCycle')?.value || 'monthly') : undefined
                 };
 
-                console.log('[REG] Calling /api/sites...', sitePayload);
                 const siteResponse = await fetch(`${API_BASE}/api/sites`, {
                     method: 'POST',
                     headers: {
@@ -1934,7 +1922,6 @@
                 });
 
                 const siteResult = await siteResponse.json();
-                console.log('[REG] Site creation response:', { status: siteResponse.status, result: siteResult });
 
                 if (!siteResponse.ok || !siteResult.success) {
                     const errorMsg = siteResult.message ||
@@ -1954,7 +1941,6 @@
                 await logRegistrationEvent('create_site', 'success', { siteId: createdSiteId });
                 updateProcessingStep('step-site', 'completed');
                 updateProcessingStep('step-finish', 'active');
-                console.log('[REG] Registration complete!', { siteId: createdSiteId, siteName: createdSiteName });
 
                 // Reset button state
                 submitBtn.disabled = false;
@@ -2048,7 +2034,6 @@
 
                 btn.textContent = 'Opening payment...';
 
-                console.log('[REG] Opening Razorpay checkout', { orderId: orderData.data.orderId, paymentReference: currentPaymentReference });
                 await logRegistrationEvent('razorpay_checkout', 'opening', { orderId: orderData.data.orderId });
 
                 // Open Razorpay checkout
@@ -2060,10 +2045,6 @@
                     description: `${selectedPlanData.name} Plan - ${cycle}`,
                     order_id: orderData.data.orderId,
                     handler: async function(response) {
-                        console.log('[REG] Razorpay payment SUCCESS', {
-                            orderId: response.razorpay_order_id,
-                            paymentId: response.razorpay_payment_id
-                        });
                         await logRegistrationEvent('razorpay_payment', 'success', {
                             orderId: response.razorpay_order_id,
                             paymentId: response.razorpay_payment_id

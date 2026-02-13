@@ -270,7 +270,6 @@ function connectStatusSocket() {
     statusSocket = new WebSocket(wsUrl);
 
     statusSocket.onopen = () => {
-      console.log('Status WebSocket connected');
       // Request current agent statuses
       statusSocket.send(JSON.stringify({ type: 'get_agent_status' }));
     };
@@ -297,20 +296,16 @@ function connectStatusSocket() {
           loadAgents(); // Refresh full list
         }
       } catch (err) {
-        console.warn('WebSocket message parse error:', err);
       }
     };
 
     statusSocket.onclose = () => {
-      console.log('Status WebSocket closed, reconnecting in 5s...');
       setTimeout(connectStatusSocket, 5000);
     };
 
     statusSocket.onerror = (err) => {
-      console.warn('Status WebSocket error:', err);
     };
   } catch (err) {
-    console.warn('Failed to connect status WebSocket:', err);
   }
 }
 

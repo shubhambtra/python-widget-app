@@ -502,16 +502,12 @@ async function login(e) {
   loginBtn.disabled = true;
 
   try {
-    console.log('Attempting login with:', email);
-
     // Use the standard login endpoint with email
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ Email: email, Password: password })
     });
-
-    console.log('Login response status:', res.status);
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -520,7 +516,6 @@ async function login(e) {
     }
 
     const result = await res.json();
-    console.log('Login result:', result);
 
     if (!result.success) {
       throw new Error(result.message || 'Login failed');
@@ -535,12 +530,9 @@ async function login(e) {
     }
 
     // Fetch sites owned by this user
-    console.log('Fetching sites with token');
     const sitesRes = await fetch(`${API_BASE}/sites`, {
       headers: { 'Authorization': `Bearer ${authToken}` }
     });
-
-    console.log('Sites response status:', sitesRes.status);
 
     if (!sitesRes.ok) {
       const err = await sitesRes.json().catch(() => ({}));
@@ -549,14 +541,12 @@ async function login(e) {
     }
 
     const sitesResult = await sitesRes.json();
-    console.log('Sites result:', sitesResult);
 
     if (!sitesResult.success || !sitesResult.data?.items?.length) {
       throw new Error('You do not own any sites. Please contact support.');
     }
 
     userSites = sitesResult.data.items;
-    console.log('Found sites:', userSites.length);
 
     // If user owns only one site, go directly to admin
     if (userSites.length === 1) {
@@ -594,14 +584,12 @@ function showSiteSelector() {
 }
 
 function goToAdmin(site) {
-  console.log('Redirecting to admin for site:', site.name);
   const params = new URLSearchParams({
     siteId: site.id,
     token: authToken,
     siteName: site.name || ''
   });
   const url = `/site-admin.html?${params.toString()}`;
-  console.log('Redirect URL:', url);
   location.href = url;
 }
 

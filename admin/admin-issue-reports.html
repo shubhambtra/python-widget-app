@@ -373,7 +373,6 @@ function viewIssue(issueId) {
   // Build attachments section
   let attachmentsHtml = '';
   const files = report.attachments || report.files || report.fileUrls || [];
-  console.log('Issue report files data:', JSON.stringify(files, null, 2));
   if (files.length > 0) {
     // Store file data globally for download handler
     window._issueFiles = files;

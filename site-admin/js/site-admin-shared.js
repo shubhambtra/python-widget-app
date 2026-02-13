@@ -121,12 +121,10 @@ async function checkSubscriptionError(res) {
 
 // ==================== API HELPERS ====================
 async function apiGet(endpoint) {
-  console.log('API GET:', endpoint);
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('API GET response:', res.status, res.statusText);
     if (res.status === 401) {
       handleTokenExpired();
       throw new Error('Session expired');
@@ -146,7 +144,6 @@ async function apiGet(endpoint) {
     }
     const text = await res.text();
     if (!text) {
-      console.log('Empty response for:', endpoint);
       return null;
     }
     const data = JSON.parse(text);
@@ -158,7 +155,6 @@ async function apiGet(endpoint) {
 }
 
 async function apiPost(endpoint, body) {
-  console.log('API POST:', endpoint, body);
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, {
       method: 'POST',
@@ -203,7 +199,6 @@ async function apiPost(endpoint, body) {
 }
 
 async function apiPut(endpoint, body) {
-  console.log('API PUT:', endpoint, body);
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, {
       method: 'PUT',
@@ -240,7 +235,6 @@ async function apiPut(endpoint, body) {
 }
 
 async function apiDelete(endpoint) {
-  console.log('API DELETE:', endpoint);
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, {
       method: 'DELETE',

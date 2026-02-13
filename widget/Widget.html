@@ -1299,7 +1299,6 @@ function connectWebSocket() {
   };
 
   socket.onclose = () => {
-    console.log("WebSocket closed");
   };
 }
 
@@ -1863,7 +1862,6 @@ async function fetchWidgetConfig() {
       }
     }
   } catch (e) {
-    console.warn("Failed to fetch widget config:", e);
   }
 }
 
@@ -1883,7 +1881,6 @@ async function fetchBrandName() {
       }
     }
   } catch (e) {
-    console.warn("Failed to fetch brand name:", e);
   }
 }
 

@@ -38,7 +38,7 @@ const Branding = (function() {
                 }
             }
         } catch (e) {
-            console.warn('Failed to read cached settings:', e);
+            // Failed to read cached settings
         }
         return null;
     }
@@ -53,7 +53,7 @@ const Branding = (function() {
                 timestamp: Date.now()
             }));
         } catch (e) {
-            console.warn('Failed to cache settings:', e);
+            // Failed to cache settings
         }
     }
 
@@ -85,7 +85,7 @@ const Branding = (function() {
                 }
             }
         } catch (error) {
-            console.warn('Failed to fetch site settings:', error);
+            // Failed to fetch site settings
         }
 
         // Return defaults if fetch fails
@@ -258,7 +258,7 @@ const Branding = (function() {
             localStorage.removeItem(CACHE_KEY);
             cachedSettings = null;
         } catch (e) {
-            console.warn('Failed to clear cache:', e);
+            // Failed to clear cache
         }
     }
 

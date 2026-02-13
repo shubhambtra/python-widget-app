@@ -561,8 +561,6 @@ async function loadReports() {
     const conversations = extractData(convsData);
     const payments = extractData(paymentsData);
 
-    console.log('Raw API responses:', { sitesData, usersData, convsData, paymentsData });
-    console.log('Extracted data:', { sites: sites.length, users: users.length, conversations: conversations.length, payments: payments.length });
 
     const dateRange = getDateRange();
 

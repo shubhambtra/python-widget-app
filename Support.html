@@ -1499,10 +1499,8 @@ function attachWebSocketHandlers(socket) {
 let wsPingInterval = null;
 
 socket.onopen = () => {
-  console.log("Connected to support WebSocket");
   updateConnectionStatus('connected');
   wsReconnectDelay = 3000; // Reset backoff on successful connect
-  console.log("Triggering loadHistoricalConversations...");
   historicalDataLoaded = false;
   pendingWsMessages = [];
   loadHistoricalConversations();
@@ -1528,7 +1526,6 @@ socket.onmessage = (e) => {
 socket.onclose = () => {
   clearInterval(wsPingInterval);
   if (!loggedOut) {
-    console.log("WebSocket closed, reconnecting in", wsReconnectDelay / 1000, "s...");
     updateConnectionStatus('disconnected');
     setTimeout(() => {
       if (!loggedOut) {
@@ -1554,7 +1551,6 @@ function handleWsMessage(data) {
     const autoReplyCheckbox = document.getElementById("toggleAutoReply");
     if (analysisCheckbox) analysisCheckbox.checked = analysisEnabled;
     if (autoReplyCheckbox) autoReplyCheckbox.checked = autoReplyEnabled;
-    console.log("Toggle state restored from DB:", { analysisEnabled, autoReplyEnabled });
   }
 
   // New visitor joined
@@ -1857,10 +1853,6 @@ function handleWsMessage(data) {
     showToast(data.message || "Conversation escalated!", "warning");
   }
 
-  if (data.type === "workflows_loaded") {
-    console.log("Workflows loaded on server:", data.count);
-  }
-
   // Delegate to collaboration handler for agent/team message types
   if (typeof handleCollaborationMessage === 'function') {
     handleCollaborationMessage(data);
@@ -1870,7 +1862,6 @@ function handleWsMessage(data) {
 function flushPendingWsMessages() {
   historicalDataLoaded = true;
   if (pendingWsMessages.length > 0) {
-    console.log("Replaying", pendingWsMessages.length, "queued WebSocket messages");
     const queued = pendingWsMessages.slice();
     pendingWsMessages = [];
     for (const msg of queued) {
@@ -2001,23 +1992,15 @@ function retryLoadMessages(visitorId) {
 }
 
 async function loadHistoricalConversations() {
-  console.log("Loading historical conversations...");
-  console.log("API_BASE:", API_BASE);
-  console.log("siteId:", siteId);
-  console.log("token:", token ? token.substring(0, 50) + "..." : "null");
-
   // Show loading skeletons
   showConversationSkeletons();
 
   try {
     const url = `${API_BASE}/sites/${siteId}/conversations`;
-    console.log("Fetching:", url);
 
     const response = await fetch(url, {
       headers: { "Authorization": `Bearer ${token}` }
     });
-
-    console.log("Response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -2029,7 +2012,6 @@ async function loadHistoricalConversations() {
     }
 
     const result = await response.json();
-    console.log("API result:", result);
 
     if (!result.success) {
       console.error("API returned failure:", result);
@@ -2040,7 +2022,6 @@ async function loadHistoricalConversations() {
     }
 
     const conversations = result.data.items || [];
-    console.log("Found", conversations.length, "conversations");
 
     for (const conv of conversations) {
       const vid = conv.visitorId;
@@ -2103,7 +2084,6 @@ async function loadHistoricalConversations() {
       }
     }
 
-    console.log("Users after loading:", Object.keys(users).length);
     renderUsers();
 
     // Replay any WebSocket messages that arrived during the fetch
@@ -2134,7 +2114,6 @@ async function loadHistoricalConversations() {
     } else {
       const firstVid = Object.keys(users)[0];
       if (firstVid && !currentVisitor) {
-        console.log("Auto-selecting first user:", firstVid);
         selectUser(firstVid);
       }
     }
@@ -2148,16 +2127,12 @@ async function loadHistoricalConversations() {
 
 async function loadConversationMessages(visitorId) {
   const user = users[visitorId];
-  console.log("Loading messages for visitor:", visitorId, "conversationId:", user?.conversationId);
-
   if (!user || !user.conversationId) {
-    console.log("No user or conversation ID found");
     return;
   }
 
   // Skip if already loaded
   if (user.messagesLoaded) {
-    console.log("Messages already loaded");
     return;
   }
 
@@ -2168,13 +2143,10 @@ async function loadConversationMessages(visitorId) {
 
   try {
     const url = `${API_BASE}/conversations/${user.conversationId}/messages`;
-    console.log("Fetching messages from:", url);
 
     const response = await fetch(url, {
       headers: { "Authorization": `Bearer ${token}` }
     });
-
-    console.log("Messages response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -2188,7 +2160,6 @@ async function loadConversationMessages(visitorId) {
     }
 
     const result = await response.json();
-    console.log("Messages result:", result);
 
     if (!result.success) {
       console.error("Messages API returned failure:", result);
@@ -2201,7 +2172,6 @@ async function loadConversationMessages(visitorId) {
     }
 
     const messages = result.data.items || [];
-    console.log("Found", messages.length, "messages");
 
     // Convert API messages to local format
     user.messages = messages.map(m => ({
@@ -2508,7 +2478,6 @@ async function deleteConversation(vid) {
         showNoChat();
       }
       renderUsers();
-      console.log('Conversation deleted successfully');
     } else {
       const error = await response.json();
       Swal.fire('Error', 'Failed to delete conversation: ' + (error.detail || 'Unknown error'), 'error');
@@ -2842,8 +2811,6 @@ function renderAnalysis(a) {
     analysisContent.innerHTML = '<div class="analysis-empty"><p>No analysis data available</p></div>';
     return;
   }
-
-  console.log("Analysis data received:", a);
 
   // Handle both Python WebSocket format and .NET API format
   // Python format: interest_level, conversion_percentage, objection, next_action, suggested_reply
@@ -4202,7 +4169,6 @@ async function analyzeConversation(conversationId, visitorId) {
         renderAnalysis(analysis);
       }
 
-      console.log("Analysis completed for:", conversationId);
     }
   } catch (error) {
     console.error("Analysis error:", error);
@@ -4239,8 +4205,6 @@ async function analyzeMessage(message) {
 // ==================== TOGGLE HANDLERS ====================
 function onAnalysisToggle(enabled) {
   analysisEnabled = enabled;
-  console.log("AI Analysis:", enabled ? "ON" : "OFF");
-
   // Send toggle state to backend
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({
@@ -4264,8 +4228,6 @@ function onAnalysisToggle(enabled) {
 
 function onAutoReplyToggle(enabled) {
   autoReplyEnabled = enabled;
-  console.log("Auto Reply:", enabled ? "ON" : "OFF");
-
   // Send toggle state to backend
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({
@@ -4310,7 +4272,6 @@ async function loadSubscriptionPlan() {
     });
 
     if (!response.ok) {
-      console.warn('Failed to load subscription plan');
       return;
     }
 
@@ -4840,8 +4801,6 @@ loadSubscriptionPlan();
 // ==================== REAL-TIME USAGE UPDATES ====================
 
 function updateAiUsageDisplay(feature, used, limit) {
-  console.log(`AI usage update: ${feature} - ${used}/${limit}`);
-
   if (feature === 'analysis') {
     // Update the internal state
     if (sitePlan) {
@@ -4894,8 +4853,6 @@ function updateAiUsageDisplay(feature, used, limit) {
 }
 
 function handleAiLimitReached(feature, message, used, limit) {
-  console.log(`AI limit reached: ${feature} - ${message}`);
-
   // Update internal state
   if (feature === 'analysis') {
     aiAnalysisLimitExhausted = true;
@@ -5156,7 +5113,6 @@ function applyFeatureFlags() {
     notificationsBtn.style.display = platformFeatures.notifications ? '' : 'none';
   }
 
-  console.log('Platform features applied:', platformFeatures);
 }
 
 let transferModalTimeout = null;
@@ -6272,14 +6228,12 @@ function updateNotificationBadge() {
 
 function initSupervisorFeatures() {
   // Check if user has supervisor role AND platform feature is enabled
-  console.log('initSupervisorFeatures - currentAgentRole:', currentAgentRole);
   if (currentAgentRole && ['admin', 'site_admin', 'supervisor', 'super_admin'].includes(currentAgentRole)) {
     isSupervisor = true;
     const btn = document.getElementById('supervisorBtn');
     if (btn) {
       // Only show if platform feature is also enabled
       btn.style.display = platformFeatures.supervisorMode ? 'flex' : 'none';
-      console.log('Supervisor button enabled:', platformFeatures.supervisorMode);
     } else {
       console.error('supervisorBtn element not found');
     }
@@ -6513,7 +6467,6 @@ function applyFilters() {
 
 async function loadFilteredConversations() {
   if (!filterActive || Object.keys(activeFilters).length === 0) {
-    console.log('[Filter] No active filters, showing all');
     renderUsers();
     return;
   }
@@ -6540,8 +6493,6 @@ async function loadFilteredConversations() {
 
   try {
     const url = `${API_BASE}/sites/${siteId}/conversations?${params.toString()}`;
-    console.log('[Filter] Fetching:', url);
-    console.log('[Filter] Active filters:', activeFilters);
     const response = await fetch(url, {
       headers: { "Authorization": `Bearer ${token}` }
     });
@@ -6550,7 +6501,6 @@ async function loadFilteredConversations() {
       return;
     }
     const result = await response.json();
-    console.log('[Filter] API result:', result);
     if (!result.success) {
       console.error('[Filter] API returned success=false');
       return;
@@ -6559,7 +6509,6 @@ async function loadFilteredConversations() {
     const items = result.data.items || [];
     const filterVids = new Set(items.map(c => c.visitorId));
     currentFilterVids = filterVids; // Store for subsequent renderUsers calls
-    console.log('[Filter] Matching visitorIds:', filterVids.size, [...filterVids]);
     renderUsers(filterVids);
   } catch (err) {
     console.error("[Filter] Fetch error:", err);
@@ -6920,7 +6869,7 @@ function playNotificationSound() {
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.3);
   } catch (e) {
-    console.warn('Could not play notification sound:', e);
+    // notification sound failed silently
   }
 }
 

@@ -1,8 +1,6 @@
 // Site Admin Onboarding Wizard
 // Guides new users through setting up agents and installing the widget
 
-console.log('[Onboarding] Script loaded');
-
 // ==================== STATE MANAGEMENT ====================
 // In-memory cache to avoid repeated API calls per page load
 let _onboardingState = null;
@@ -24,7 +22,6 @@ async function getOnboardingState() {
     _onboardingState = data.data || { ...DEFAULT_ONBOARDING_STATE };
     return _onboardingState;
   } catch (e) {
-    console.warn('Error reading onboarding state from API, using default:', e);
     _onboardingState = { ...DEFAULT_ONBOARDING_STATE };
     return _onboardingState;
   }
@@ -35,7 +32,6 @@ async function saveOnboardingState(state) {
   try {
     await apiPut(`/sites/${siteId}/onboarding`, state);
   } catch (e) {
-    console.warn('Error saving onboarding state to API:', e);
   }
 }
 
@@ -53,61 +49,47 @@ async function migrateLocalStorageOnboarding() {
     const stored = localStorage.getItem(localKey);
     if (stored) {
       const localState = JSON.parse(stored);
-      console.log('[Onboarding] Migrating localStorage state to DB:', localState);
       await saveOnboardingState(localState);
       localStorage.removeItem(localKey);
-      console.log('[Onboarding] Migration complete, localStorage key removed');
     }
   } catch (e) {
-    console.warn('Error migrating localStorage onboarding state:', e);
   }
 }
 
 // ==================== WIZARD LIFECYCLE ====================
 async function checkOnboarding() {
-  console.log('[Onboarding] checkOnboarding called');
-
   // Fast local check first — avoids API round-trip on every page navigation
   const localDismissKey = `assistica_onboarding_done_${siteId}`;
   if (localStorage.getItem(localDismissKey)) {
-    console.log('[Onboarding] Already dismissed/completed (localStorage), not showing');
     return;
   }
 
   const state = await getOnboardingState();
-  console.log('[Onboarding] Current state:', state);
 
   // Don't show if already completed
   if (state.completed) {
-    console.log('[Onboarding] Already completed, not showing');
     localStorage.setItem(localDismissKey, '1');
     return;
   }
 
   // Don't show if previously dismissed
   if (state.dismissedAt) {
-    console.log('[Onboarding] Previously dismissed, not showing automatically');
     localStorage.setItem(localDismissKey, '1');
     return;
   }
 
   // Show wizard
-  console.log('[Onboarding] Opening wizard...');
   await openOnboardingWizard();
 }
 
 async function openOnboardingWizard() {
-  console.log('[Onboarding] openOnboardingWizard called');
-
   // Remove existing wizard if present
   const existing = document.getElementById('onboardingWizard');
   if (existing) {
-    console.log('[Onboarding] Removing existing wizard');
     existing.remove();
   }
 
   const state = await getOnboardingState();
-  console.log('[Onboarding] Creating wizard with state:', state);
 
   const wizardHtml = `
     <div class="onboarding-overlay show" id="onboardingWizard">
@@ -163,7 +145,6 @@ async function dismissOnboarding() {
     state.dismissedAt = new Date().toISOString();
     await saveOnboardingState(state);
   } catch (e) {
-    console.warn('[Onboarding] Failed to save dismiss state to API:', e);
   }
 }
 
@@ -177,7 +158,6 @@ async function completeOnboarding() {
     state.completed = true;
     await saveOnboardingState(state);
   } catch (e) {
-    console.warn('[Onboarding] Failed to save complete state to API:', e);
   }
 }
 
@@ -721,7 +701,6 @@ function injectSetupGuideButton() {
 let onboardingInitialized = false;
 
 async function initOnboarding() {
-  console.log('[Onboarding] initOnboarding called, initialized:', onboardingInitialized);
   if (onboardingInitialized) return;
   onboardingInitialized = true;
 
@@ -729,23 +708,18 @@ async function initOnboarding() {
   await migrateLocalStorageOnboarding();
 
   // Inject the setup guide button
-  console.log('[Onboarding] Injecting setup guide button...');
   injectSetupGuideButton();
 
   // Check if we should show the wizard
   // Delay slightly to ensure siteData is loaded
-  console.log('[Onboarding] Will check onboarding in 500ms...');
   setTimeout(async () => {
     await checkOnboarding();
   }, 500);
 }
 
 // Initialize when DOM is ready
-console.log('[Onboarding] Document readyState:', document.readyState);
 if (document.readyState === 'loading') {
-  console.log('[Onboarding] Adding DOMContentLoaded listener');
   document.addEventListener('DOMContentLoaded', initOnboarding);
 } else {
-  console.log('[Onboarding] DOM already ready, calling initOnboarding');
   initOnboarding();
 }

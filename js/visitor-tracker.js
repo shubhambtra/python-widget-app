@@ -33,7 +33,6 @@
     async function trackVisit() {
         // Skip if CONFIG is not available
         if (typeof CONFIG === 'undefined' || !CONFIG.API_BASE) {
-            console.warn('Visitor tracking: CONFIG not available');
             return;
         }
 
@@ -61,7 +60,6 @@
             }
         } catch (error) {
             // Silent fail - don't disrupt user experience
-            console.debug('Visitor tracking failed:', error);
         }
     }
 
