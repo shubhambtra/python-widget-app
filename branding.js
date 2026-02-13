@@ -19,7 +19,10 @@ const Branding = (function() {
         copyrightText: null,
         seoTitle: null,
         seoDescription: null,
-        seoKeywords: null
+        seoKeywords: null,
+        supportEmail: null,
+        supportPhone: null,
+        supportAddress: null
     };
 
     /**
@@ -72,7 +75,10 @@ const Branding = (function() {
                         copyrightText: result.data.copyrightText || defaults.copyrightText,
                         seoTitle: result.data.seoTitle || defaults.seoTitle,
                         seoDescription: result.data.seoDescription || defaults.seoDescription,
-                        seoKeywords: result.data.seoKeywords || defaults.seoKeywords
+                        seoKeywords: result.data.seoKeywords || defaults.seoKeywords,
+                        supportEmail: result.data.supportEmail || defaults.supportEmail,
+                        supportPhone: result.data.supportPhone || defaults.supportPhone,
+                        supportAddress: result.data.supportAddress || defaults.supportAddress
                     };
                     setCachedSettings(cachedSettings);
                     return cachedSettings;
@@ -134,6 +140,25 @@ const Branding = (function() {
                 el.innerHTML = `&copy; ${year} ${settings.siteName}. All rights reserved.`;
             }
         });
+
+        // Update elements with data-brand="email"
+        if (settings.supportEmail) {
+            document.querySelectorAll('[data-brand="email"]').forEach(el => {
+                if (el.tagName === 'A') {
+                    el.href = 'mailto:' + settings.supportEmail;
+                    el.textContent = settings.supportEmail;
+                } else {
+                    el.textContent = settings.supportEmail;
+                }
+            });
+        }
+
+        // Update elements with data-brand="address"
+        if (settings.supportAddress) {
+            document.querySelectorAll('[data-brand="address"]').forEach(el => {
+                el.textContent = settings.supportAddress;
+            });
+        }
 
         // Update page title
         updatePageTitle(settings);
