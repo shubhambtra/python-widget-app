@@ -152,11 +152,14 @@
   document.body.appendChild(container);
 
   // State
-  let isCollapsed = false;
+  let isCollapsed = true;
   let unreadCount = 0;
 
-  // Apply initial expanded size and listen for changes
-  applyExpandedSize();
+  // Start collapsed
+  iframe.style.height = "56px";
+  iframe.style.width = "260px";
+  iframe.style.borderRadius = "28px";
+  iframe.style.cursor = "pointer";
   window.addEventListener('resize', applyExpandedSize);
   window.addEventListener('orientationchange', () => setTimeout(applyExpandedSize, 150));
 

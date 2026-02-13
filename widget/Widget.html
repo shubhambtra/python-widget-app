@@ -1083,7 +1083,7 @@ sessionStorage.setItem("chatWidgetVisitorId", visitorId);
 
 // ==================== STATE ====================
 let socket = null;
-let isCollapsed = false;
+let isCollapsed = true;
 let unreadCount = 0;
 let userName = sessionStorage.getItem("chatWidgetUserName") || "";
 let userEmail = sessionStorage.getItem("chatWidgetUserEmail") || "";
@@ -1887,6 +1887,7 @@ async function fetchBrandName() {
 }
 
 // Initialize on load
+collapse();
 fetchWidgetConfig();
 fetchBrandName();
 </script>
