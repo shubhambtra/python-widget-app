@@ -197,7 +197,7 @@
   function collapse() {
     isCollapsed = true;
     iframe.style.height = "56px";
-    iframe.style.width = "200px";
+    iframe.style.width = "260px";
     iframe.style.borderRadius = "28px";
     iframe.style.cursor = "pointer";
     // Reset container position to default
