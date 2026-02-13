@@ -64,10 +64,8 @@
   const iframe = document.createElement("iframe");
   iframe.id = "chat-widget-iframe";
   const apiKey = config.apiKey || "";
-  iframe.src = `${baseUrl}/static/Widget.html?siteId=${encodeURIComponent(siteId)}&apiKey=${encodeURIComponent(apiKey)}`;
+  iframe.src = `${baseUrl}/static/Widget.html?siteId=${encodeURIComponent(siteId)}&apiKey=${encodeURIComponent(apiKey)}&_v=${Date.now()}`;
   iframe.style.cssText = `
-    width: 360px;
-    height: 520px;
     border: none;
     border-radius: 16px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -75,6 +73,40 @@
     overflow: hidden;
     color-scheme: normal;
   `;
+
+  // Responsive sizing helper
+  function getExpandedSize() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (vw <= 480) {
+      // Mobile: full screen minus small margin
+      return { w: vw - 16, h: vh - 16, r: '12px', bottom: '8px', side: '8px' };
+    }
+    // Desktop/tablet: capped to viewport
+    return {
+      w: Math.min(360, vw - 40),
+      h: Math.min(520, vh - 40),
+      r: '16px',
+      bottom: '20px',
+      side: '20px'
+    };
+  }
+
+  function applyExpandedSize() {
+    if (isCollapsed) return;
+    const s = getExpandedSize();
+    iframe.style.width = s.w + 'px';
+    iframe.style.height = s.h + 'px';
+    iframe.style.borderRadius = s.r;
+    container.style.bottom = s.bottom;
+    // Preserve left/right positioning
+    if (container.style.left && container.style.left !== 'auto') {
+      container.style.left = s.side;
+    } else {
+      container.style.right = s.side;
+    }
+  }
+
   iframe.allow = "clipboard-write";
 
   // Create notification badge (outside iframe)
@@ -123,6 +155,11 @@
   let isCollapsed = false;
   let unreadCount = 0;
 
+  // Apply initial expanded size and listen for changes
+  applyExpandedSize();
+  window.addEventListener('resize', applyExpandedSize);
+  window.addEventListener('orientationchange', () => setTimeout(applyExpandedSize, 150));
+
   // Handle messages from iframe
   window.addEventListener("message", (e) => {
     if (!e.data || typeof e.data !== "object") return;
@@ -144,12 +181,12 @@
       case "WIDGET_POSITION":
         if (e.data.position === "bottom-left") {
           container.style.right = "auto";
-          container.style.left = "20px";
+          container.style.left = isCollapsed ? "20px" : getExpandedSize().side;
           badge.style.right = "auto";
           badge.style.left = "-8px";
         } else {
           container.style.left = "auto";
-          container.style.right = "20px";
+          container.style.right = isCollapsed ? "20px" : getExpandedSize().side;
           badge.style.left = "auto";
           badge.style.right = "-8px";
         }
@@ -163,13 +200,18 @@
     iframe.style.width = "200px";
     iframe.style.borderRadius = "28px";
     iframe.style.cursor = "pointer";
+    // Reset container position to default
+    container.style.bottom = "20px";
+    if (container.style.left && container.style.left !== 'auto') {
+      container.style.left = "20px";
+    } else {
+      container.style.right = "20px";
+    }
   }
 
   function expand() {
     isCollapsed = false;
-    iframe.style.height = "520px";
-    iframe.style.width = "360px";
-    iframe.style.borderRadius = "16px";
+    applyExpandedSize();
     iframe.style.cursor = "default";
     unreadCount = 0;
     updateBadge();
