@@ -35,6 +35,12 @@ html, body {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chat-widget.loaded {
+  opacity: 1;
 }
 
 /* ==================== HEADER ==================== */
@@ -981,7 +987,7 @@ html, body {
   <div class="chat-header" id="chatHeader">
     <div class="header-info">
       <div class="header-avatar" id="headerAvatar">
-        <img class="header-avatar-img" src="/uploads/favicon-48x48.png" alt="Logo" />
+        <img class="header-avatar-img" src="" alt="Logo" id="headerLogoImg" />
       </div>
       <div class="header-text">
         <h3 id="headerTitle">Chat Support</h3>
@@ -1835,6 +1841,9 @@ window.addEventListener("message", (e) => {
 // ==================== API BASE URL ====================
 const apiBaseUrl = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : window.location.origin;
 
+// Set logo URL dynamically so it works on external sites
+document.getElementById('headerLogoImg').src = apiBaseUrl + '/uploads/favicon-48x48.png';
+
 // ==================== WIDGET CONFIG ====================
 async function fetchWidgetConfig() {
   if (!siteId) return;
@@ -1888,7 +1897,9 @@ async function fetchBrandName() {
 
 // Initialize on load
 collapse();
-fetchWidgetConfig();
+fetchWidgetConfig().finally(() => {
+  document.getElementById('chatWidget').classList.add('loaded');
+});
 fetchBrandName();
 </script>
 

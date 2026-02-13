@@ -9,7 +9,8 @@ from pathlib import Path
 import httpx
 import jwt
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, UploadFile, File, Form, Header
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, Response
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -26,6 +27,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Custom 404 handler
+@app.exception_handler(404)
+async def custom_404(request, exc):
+    return FileResponse(BASE_DIR / "404.html", status_code=404)
 
 # JWT settings (must match .NET API)
 JWT_SECRET = os.getenv("JWT_SECRET", "YourSuperSecretKeyThatShouldBeAtLeast32CharactersLong!")
