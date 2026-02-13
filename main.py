@@ -230,6 +230,14 @@ def admin_dashboard_page():
 def admin_dashboard_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-dashboard.html")
 
+@app.get("/admin-sites")
+def admin_sites_page():
+    return FileResponse(BASE_DIR / "admin" / "admin-sites.html")
+
+@app.get("/admin-sites.html")
+def admin_sites_page_html():
+    return FileResponse(BASE_DIR / "admin" / "admin-sites.html")
+
 
 @app.get("/support/login")
 def support_login_page():
