@@ -5201,19 +5201,31 @@ function openTransferModal() {
 
 function renderTransferAgentsList() {
   const transferAgentsList = document.getElementById('transferAgentsList');
-  transferAgentsList.innerHTML = siteAgents.map(agent => `
-    <div class="agent-option ${selectedTransferAgent === agent.userId ? 'selected' : ''}"
-         onclick="selectTransferAgent('${agent.userId}', '${escapeHtml(agent.name || agent.email)}')">
-      <div class="agent-option-avatar">${getInitials(agent.name || agent.email)}</div>
+  // Filter out current user from transfer list (currentAgentId from URL params)
+  const availableAgents = siteAgents.filter(a => a.userId !== currentAgentId);
+
+  if (availableAgents.length === 0) {
+    transferAgentsList.innerHTML = '<div class="no-agents" style="text-align:center;padding:20px;color:var(--text-muted);">No other agents available to transfer to</div>';
+    return;
+  }
+
+  transferAgentsList.innerHTML = availableAgents.map(agent => {
+    const displayName = agent.name && agent.name !== agent.username
+      ? `${agent.name} (${agent.username})`
+      : agent.username || agent.name || 'Agent';
+    return `
+    <div class="agent-option ${selectedTransferAgent?.id === agent.userId ? 'selected' : ''}"
+         onclick="selectTransferAgent('${agent.userId}', '${escapeHtml(displayName)}')">
+      <div class="agent-option-avatar">${getInitials(agent.username || agent.name || agent.email)}</div>
       <div class="agent-option-info">
-        <div class="agent-option-name">${escapeHtml(agent.name || 'Agent')}</div>
+        <div class="agent-option-name">${escapeHtml(displayName)}</div>
         <div class="agent-option-email">${escapeHtml(agent.email || '')}</div>
       </div>
       <div class="agent-option-status">
         <span class="agent-status-dot online"></span>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function retryLoadTransferAgents() {
