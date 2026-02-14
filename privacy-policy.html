@@ -94,22 +94,37 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .signup-btn {
-            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-            border: none;
-            color: #fff;
-            padding: 0.6rem 1.25rem;
-            border-radius: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            text-decoration: none;
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
 
-        .signup-btn:hover {
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        .register-btn {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .register-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
         }
 
         /* Main Content */
@@ -332,6 +347,10 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
             .page-header h1 {
                 font-size: 2rem;
             }
@@ -360,9 +379,18 @@
             <div class="logo-icon" data-brand="icon">C</div>
             <span data-brand="name">Assistica AI</span>
         </a>
+        <div class="nav-menu">
+            <a href="/#features" class="nav-link">Features</a>
+            <a href="/#pricing" class="nav-link">Pricing</a>
+            <a href="/tutorials" class="nav-link">Tutorials</a>
+            <a href="/#about" class="nav-link">About Us</a>
+            <a href="/#contact" class="nav-link">Contact</a>
+            <a href="/guide" class="nav-link">Guide</a>
+            <a href="/report-issue.html" class="nav-link">Report Issue</a>
+        </div>
         <div class="nav-buttons">
-            <a href="/login.html" class="login-btn">Log In</a>
-            <a href="/register.html" class="signup-btn">Get Started</a>
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="register-btn">Get Started</a>
         </div>
     </nav>
 
@@ -561,15 +589,16 @@
                 <h4>Product</h4>
                 <a href="/#features">Features</a>
                 <a href="/#pricing">Pricing</a>
-                <a href="/guide.html">Documentation</a>
-                <a href="#">API Reference</a>
+                <a href="/tutorials">Tutorials</a>
+                <a href="/guide">Guide</a>
             </div>
             <div class="footer-column">
                 <h4>Company</h4>
                 <a href="/#about">About Us</a>
-                <a href="#">Blog</a>
-                <a href="#">Careers</a>
                 <a href="/#contact">Contact</a>
+                <a href="/report-issue.html">Report Issue</a>
+                <a href="/login">Login</a>
+                <a href="/register">Get Started</a>
             </div>
             <div class="footer-column">
                 <h4>Legal</h4>
@@ -585,7 +614,7 @@
             <div class="footer-bottom-links">
                 <a href="/privacy-policy.html">Privacy</a>
                 <a href="/terms-of-service.html">Terms</a>
-                <a href="#">Sitemap</a>
+                <a href="/cookie-policy.html">Cookies</a>
             </div>
         </div>
     </footer>
