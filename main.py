@@ -201,6 +201,16 @@ def cookie_policy_page_html():
     return FileResponse(BASE_DIR / "cookie-policy.html")
 
 
+@app.get("/refund-policy")
+def refund_policy_page():
+    return FileResponse(BASE_DIR / "refund-policy.html")
+
+
+@app.get("/refund-policy.html")
+def refund_policy_page_html():
+    return FileResponse(BASE_DIR / "refund-policy.html")
+
+
 @app.get("/gdpr")
 def gdpr_page():
     return FileResponse(BASE_DIR / "gdpr.html")
