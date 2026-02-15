@@ -390,7 +390,7 @@ function renderPlanInfo(overview) {
       </div>
 
       <div style="background: #f8fafc; border-radius: 12px; padding: 20px; min-width: 200px;">
-        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Plan Limits</div>
+        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Plan Features</div>
         <div style="display: grid; gap: 8px;">
           <div style="display: flex; justify-content: space-between; font-size: 14px;">
             <span style="color: #64748b;">Agents</span>
@@ -398,15 +398,35 @@ function renderPlanInfo(overview) {
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 14px;">
             <span style="color: #64748b;">Conversations/mo</span>
-            <span style="font-weight: 600;">${plan.maxConversationsPerMonth || 'Unlimited'}</span>
+            <span style="font-weight: 600;">${plan.maxConversationsPerMonth ? plan.maxConversationsPerMonth.toLocaleString() : 'Unlimited'}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 14px;">
             <span style="color: #64748b;">Messages/mo</span>
-            <span style="font-weight: 600;">${plan.maxMessagesPerMonth || 'Unlimited'}</span>
+            <span style="font-weight: 600;">${plan.maxMessagesPerMonth ? plan.maxMessagesPerMonth.toLocaleString() : 'Unlimited'}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 14px;">
             <span style="color: #64748b;">Max File Size</span>
             <span style="font-weight: 600;">${plan.maxFileSizeMb || 10} MB</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Storage</span>
+            <span style="font-weight: 600;">${plan.maxStorageMb ? plan.maxStorageMb + ' MB' : 'Unlimited'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">AI Analysis</span>
+            <span style="font-weight: 600; color: ${plan.aiAnalysisEnabled ? '#10b981' : '#94a3b8'};">${plan.aiAnalysisEnabled ? (plan.maxAiAnalysesPerMonth ? plan.maxAiAnalysesPerMonth.toLocaleString() + '/mo' : 'Unlimited') : 'Not included'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Chat Transcripts</span>
+            <span style="font-weight: 600; color: ${plan.chatTranscriptsEnabled ? '#10b981' : '#94a3b8'};">${plan.chatTranscriptsEnabled ? 'Included' : 'Not included'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">AI Doc Search</span>
+            <span style="font-weight: 600; color: #10b981;">Included</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span style="color: #64748b;">Team Collaboration</span>
+            <span style="font-weight: 600; color: #10b981;">Included</span>
           </div>
         </div>
       </div>
@@ -627,13 +647,13 @@ function renderUpgradePlans() {
             <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
-            <span>${plan.maxConversationsPerMonth || 'Unlimited'} conversations/mo</span>
+            <span>${plan.maxConversationsPerMonth ? plan.maxConversationsPerMonth.toLocaleString() : 'Unlimited'} conversations/mo</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
             <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
-            <span>${plan.maxMessagesPerMonth || 'Unlimited'} messages/mo</span>
+            <span>${plan.maxMessagesPerMonth ? plan.maxMessagesPerMonth.toLocaleString() : 'Unlimited'} messages/mo</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
             <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
@@ -642,10 +662,40 @@ function renderUpgradePlans() {
             <span>${plan.maxFileSizeMb || 10} MB file uploads</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>${plan.maxStorageMb ? plan.maxStorageMb + 'MB' : 'Unlimited'} storage</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="${plan.aiAnalysisEnabled ? '#10b981' : '#cbd5e1'}" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="${plan.aiAnalysisEnabled ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/>
+            </svg>
+            <span style="${plan.aiAnalysisEnabled ? '' : 'color: #94a3b8;'}">${plan.aiAnalysisEnabled ? (plan.maxAiAnalysesPerMonth ? plan.maxAiAnalysesPerMonth.toLocaleString() + ' AI Analyses/mo' : 'Unlimited AI Analysis') : 'AI Conversation Analysis'}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
             <svg width="16" height="16" fill="none" stroke="${plan.chatTranscriptsEnabled ? '#10b981' : '#cbd5e1'}" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="${plan.chatTranscriptsEnabled ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/>
             </svg>
             <span style="${plan.chatTranscriptsEnabled ? '' : 'color: #94a3b8;'}">Chat Transcripts & Reports</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>AI Documentation Search</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Team Collaboration</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <svg width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>24/7 Priority Support</span>
           </div>
         </div>
 
