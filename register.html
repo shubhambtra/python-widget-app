@@ -1200,7 +1200,9 @@
 
         // Get display price for a plan
         function getPlanPrice(plan, cycle = 'monthly') {
-            if (useInr && plan.inrEnabled && plan.monthlyPriceInr) {
+            // Only show INR if Razorpay is enabled (PayPal doesn't support INR)
+            const canUseInr = useInr && paymentGatewayStatus.razorpayEnabled;
+            if (canUseInr && plan.inrEnabled && plan.monthlyPriceInr) {
                 const price = cycle === 'yearly' ? (plan.annualPriceInr || plan.monthlyPriceInr * 12) : plan.monthlyPriceInr;
                 return { amount: price, currency: 'INR', symbol: '₹' };
             }
@@ -1210,8 +1212,8 @@
 
         // Fetch plans from API
         async function fetchPlans() {
-            // Detect country first
-            await detectUserCountry();
+            // Detect country and payment gateway status before rendering prices
+            await Promise.all([detectUserCountry(), fetchPaymentGatewayStatus()]);
             try {
                 const response = await fetch(`${API_BASE}/api/subscriptions/plans`);
                 const result = await response.json();
@@ -1288,6 +1290,22 @@
 
         // Initialize plans on page load
         fetchPlans();
+
+        // Fetch payment gateway status and hide disabled gateways
+        let paymentGatewayStatus = { razorpayEnabled: true, paypalEnabled: true };
+        async function fetchPaymentGatewayStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/AppConfiguration/payment-gateways`);
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.data) {
+                        paymentGatewayStatus = result.data;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to fetch payment gateway status:', e);
+            }
+        }
 
         // Password visibility toggle
         function togglePassword(fieldId) {
@@ -1973,6 +1991,13 @@
             document.getElementById('paymentPlanDesc').textContent = selectedPlanData.description || '';
             document.getElementById('billingCycle').value = 'monthly';
             updatePaymentTotal();
+
+            // Show/hide payment buttons based on gateway status
+            const razorpayBtn = document.getElementById('razorpayBtn');
+            const paypalBtn = document.getElementById('paypalBtn');
+            razorpayBtn.style.display = paymentGatewayStatus.razorpayEnabled ? '' : 'none';
+            paypalBtn.style.display = paymentGatewayStatus.paypalEnabled ? '' : 'none';
+
             document.getElementById('paymentModal').classList.add('active');
         }
 
