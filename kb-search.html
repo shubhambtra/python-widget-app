@@ -1362,7 +1362,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ==================== NAV ====================
 function goToDashboard() {
-  window.location.href = `/Support.html?siteId=${siteId}&token=${token}`;
+  window.location.href = `/support?siteId=${siteId}&token=${token}`;
 }
 
 function toggleUserMenu() {
@@ -1451,7 +1451,7 @@ async function loadStats() {
     if (totalDocs === 0 && totalChunks === 0) {
       document.getElementById('welcomeState').style.display = 'none';
       document.getElementById('emptyState').style.display = 'flex';
-      document.getElementById('emptyUploadBtn').href = `/knowledge-base.html?siteId=${siteId}&token=${token}`;
+      document.getElementById('emptyUploadBtn').href = `/knowledge-base?siteId=${siteId}&token=${token}`;
       document.getElementById('searchInput').disabled = true;
       document.getElementById('searchInput').placeholder = 'No documents available to search...';
       document.querySelector('.submit-btn').disabled = true;

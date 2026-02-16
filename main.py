@@ -482,13 +482,21 @@ def admin_demo_requests_page_html():
     return FileResponse(BASE_DIR / "admin" / "admin-demo-requests.html")
 
 
-@app.get("/profile.html")
+@app.get("/profile")
 def profile_page():
     return FileResponse(BASE_DIR / "profile.html")
 
+@app.get("/profile.html")
+def profile_page_html():
+    return FileResponse(BASE_DIR / "profile.html")
+
+
+@app.get("/welcome-messages")
+def welcome_messages_page():
+    return FileResponse(BASE_DIR / "welcome-messages.html")
 
 @app.get("/welcome-messages.html")
-def welcome_messages_page():
+def welcome_messages_page_html():
     return FileResponse(BASE_DIR / "welcome-messages.html")
 
 
@@ -502,53 +510,92 @@ def site_login_page_html():
     return FileResponse(BASE_DIR / "login.html")
 
 
-@app.get("/site-admin.html")
+@app.get("/site-admin")
 def site_admin_page():
-    # Redirect to the new overview page
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-overview.html")
+
+@app.get("/site-admin.html")
+def site_admin_page_html():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-overview.html")
 
 
 # Site admin pages (split from monolithic site-admin.html)
-@app.get("/site-admin-overview.html")
+@app.get("/site-admin-overview")
 def site_admin_overview():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-overview.html")
 
+@app.get("/site-admin-overview.html")
+def site_admin_overview_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-overview.html")
 
-@app.get("/site-admin-agents.html")
+
+@app.get("/site-admin-agents")
 def site_admin_agents():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-agents.html")
 
+@app.get("/site-admin-agents.html")
+def site_admin_agents_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-agents.html")
 
-@app.get("/site-admin-messages.html")
+
+@app.get("/site-admin-messages")
 def site_admin_messages():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-messages.html")
 
+@app.get("/site-admin-messages.html")
+def site_admin_messages_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-messages.html")
 
-@app.get("/site-admin-settings.html")
+
+@app.get("/site-admin-settings")
 def site_admin_settings():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-settings.html")
 
+@app.get("/site-admin-settings.html")
+def site_admin_settings_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-settings.html")
 
-@app.get("/site-admin-widget.html")
+
+@app.get("/site-admin-widget")
 def site_admin_widget():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-widget.html")
 
+@app.get("/site-admin-widget.html")
+def site_admin_widget_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-widget.html")
 
-@app.get("/site-admin-subscription.html")
+
+@app.get("/site-admin-subscription")
 def site_admin_subscription():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-subscription.html")
 
+@app.get("/site-admin-subscription.html")
+def site_admin_subscription_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-subscription.html")
 
-@app.get("/site-admin-billing.html")
+
+@app.get("/site-admin-billing")
 def site_admin_billing():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-billing.html")
 
-@app.get("/site-admin-conversations.html")
+@app.get("/site-admin-billing.html")
+def site_admin_billing_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-billing.html")
+
+@app.get("/site-admin-conversations")
 def site_admin_conversations():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-conversations.html")
 
-@app.get("/site-admin-reports.html")
+@app.get("/site-admin-conversations.html")
+def site_admin_conversations_html():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-conversations.html")
+
+@app.get("/site-admin-reports")
 def site_admin_reports():
+    return FileResponse(BASE_DIR / "site-admin" / "site-admin-reports.html")
+
+@app.get("/site-admin-reports.html")
+def site_admin_reports_html():
     return FileResponse(BASE_DIR / "site-admin" / "site-admin-reports.html")
 
 
@@ -563,16 +610,28 @@ def serve_site_admin_onboarding_js():
     return FileResponse(BASE_DIR / "site-admin" / "js" / "site-admin-onboarding.js", media_type="application/javascript")
 
 
-@app.get("/knowledge-base.html")
+@app.get("/knowledge-base")
 def knowledge_base_page():
     return FileResponse(BASE_DIR / "knowledge-base.html")
 
-@app.get("/kb-search.html")
+@app.get("/knowledge-base.html")
+def knowledge_base_page_html():
+    return FileResponse(BASE_DIR / "knowledge-base.html")
+
+@app.get("/kb-search")
 def kb_search_page():
     return FileResponse(BASE_DIR / "kb-search.html")
 
-@app.get("/Reviews.html")
+@app.get("/kb-search.html")
+def kb_search_page_html():
+    return FileResponse(BASE_DIR / "kb-search.html")
+
+@app.get("/reviews")
 def reviews_page():
+    return FileResponse(BASE_DIR / "Reviews.html")
+
+@app.get("/Reviews.html")
+def reviews_page_html():
     return FileResponse(BASE_DIR / "Reviews.html")
 
 @app.get("/report-issue")

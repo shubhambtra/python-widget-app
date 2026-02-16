@@ -25,11 +25,12 @@ if (document.getElementById('userAvatar')) {
 
 // ==================== NAVIGATION ====================
 function buildSiteAdminUrl(page) {
+  const cleanPage = page.replace(/\.html$/, '');
   const params = new URLSearchParams();
   params.set('siteId', siteId);
   params.set('token', token);
   if (userName) params.set('user', userName);
-  return `${page}?${params.toString()}`;
+  return `/${cleanPage}?${params.toString()}`;
 }
 
 function setupNavigation() {
@@ -48,7 +49,7 @@ function setupNavigation() {
   if (knowledgeLink) {
     knowledgeLink.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = buildSiteAdminUrl('knowledge-base.html');
+      window.location.href = buildSiteAdminUrl('knowledge-base');
     });
   }
 }
@@ -94,7 +95,7 @@ function handleSubscriptionExpired(errorCode) {
           <p style="color: var(--text-secondary, #64748b); font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
             ${message}
           </p>
-          <button class="btn btn-primary" onclick="window.location.href=buildSiteAdminUrl('site-admin-subscription.html')" style="width: 100%; padding: 14px; font-size: 16px;">
+          <button class="btn btn-primary" onclick="window.location.href=buildSiteAdminUrl('site-admin-subscription')" style="width: 100%; padding: 14px; font-size: 16px;">
             View Plans & Subscribe
           </button>
         </div>
@@ -517,7 +518,7 @@ async function loadTrialBanner() {
     const isExpired = daysLeft <= 0;
     const isUrgent = daysLeft <= 3;
     const bgColor = isExpired ? '#ef4444' : isUrgent ? '#f59e0b' : '#0ea5e9';
-    const upgradeUrl = buildSiteAdminUrl('site-admin-subscription.html');
+    const upgradeUrl = buildSiteAdminUrl('site-admin-subscription');
 
     const bannerHtml = `
       <div id="freeTrialBanner" style="background: ${bgColor}; color: white; padding: 8px 24px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 12px; z-index: 49;">
@@ -554,7 +555,7 @@ function openReportIssue() {
   // Try to get email from page if available
   const emailEl = document.getElementById('dropdownEmail') || document.getElementById('userEmail');
   if (emailEl && emailEl.textContent) qp.set('email', emailEl.textContent);
-  window.open('/report-issue.html?' + qp.toString(), '_blank');
+  window.open('/report-issue?' + qp.toString(), '_blank');
 }
 
 function injectReportIssueLink() {
@@ -588,6 +589,6 @@ document.addEventListener('DOMContentLoaded', injectReportIssueLink);
 function openLiveMonitor() {
   // Build Support URL with admin role for supervisor view
   // Uses siteId and token from current session (already available in this file)
-  const supportUrl = `/Support.html?siteId=${siteId}&token=${token}&role=admin`;
+  const supportUrl = `/support?siteId=${siteId}&token=${token}&role=admin`;
   window.open(supportUrl, '_blank');
 }

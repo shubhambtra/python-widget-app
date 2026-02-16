@@ -726,7 +726,7 @@ const token = params.get("token");
 
 if (!siteId || !token) {
   alert("Missing siteId or token. Please access this page from the Support Dashboard.");
-  window.location.href = "/Support.html";
+  window.location.href = "/support";
 }
 
 const API_BASE = CONFIG.API_BASE;
@@ -1035,7 +1035,7 @@ function escapeHtml(text) {
 }
 
 function goBack() {
-  window.location.href = `http://${location.hostname}:8000/Support.html?siteId=${siteId}&token=${token}`;
+  window.location.href = `http://${location.hostname}:8000/support?siteId=${siteId}&token=${token}`;
 }
 
 // ==================== TOAST ====================

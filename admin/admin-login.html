@@ -295,7 +295,7 @@ body {
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Enter admin password" required autocomplete="current-password" />
         <div class="forgot-password-link">
-          <a href="/forgot-password.html">Forgot password?</a>
+          <a href="/forgot-password">Forgot password?</a>
         </div>
       </div>
 
@@ -375,7 +375,7 @@ async function login(e) {
       token: authToken,
       user: user.username || user.email
     });
-    location.href = `/admin-dashboard.html?${params.toString()}`;
+    location.href = `/admin-dashboard?${params.toString()}`;
 
   } catch (err) {
     showToast(err.message || 'Login failed. Please try again.');

@@ -299,24 +299,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ==================== NAVIGATION ====================
 function navigateTo(id) {
-  const base = `Support.html?siteId=${siteId}&token=${token}`;
+  const base = `/support?siteId=${siteId}&token=${token}`;
   if (id === 'inbox') {
     window.location.href = base;
   } else if (id === 'team') {
     window.location.href = base + '&nav=team';
   } else if (id === 'kb') {
-    window.location.href = `kb-search.html?siteId=${siteId}&token=${token}`;
+    window.location.href = `/kb-search?siteId=${siteId}&token=${token}`;
   } else if (id === 'settings') {
     window.location.href = base + '&nav=settings';
   } else if (id === 'help') {
     window.location.href = base + '&nav=help';
   } else if (id === 'report-issue') {
-    window.open(`report-issue.html?siteId=${siteId}&token=${token}`, '_blank');
+    window.open(`/report-issue?siteId=${siteId}&token=${token}`, '_blank');
   }
 }
 
 function viewReviewConversation(visitorId) {
-  window.location.href = `Support.html?siteId=${siteId}&token=${token}&selectVisitor=${visitorId}`;
+  window.location.href = `/support?siteId=${siteId}&token=${token}&selectVisitor=${visitorId}`;
 }
 
 // ==================== DATA ====================

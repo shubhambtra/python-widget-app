@@ -1013,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Set back link
-  document.getElementById('backToAdmin').href = `/site-admin.html?siteId=${siteId}&token=${token}`;
+  document.getElementById('backToAdmin').href = `/site-admin?siteId=${siteId}&token=${token}`;
 
   // Load site info
   await loadSiteInfo();

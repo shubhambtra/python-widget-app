@@ -1925,7 +1925,7 @@ const API_BASE = CONFIG.API_BASE;
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <span>${bannerText}</span>
-        <a href="/site-admin/site-admin-subscription.html?siteId=${siteId}&token=${token}" style="color: white; text-decoration: underline; font-weight: 600; white-space: nowrap;" target="_blank">Upgrade Now</a>
+        <a href="/site-admin/site-admin-subscription?siteId=${siteId}&token=${token}" style="color: white; text-decoration: underline; font-weight: 600; white-space: nowrap;" target="_blank">Upgrade Now</a>
       `;
     }
   } catch (err) {
@@ -6985,12 +6985,12 @@ function switchNavRail(id) {
   } else if (id === 'reviews') {
     const siteId = new URLSearchParams(window.location.search).get('siteId');
     const token = new URLSearchParams(window.location.search).get('token') || localStorage.getItem('token');
-    window.location.href = `Reviews.html?siteId=${siteId}&token=${token}`;
+    window.location.href = `/reviews?siteId=${siteId}&token=${token}`;
     return;
   } else if (id === 'kb') {
     const siteId = new URLSearchParams(window.location.search).get('siteId');
     const token = new URLSearchParams(window.location.search).get('token') || localStorage.getItem('token');
-    window.location.href = `kb-search.html?siteId=${siteId}&token=${token}`;
+    window.location.href = `/kb-search?siteId=${siteId}&token=${token}`;
     // Restore previous active nav state
     const navMap = { team: 'navTeam' };
     document.getElementById(navMap[currentNavView] || 'navInbox').classList.add('active');

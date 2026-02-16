@@ -980,7 +980,7 @@
             <a href="/#about" class="nav-link">About Us</a>
             <a href="/#contact" class="nav-link">Contact</a>
             <a href="/guide" class="nav-link">Guide</a>
-            <a href="/report-issue.html" class="nav-link">Report Issue</a>
+            <a href="/report-issue" class="nav-link">Report Issue</a>
         </div>
         <div class="nav-buttons">
             <a href="/login" class="login-btn">Login</a>
@@ -1792,7 +1792,7 @@
                 if (success) {
                     showAlert('Account created successfully! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                        window.location.href = `/site-admin?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                     }, 1000);
                 }
             } else {
@@ -2147,7 +2147,7 @@
                                 hideProcessingOverlay();
                                 showAlert('Payment successful! Redirecting...', 'success');
                                 setTimeout(() => {
-                                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                                    window.location.href = `/site-admin?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                                 }, 1000);
                             } else {
                                 // Account created, payment received but verification failed - still redirect
@@ -2156,7 +2156,7 @@
                                 hideProcessingOverlay();
                                 showAlert('Account created! Payment verification pending. Redirecting...', 'success');
                                 setTimeout(() => {
-                                    window.location.href = `/site-admin.html?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
+                                    window.location.href = `/site-admin?siteId=${createdSiteId}&token=${encodeURIComponent(accessToken)}&siteName=${encodeURIComponent(createdSiteName)}`;
                                 }, 1500);
                             }
                         } catch (err) {
@@ -2412,7 +2412,7 @@
                                 showAlert('Account created. Payment verification pending. Redirecting...', 'success');
                             }
                             setTimeout(() => {
-                                window.location.href = `/site-admin.html?siteId=${paypalSiteId}&token=${encodeURIComponent(paypalAccessToken)}&siteName=${encodeURIComponent(paypalSiteName || '')}`;
+                                window.location.href = `/site-admin?siteId=${paypalSiteId}&token=${encodeURIComponent(paypalAccessToken)}&siteName=${encodeURIComponent(paypalSiteName || '')}`;
                             }, 1000);
 
                         } catch (err) {

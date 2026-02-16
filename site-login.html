@@ -442,7 +442,7 @@ body {
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password" />
         <div class="forgot-password-link">
-          <a href="/forgot-password.html">Forgot password?</a>
+          <a href="/forgot-password">Forgot password?</a>
         </div>
       </div>
 
@@ -589,7 +589,7 @@ function goToAdmin(site) {
     token: authToken,
     siteName: site.name || ''
   });
-  const url = `/site-admin.html?${params.toString()}`;
+  const url = `/site-admin?${params.toString()}`;
   location.href = url;
 }
 

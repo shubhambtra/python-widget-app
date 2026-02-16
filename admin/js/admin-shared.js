@@ -39,10 +39,11 @@ function logout() {
 
 // Build URL with auth params
 function buildAdminUrl(page) {
+  const cleanPage = page.replace(/\.html$/, '');
   const params = new URLSearchParams();
   if (authToken) params.set('token', authToken);
   if (currentUser) params.set('user', currentUser);
-  return `${page}?${params.toString()}`;
+  return `/${cleanPage}?${params.toString()}`;
 }
 
 // ==================== DATE FORMATTERS ====================

@@ -527,7 +527,7 @@ body {
     <a href="/#about" class="nav-link">About Us</a>
     <a href="/#contact" class="nav-link">Contact</a>
     <a href="/guide" class="nav-link">Guide</a>
-    <a href="/report-issue.html" class="nav-link">Report Issue</a>
+    <a href="/report-issue" class="nav-link">Report Issue</a>
   </div>
   <div class="nav-buttons">
     <a href="/register" class="register-btn">Get Started</a>
@@ -575,7 +575,7 @@ body {
           </button>
         </div>
         <div class="forgot-password-link">
-          <a href="/forgot-password.html">Forgot password?</a>
+          <a href="/forgot-password">Forgot password?</a>
         </div>
       </div>
 
@@ -696,14 +696,14 @@ async function login(e) {
               token: token,
               siteName: ''
             });
-            location.href = `/site-admin-overview.html?${params.toString()}`;
+            location.href = `/site-admin-overview?${params.toString()}`;
           } else if (role === 'super_admin') {
             // Platform admin - redirect to admin dashboard
             const params = new URLSearchParams({
               token: token,
               user: identifier
             });
-            location.href = `/admin-dashboard.html?${params.toString()}`;
+            location.href = `/admin-dashboard?${params.toString()}`;
           } else {
             // Support agent or other roles - redirect to support dashboard
             location.href = `/support?siteId=${encodeURIComponent(siteId)}&token=${encodeURIComponent(token)}&user=${encodeURIComponent(identifier)}&email=${encodeURIComponent(email || '')}`;
@@ -729,7 +729,7 @@ async function login(e) {
           token: authToken,
           user: userData.username || userData.email
         });
-        location.href = `/admin-dashboard.html?${params.toString()}`;
+        location.href = `/admin-dashboard?${params.toString()}`;
 
       } else if (role === 'site_admin') {
         // Site Admin - fetch sites and redirect
@@ -825,7 +825,7 @@ function goToSiteAdmin(site) {
     token: authToken,
     siteName: site.name || ''
   });
-  location.href = `/site-admin-overview.html?${params.toString()}`;
+  location.href = `/site-admin-overview?${params.toString()}`;
 }
 
 function escapeHtml(text) {
